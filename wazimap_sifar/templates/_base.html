@@ -1,0 +1,58 @@
+{% extends '_base.html' %}
+{% load staticfiles %}
+{% load sass_tags %}
+
+{% block head_css %}
+  <link rel="stylesheet" href="{% static 'css/vendor/featherlight.min.css' %}">
+
+  {% if WAZIMAP.default_profile == 'youth' %}
+  <link rel="stylesheet" href="{% sass_src 'css/wazimap_youth.scss' %}">
+  {% else %}
+  <link rel="stylesheet" href="{% sass_src 'css/wazimap_za.scss' %}">
+  {% endif %}
+{% endblock %}
+
+
+{% block favicon %}
+  {% if WAZIMAP.default_profile == 'youth' %}
+    <link rel="shortcut icon" href="{% static 'img/youth-favicon.ico' %}"/>
+  {% else %}
+    {{ block.super }}
+  {% endif %}
+{% endblock %}
+
+{% block header_logo %}
+  {% if WAZIMAP.default_profile == 'youth' %}
+    <img src="{% static 'img/youth-logo.png' %}">
+  {% else %}
+    {{ block.super }}
+  {% endif %}
+{% endblock %}
+
+{% block header_menu %}
+  <li><a href="/about">About</a></li>
+  <li><a href="/help">Help</a></li>
+{% endblock %}
+
+{% block header_branding %}
+  {% if WAZIMAP.default_profile != 'youth' %}
+    {{ block.super }}
+  {% endif %}
+{% endblock %}
+
+{% block body_javascript_extra %}
+{{ block.super }}
+<!--Start of Zendesk Chat Script-->
+<script type="text/javascript">
+window.$zopim||(function(d,s){var z=$zopim=function(c){z._.push(c)},$=z.s=
+d.createElement(s),e=d.getElementsByTagName(s)[0];z.set=function(o){z.set.
+_.push(o)};z._=[];z.set._=[];$.async=!0;$.setAttribute("charset","utf-8");
+$.src="https://v2.zopim.com/?4i7Iq4DZ2A1k3ggcnEZBWXw7YB8IZsnG";z.t=+new Date;$.
+type="text/javascript";e.parentNode.insertBefore($,e)})(document,"script");
+</script>
+
+{% if WAZIMAP.default_profile == 'census' %}
+<script type="text/javascript" src="{% static 'js/wazimap-za.js' %}"></script>
+{% endif %}
+<!--End of Zendesk Chat Script-->
+{% endblock %}
