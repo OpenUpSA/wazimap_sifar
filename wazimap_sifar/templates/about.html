@@ -3,9 +3,19 @@
 {% block head_title %}{{ block.super }}{% endblock %}
 
 {% block content %}
-    {% if WAZIMAP.default_profile == 'youth' %}
-        {% include 'about_youth.html' %}
-    {% else %}
-        {{ block.super }}
-    {% endif %}
+<p>
+    The Samson Institute for Ageing Research (SIFAR) is based at Highlands House, Cape Town. Our work focuses on generating evidence on and awareness of the health, wellbeing and social needs of older persons and developing tools to support the provision of age-friendly health services, particularly at the primary care level. We also work to improve the training of people involved in caring for the elderly and to inform best practice guidelines for care provision.
+</p>
+
+<h2>OUR VISION</h2>
+
+<p>A society that takes the needs of older people into account and provides adequate health and social services to meet those needs.</p>
+
+<h2>OUR MISSION</h2>
+
+<p>To generate and disseminate research on the experiences and needs of older people that is relevant to policy makers, civil society, government and health workers and which increases awareness of elder issues in broader society.</p>
+
+<p>To support the design of evidence-based initiatives that improve the health, wellbeing and quality of care for older people and support their participation in social and economic life, both in South Africa and in other developing countries.</p>
+
+<p>To become a space where topics relevant to an ageing society, such as the treatment, human rights, socio-economic inclusion, social protection and media portrayal of older people, can be discussed, debated and acted upon.</p>
 {% endblock %}
