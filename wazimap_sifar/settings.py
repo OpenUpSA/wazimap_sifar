@@ -78,15 +78,19 @@ WAZIMAP['available_release_years'] = {
 WAZIMAP['levels'] = {
     'country': {
         'plural': 'countries',
-        'children': ['province', 'district', 'municipality', 'point'],
+        'children':
+        ['province', 'district', 'municipality', 'subplace', 'point'],
     },
     'province': {
-        'children': ['district', 'municipality', 'point'],
+        'children': ['district', 'municipality', 'subplace', 'point'],
     },
     'district': {
-        'children': ['municipality', 'point'],
+        'children': ['municipality', 'subplace', 'point'],
     },
     'municipality': {
+        'children': ['subplace', 'point']
+    },
+    'subplace': {
         'children': ['point']
     },
     'point': {
