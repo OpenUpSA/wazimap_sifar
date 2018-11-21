@@ -13,20 +13,21 @@ SETTINGS.setdefault('url', 'https://mapit.code4sa.org')
 SETTINGS.setdefault('generations', {
     '2011': '1',
     '2016': '2',
-    None: '2',  # TODO: this should be based on the default_geo_version wazimap setting
+    None: '2',
 })
-SETTINGS.setdefault('level_codes', {
-    'ward': 'WD',
-    'municipality': 'MN',
-    'district': 'DC',
-    'province': 'PR',
-    'country': 'CY',
-})
+SETTINGS.setdefault(
+    'level_codes', {
+        'subplace': 'SP',
+        'municipality': 'MN',
+        'district': 'DC',
+        'province': 'PR',
+        'country': 'CY',
+    })
 SETTINGS.setdefault('level_simplify', {
     'DC': 0.01,
     'PR': 0.005,
     'MN': 0.005,
-    'WD': 0.0001,
+    'SP': 0.0001,
 })
 
 
@@ -38,7 +39,8 @@ class GeoData(BaseGeoData):
         """
 
         mapit_level = SETTINGS['level_codes'][geo.geo_level]
-        url = SETTINGS['url'] + '/area/MDB:%s/feature.geojson?type=%s' % (geo.geo_code, mapit_level)
+        url = SETTINGS['url'] + '/area/MDB:%s/feature.geojson?type=%s' % (
+            geo.geo_code, mapit_level)
         url = url + '&generation=%s' % SETTINGS['generations'][geo.version]
         simplify = SETTINGS['level_simplify'].get(mapit_level)
         if simplify:
@@ -52,29 +54,38 @@ class GeoData(BaseGeoData):
         feature = resp.json()
         shape = asShape(feature['geometry'])
 
-        
         return {
             'properties': feature['properties'],
             'shape': shape,
         }
 
-    def get_locations_from_coords(self, longitude, latitude, levels=None, version=None):
+    def get_locations_from_coords(self,
+                                  longitude,
+                                  latitude,
+                                  levels=None,
+                                  version=None):
         """
         Returns a list of geographies containing this point.
         """
-        resp = requests.get(SETTINGS['url'] + '/point/4326/%s,%s?generation=%s' % (longitude, latitude, SETTINGS['generations'][version]), verify=False)
+        resp = requests.get(
+            SETTINGS['url'] + '/point/4326/%s,%s?generation=%s' %
+            (longitude, latitude, SETTINGS['generations'][version]),
+            verify=False)
         resp.raise_for_status()
 
         geos = []
         for feature in resp.json().itervalues():
             try:
-                geo = self.get_geography(feature['codes']['MDB'],
-                                         feature['type_name'].lower(),
-                                         version=version)
+                geo = self.get_geography(
+                    feature['codes']['MDB'],
+                    feature['type_name'].lower(),
+                    version=version)
 
                 if not levels or geo.geo_level in levels:
                     geos.append(geo)
             except LocationNotFound as e:
-                log.warn("Couldn't find geo that Mapit gave us: %s" % feature, exc_info=e)
+                log.warn(
+                    "Couldn't find geo that Mapit gave us: %s" % feature,
+                    exc_info=e)
 
         return geos
