@@ -2,7 +2,7 @@ from django.core.exceptions import ValidationError
 from import_export.fields import Field
 from import_export.resources import ModelResource
 
-from sifar.models import PrivatePharmacy
+from wazimap_sifar.models import PrivatePharmacy
 
 
 class FieldWithDBValidation(Field):

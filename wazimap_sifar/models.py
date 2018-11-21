@@ -26,7 +26,7 @@ class PrivatePharmacy(models.Model):
 
     class Meta:
         verbose_name_plural = 'private pharmacies'
-        db_table = 'private_pharmacies'
+        db_table = 'private_pharmacy'
         unique_together = (
             'facility', 'latitude', 'longitude', 'organization_unit_type')
 
