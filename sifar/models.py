@@ -1,5 +1,7 @@
 from __future__ import unicode_literals
+
 from django.db import models
+
 from django.contrib.postgres.fields import ArrayField
 
 
@@ -23,8 +25,10 @@ class PrivatePharmacy(models.Model):
     # service = HStoreField()
 
     class Meta:
+        verbose_name_plural = 'private pharmacies'
         db_table = 'private_pharmacies'
-        unique_together = ('facility', 'latitude', 'longitude', 'organization_unit_type')
+        unique_together = (
+            'facility', 'latitude', 'longitude', 'organization_unit_type')
 
-    def __str__(self):
+    def __unicode__(self):
         return '%s, %s' % (self.facility, self.organization_unit_type)
