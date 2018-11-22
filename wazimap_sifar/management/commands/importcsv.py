@@ -8,12 +8,10 @@ from wazimap.data.utils import get_session
 from wazimap.data.tables import get_datatable, get_table_id
 from wazimap.geo import geo_data
 
-
 import logging
 
 logging.basicConfig()
 logging.getLogger('sqlalchemy.engine').setLevel(logging.WARN)
-
 """
 This is a helper script that reads in a SuperCROSS or SuperWEB
 CSV file and imports the data into the Wazi database, creating
@@ -24,24 +22,23 @@ muni_re = re.compile('^[A-Z]{2,3}\d{0,3}\s*:\s.*$')
 
 
 class Command(BaseCommand):
-    help = ("Imports data from a SuperWEB- or SuperCROSS-generated CSV file. " +
-            "The database table is automatically created from the fields in " +
-            "the file headers.")
+    help = ("Imports data from a SuperWEB- or SuperCROSS-generated CSV file. "
+            + "The database table is automatically created from the fields in "
+            + "the file headers.")
 
     def add_arguments(self, parser):
         parser.add_argument(
             'filepath',
             action='store',
-            help='The file path to a SuperCROSS or SuperWEB CSV export'
-        )
+            help='The file path to a SuperCROSS or SuperWEB CSV export')
         parser.add_argument(
             '--table',
             action='store',
             dest='table',
             default=None,
-            help='The name of the database table where the imported data will be stored. '
-                 'If not provided, it is generated from the field names'
-        )
+            help=
+            'The name of the database table where the imported data will be stored. '
+            'If not provided, it is generated from the field names')
         parser.add_argument(
             '--dry-run',
             action='store_true',
@@ -55,16 +52,14 @@ class Command(BaseCommand):
             dest='geo_version',
             default=None,
             required=True,
-            help='The geography demarcation version that this table refers to'
-        )
+            help='The geography demarcation version that this table refers to')
         parser.add_argument(
             '--release-year',
             action='store',
             dest='release_year',
             default=None,
             required=True,
-            help='The release year of the data to import'
-        )
+            help='The release year of the data to import')
 
     def debug(self, msg):
         if self.verbosity >= 2:
@@ -78,9 +73,22 @@ class Command(BaseCommand):
         self.dryrun = options.get('dryrun', False)
         self.geo_version = options.get('geo_version')
         self.release_year = options.get('release_year')
-        self.provinces = {g.name.lower(): g for g in geo_data.geo_model.objects.filter(version=self.geo_version).filter(geo_level='province')}
-        self.districts = {g.name.lower(): g for g in geo_data.geo_model.objects.filter(version=self.geo_version).filter(geo_level='district')}
-        self.metros = {g.name.lower(): g for g in geo_data.geo_model.objects.filter(version=self.geo_version).filter(geo_level='municipality').filter(parent_level='province')}
+        self.provinces = {
+            g.name.lower(): g
+            for g in geo_data.geo_model.objects.filter(
+                version=self.geo_version).filter(geo_level='province')
+        }
+        self.districts = {
+            g.name.lower(): g
+            for g in geo_data.geo_model.objects.filter(
+                version=self.geo_version).filter(geo_level='district')
+        }
+        self.metros = {
+            g.name.lower(): g
+            for g in geo_data.geo_model.objects.filter(
+                version=self.geo_version).filter(
+                    geo_level='municipality').filter(parent_level='province')
+        }
 
         if self.dryrun:
             self.stdout.write("DRY RUN: not actually writing data")
@@ -221,8 +229,10 @@ class Command(BaseCommand):
             if categories is None:
                 categories = [(c, ) for c in categories_for_field]
             else:
-                categories = [tup + (categories_for_field[i], )
-                              for i, tup in enumerate(categories)]
+                categories = [
+                    tup + (categories_for_field[i], )
+                    for i, tup in enumerate(categories)
+                ]
 
         self.fields = fields
         self.categories = categories
@@ -252,10 +262,14 @@ class Command(BaseCommand):
     def setup_table(self):
         table_id = self.table_id or get_table_id(self.fields)
         try:
-            self.table = get_datatable(table_id).get_db_table(year=self.release_year)
-            self.stdout.write("Table for fields %s is %s" % (self.fields, self.table.id))
+            self.table = get_datatable(table_id).get_db_table(
+                year=self.release_year)
+            self.stdout.write("Table for fields %s is %s" % (self.fields,
+                                                             self.table.id))
         except KeyError:
-            raise CommandError("Couldn't establish which table to use for these fields. Have you added a FieldTable entry in wazimap_za/tables.py?\nFields: %s" % self.fields)
+            raise CommandError(
+                "Couldn't establish which table to use for these fields. Have you added a FieldTable entry in wazimap_za/tables.py?\nFields: %s"
+                % self.fields)
 
     def store_values(self):
         session = get_session()
@@ -267,39 +281,46 @@ class Command(BaseCommand):
                 break
             count += 1
             geo_level, geo_code = self.determine_geo_id(geo_name)
+            if geo_level:
 
-            self.stdout.write("%s-%s" % (geo_level, geo_code))
+                self.stdout.write("%s-%s" % (geo_level, geo_code))
 
-            for category, value in zip(self.categories, values):
-                # prepare the dict of args to pass to the db model for this row
-                kwargs = {
-                    'geo_level': geo_level,
-                    'geo_code': geo_code,
-                    'geo_version': self.geo_version,
-                }
+                for category, value in zip(self.categories, values):
+                    # prepare the dict of args to pass to the db model for this row
+                    kwargs = {
+                        'geo_level': geo_level,
+                        'geo_code': geo_code,
+                        'geo_version': self.geo_version,
+                    }
 
-                kwargs.update(dict((f, v) for f, v in zip(self.fields, category)))
-                if value == '-':
-                    value = '0'
-                total = round(float(value.replace(',', '')))
-                stored_key = tuple(sorted(list(kwargs.items())))
-                if stored_key in stored_values:
-                    if stored_values[stored_key] == total:
-                        self.stdout.write("Skipping already-added value for key %r" % list(stored_key))
-                        continue
-                    else:
-                        raise Exception("Different value %r != %r for duplicate key %r" % (stored_values[stored_key], total, stored_key))
-                stored_values[stored_key] = total
-                kwargs['total'] = total
+                    kwargs.update(
+                        dict((f, v) for f, v in zip(self.fields, category)))
+                    if value == '-':
+                        value = '0'
+                    total = round(float(value.replace(',', '')))
+                    stored_key = tuple(sorted(list(kwargs.items())))
+                    if stored_key in stored_values:
+                        if stored_values[stored_key] == total:
+                            self.stdout.write(
+                                "Skipping already-added value for key %r" %
+                                list(stored_key))
+                            continue
+                        else:
+                            raise Exception(
+                                "Different value %r != %r for duplicate key %r"
+                                % (stored_values[stored_key], total,
+                                   stored_key))
+                    stored_values[stored_key] = total
+                    kwargs['total'] = total
 
-                # create and add the row
-                self.debug(kwargs)
-                entry = self.table.model(**kwargs)
-                if not self.dryrun:
-                    session.add(entry)
+                    # create and add the row
+                    self.debug(kwargs)
+                    entry = self.table.model(**kwargs)
+                    if not self.dryrun:
+                        session.add(entry)
 
-            if count % 100 == 0:
-                session.flush()
+                if count % 100 == 0:
+                    session.flush()
 
         if not self.dryrun:
             session.commit()
@@ -314,7 +335,8 @@ class Command(BaseCommand):
         level = None
         if ':' in geo_name:
             pre, code = geo_name.split(':', 1)
-            pre = pre.strip(); code = code.strip()
+            pre = pre.strip()
+            code = code.strip()
         else:
             pre = code = geo_name
 
@@ -337,10 +359,15 @@ class Command(BaseCommand):
                 if match:
                     matches.append((geo_level, match.geo_code))
             if len(matches) == 0:
-                raise ValueError("Cannot recognize the geo level of %s" % geo_name)
+                print("This is probably a subplace, so we will ingnore them")
+                return [None, None]
+                # raise ValueError(
+                #     "Cannot recognize the geo level of %s" % geo_name)
             elif len(matches) == 1:
                 (level, code) = matches[0]
             else:
-                raise ValueError("Cannot recognize single geo level of %s: %s" % (geo_name, matches))
+                raise ValueError(
+                    "Cannot recognize single geo level of %s: %s" % (geo_name,
+                                                                     matches))
 
         return [level, code]
