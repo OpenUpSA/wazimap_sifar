@@ -21,7 +21,7 @@ class Command(BaseCommand):
                 for row in reader:
                     obj, created = Geography.objects.update_or_create(
                         {
-                            'version': 2011,
+                            'version': 2016,
                             'geo_code': row['SP_CODE'],
                             'geo_level': 'subplace',
                             'name': row['SP_NAME'],
