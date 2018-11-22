@@ -1,5 +1,5 @@
 from django.contrib import admin
-from import_export.admin import ImportMixin, ImportExportModelAdmin
+from import_export.admin import ImportExportModelAdmin
 
 from wazimap_sifar.models import PrivatePharmacy
 from wazimap_sifar.import_resource import PrivatePharmacyResource
