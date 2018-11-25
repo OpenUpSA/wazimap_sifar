@@ -14,7 +14,7 @@ log = logging.getLogger(__name__)
 
 PROFILE_SECTIONS = (
     'demographics',  # population group, age group in 5 years, age in completed years
-    #'economics',  # individual monthly income, type of sector, official employment status
+    'economics',  # individual monthly income, type of sector, official employment status
     #'service_delivery',  # source of water, refuse disposal
     #'households',  # household heads, etc.
     #'children',  # child-related stats
@@ -452,8 +452,13 @@ def get_health_profile(geo, session):
         session,
         table_name='senior_population_selfcare',
         order_by='-total')
+
     walking_data, _ = get_stat_data(
-        'walking', geo, session, table_name='senior_population_walking')
+        'walking or climbing stairs',
+        geo,
+        session,
+        table_name='senior_population_walking',
+        order_by='-total')
 
     hearing_data, _ = get_stat_data(
         'hearing',
@@ -464,8 +469,36 @@ def get_health_profile(geo, session):
 
     final_data = {
         'senior_seeing_difficulty': seeing_dist_data,
+        'senior_seeing_perc': {
+            'name': 'Of senior citizens have difficulty seeing',
+            'values': {
+                'this':
+                seeing_dist_data['A lot of difficulty']['values']['this']
+            }
+        },
         'senior_selfcare_difficulty': selfcare_data,
-        'senior_walking_difficulty': walking_data
+        'senior_selfcare_perc': {
+            'name':
+            'Of senior citizens have difficulty taking care of themselves',
+            'values': {
+                'this': selfcare_data['A lot of difficulty']['values']['this']
+            }
+        },
+        'senior_walking_difficulty': walking_data,
+        'senior_walking_perc': {
+            'name':
+            'Of senior citizens have difficulty walking or climbing the stairs',
+            'values': {
+                'this': walking_data['A lot of difficulty']['values']['this']
+            }
+        },
+        'senior_hearing_difficulty': hearing_data,
+        'senior_hearing_perc': {
+            'name': 'Of senior citizens have difficulty hearing',
+            'values': {
+                'this': hearing_data['A lot of difficulty']['values']['this']
+            }
+        }
     }
 
     return final_data
@@ -498,6 +531,8 @@ def get_demographics_profile(geo, session):
     age_dist_data, total_age = get_stat_data(
         ['age'], geo, session, table_name='senior_population_age')
 
+    senior_age_per = (total_pop / total_census_pop) * 100
+
     # sex
     sex_data, _ = get_stat_data(
         ['gender'],
@@ -523,6 +558,12 @@ def get_demographics_profile(geo, session):
             "values": {
                 "this": total_census_pop
             },
+        },
+        'total_population_perc': {
+            'name': 'Of the population are senior citizens',
+            'values': {
+                'this': senior_age_per
+            }
         }
     }
 
@@ -756,57 +797,14 @@ def get_households_profile(geo, session):
 
 
 def get_economics_profile(geo, session):
-    profile = {}
-    # income
-    if geo.version == '2011':
-        # distribution
-        recode = COLLAPSED_MONTHLY_INCOME_CATEGORIES
-        fields = ['employed individual monthly income']
-        income_dist_data, total_workers = get_stat_data(
-            fields,
-            geo,
-            session,
-            exclude=['Not applicable'],
-            recode=recode,
-            key_order=recode.values())
-
-        # median income
-        median = calculate_median_stat(income_dist_data)
-        median_income = ESTIMATED_MONTHLY_INCOME_CATEGORIES[median]
-        profile.update({
-            'individual_income_distribution': income_dist_data,
-            'median_individual_income': {
-                'name': 'Average monthly income',
-                'values': {
-                    'this': median_income
-                },
-            }
-        })
-    else:
-        # distribution
-        recode = COLLAPSED_ANNUAL_INCOME_CATEGORIES
-        fields = ['employed individual annual income']
-        income_dist_data, total_workers = get_stat_data(
-            fields,
-            geo,
-            session,
-            exclude=['Not applicable'],
-            recode=recode,
-            key_order=recode.values())
-
-        # median income
-        median = calculate_median_stat(income_dist_data)
-        median_income = ESTIMATED_ANNUAL_INCOME_CATEGORIES[median]
-        profile.update({
-            'individual_annual_income_distribution':
-            income_dist_data,
-            'median_annual_individual_income': {
-                'name': 'Average annual income',
-                'values': {
-                    'this': median_income
-                },
-            }
-        })
+    senior_income, total_pop = get_stat_data(
+        'individual monthly income',
+        geo,
+        session,
+        exclude=['Not applicable'],
+        recode=COLLAPSED_MONTHLY_INCOME_CATEGORIES,
+        table_name='senior_individual_monthly_income',
+        key_order=COLLAPSED_MONTHLY_INCOME_CATEGORIES.values())
 
     # employment status
     employ_status, total_workers = get_stat_data(
@@ -817,284 +815,7 @@ def get_economics_profile(geo, session):
         order_by='official employment status',
         table_name='officialemploymentstatus')
 
-    # sector
-    sector_dist_data, _ = get_stat_data(
-        ['type of sector'],
-        geo,
-        session,
-        exclude=['Not applicable'],
-        order_by='type of sector')
-
-    profile.update({
-        'employment_status': employ_status,
-        'sector_type_distribution': sector_dist_data
-    })
-
-    # access to internet
-    if current_context().get('year') == 'latest':
-        internet_access_dist, total_households = get_stat_data(
-            ['access to internet'],
-            geo,
-            session,
-            recode=INTERNET_ACCESS_RECODE,
-            table_name='accesstointernet_2016')
-
-        profile.update({'internet_access_distribution': internet_access_dist})
-
-    else:
-        internet_access_dist, total_with_access = get_stat_data(
-            ['access to internet'],
-            geo,
-            session,
-            exclude=['No access to internet'],
-            order_by='access to internet')
-        _, total_without_access = get_stat_data(
-            ['access to internet'],
-            geo,
-            session,
-            only=['No access to internet'])
-        total_households = total_with_access + total_without_access
-
-        profile.update({
-            'internet_access_distribution': internet_access_dist,
-            'internet_access': {
-                'name': 'Households with internet access',
-                'values': {
-                    'this': percent(total_with_access, total_households)
-                },
-                'numerators': {
-                    'this': total_with_access
-                },
-            }
-        })
-
-    return profile
-
-
-def get_service_delivery_profile(geo, session):
-    # water source
-    water_src_data, total_wsrc = get_stat_data(
-        ['source of water'],
-        geo,
-        session,
-        recode=SHORT_WATER_SOURCE_CATEGORIES,
-        order_by='-total')
-
-    # water from a service provider
-    total_water_sp = 0.0
-    perc_water_sp = 0.0
-
-    if current_context().get('year') == 'latest':
-        water_supplier_data, total_wspl = get_stat_data(
-            ['supplier of water'],
-            geo,
-            session,
-            recode=SHORT_WATER_SUPPLIER_CATEGORIES,
-            order_by='-total')
-
-        water_sp = ['Service provider', 'Water scheme']
-
-        for key in water_sp:
-            if key in water_supplier_data:
-                total_water_sp += water_supplier_data[key]['numerators'][
-                    'this']
-
-        perc_water_sp = percent(total_water_sp, total_wspl)
-
-    else:
-        if 'Service provider' in water_src_data:
-            total_water_sp = water_src_data['Service provider']['numerators'][
-                'this']
-            perc_water_sp = percent(total_water_sp, total_wsrc)
-
-    percentage_water_from_service_provider = {
-        "name": "Are getting water from a regional or local service provider",
-        "numerators": {
-            "this": total_water_sp
-        },
-        "values": {
-            "this": perc_water_sp
-        }
-    }
-
-    # refuse disposal
-    refuse_disp_data, total_ref = get_stat_data(
-        ['refuse disposal'],
-        geo,
-        session,
-        recode=SHORT_REFUSE_DISPOSAL_CATEGORIES,
-        order_by='-total')
-
-    total_ref_sp = 0.0
-    for k, v in refuse_disp_data.iteritems():
-        if k.startswith('Service provider'):
-            total_ref_sp += v['numerators']['this']
-
-    sp_name_2011 = "Are getting refuse disposal from a local authority or private company"
-    sp_name_2016 = "Are getting refuse disposal from a local authority, private company or community members"
-
-    percentage_ref_disp_from_service_provider = {
-        "name":
-        sp_name_2011
-        if str(current_context().get('year')) == '2011' else sp_name_2016,
-        "numerators": {
-            "this": total_ref_sp
-        },
-        "values": {
-            "this": percent(total_ref_sp, total_ref)
-        },
-    }
-
-    # electricity
-    if geo.version == '2011' and str(current_context().get('year')) == '2011':
-        elec_attrs = [
-            'electricity for cooking', 'electricity for heating',
-            'electricity for lighting'
-        ]
-
-        elec_table = get_datatable(
-            'electricityforcooking_electricityforheating_electr')
-        objects = elec_table.get_rows_for_geo(geo, session)
-
-        total_elec = 0.0
-        total_some_elec = 0.0
-        elec_access_data = {
-            'total_all_elec': {
-                "name": "Have electricity for everything",
-                "numerators": {
-                    "this": 0.0
-                },
-            },
-            'total_some_not_all_elec': {
-                "name": "Have electricity for some things",
-                "numerators": {
-                    "this": 0.0
-                },
-            },
-            'total_no_elec': {
-                "name": "No electricity",
-                "numerators": {
-                    "this": 0.0
-                },
-            }
-        }
-        for obj in objects:
-            total_elec += obj.total
-            has_some = False
-            has_all = True
-            for attr in elec_attrs:
-                val = not getattr(obj, attr).startswith('no ')
-                has_all = has_all and val
-                has_some = has_some or val
-            if has_some:
-                total_some_elec += obj.total
-            if has_all:
-                elec_access_data['total_all_elec']['numerators'][
-                    'this'] += obj.total
-            elif has_some:
-                elec_access_data['total_some_not_all_elec']['numerators'][
-                    'this'] += obj.total
-            else:
-                elec_access_data['total_no_elec']['numerators'][
-                    'this'] += obj.total
-        set_percent_values(elec_access_data, total_elec)
-        add_metadata(elec_access_data, elec_table,
-                     elec_table.get_release(current_context().get('year')))
-
-    if current_context().get('year') == 'latest':
-        # We don't have this data for 2011
-        elec_access, _ = get_stat_data(
-            ['access to electricity'],
-            geo,
-            session,
-            table_universe='Population',
-            recode=ELECTRICITY_ACCESS_RECODE,
-            order_by='-total')
-
-    # toilets
-    toilet_data, total_toilet = get_stat_data(
-        ['toilet facilities'],
-        geo,
-        session,
-        exclude_zero=True,
-        recode=COLLAPSED_TOILET_CATEGORIES,
-        order_by='-total')
-
-    total_flush_toilet = 0.0
-    total_no_toilet = 0.0
-    for key, data in toilet_data.iteritems():
-        if key.startswith('Flush') or key.startswith('Chemical'):
-            total_flush_toilet += data['numerators']['this']
-        if key == 'None':
-            total_no_toilet += data['numerators']['this']
-
-    profile = {
-        'water_source_distribution':
-        water_src_data,
-        'percentage_water_from_service_provider':
-        percentage_water_from_service_provider,
-        'refuse_disposal_distribution':
-        refuse_disp_data,
-        'percentage_ref_disp_from_service_provider':
-        percentage_ref_disp_from_service_provider,
-        'percentage_flush_toilet_access': {
-            "name": "Have access to flush or chemical toilets",
-            "numerators": {
-                "this": total_flush_toilet
-            },
-            "values": {
-                "this": percent(total_flush_toilet, total_toilet)
-            },
-        },
-        'percentage_no_toilet_access': {
-            "name": "Have no access to any toilets",
-            "numerators": {
-                "this": total_no_toilet
-            },
-            "values": {
-                "this": percent(total_no_toilet, total_toilet)
-            },
-        },
-        'toilet_facilities_distribution':
-        toilet_data,
-    }
-
-    if current_context().get('year') == 'latest':
-        profile.update({
-            'water_supplier_distribution': water_supplier_data,
-            'electricity_access': elec_access,
-            'percentage_no_electricity_access': {
-                "name":
-                "Have no access to electricity",
-                "numerators":
-                elec_access['No access to electricity']["numerators"],
-                "values":
-                elec_access['No access to electricity']["values"]
-            }
-        })
-
-    if geo.version == '2011':
-        profile.update({
-            'percentage_electricity_access': {
-                "name":
-                "Have electricity for at least one of cooking, heating or lighting",
-                "numerators": {
-                    "this": total_some_elec
-                },
-                "values": {
-                    "this": percent(total_some_elec, total_elec)
-                },
-            },
-            'electricity_access_distribution': elec_access_data,
-        })
-    return profile
-
-
-def set_percent_values(data, total):
-    for fields in data.values():
-        fields["values"] = {
-            "this": percent(fields["numerators"]["this"], total)
-        }
+    return {'senior_individual_income': senior_income}
 
 
 def get_education_profile(geo, session):
@@ -1152,296 +873,3 @@ def get_education_profile(geo, session):
     }
 
     return profile
-
-
-def get_children_profile(geo, session):
-    profile = {}
-    # age
-    child_adult_dist, _ = get_stat_data(
-        ['age in completed years'],
-        geo,
-        session,
-        table_name='ageincompletedyearssimplified',
-        recode={
-            '< 18': 'Children (< 18)',
-            '18 to 64': 'Adults (>= 18)',
-            '>= 65': 'Adults (>= 18)'
-        },
-        key_order=['Children (< 18)', 'Adults (>= 18)'])
-
-    # parental survival
-    survival, total = get_stat_data(['mother alive', 'father alive'], geo,
-                                    session)
-
-    parental_survival_dist = OrderedDict()
-    parental_survival_dist['metadata'] = survival['metadata']
-
-    parental_survival_dist['Both parents'] = survival['Yes']['Yes']
-    parental_survival_dist['Both parents']['name'] = 'Both parents'
-
-    parental_survival_dist['Neither parent'] = survival['No']['No']
-    parental_survival_dist['Neither parent']['name'] = 'Neither parent'
-
-    parental_survival_dist['One parent'] = survival['Yes']['No']
-    parental_survival_dist['One parent']['numerators']['this'] += survival[
-        'No']['Yes']['numerators']['this']
-
-    rest = (
-        total - parental_survival_dist['Both parents']['numerators']['this'] -
-        parental_survival_dist['Neither parent']['numerators']['this'] -
-        parental_survival_dist['One parent']['numerators']['this'])
-
-    parental_survival_dist['Uncertain'] = {
-        'name': 'Uncertain',
-        'numerators': {
-            'this': rest
-        },
-        'values': {
-            'this': percent(rest, total)
-        }
-    }
-
-    # gender
-    gender_dist, _ = get_stat_data(
-        ['gender'], geo, session, table_universe='Children under 18')
-
-    # school
-
-    # NOTE: this data is incompatible with some views (check out
-    # https://github.com/censusreporter/censusreporter/issues/78)
-    #
-    # school_attendance_dist, total_school_aged = get_stat_data(
-    #     ['present school attendance', 'age in completed years'],
-    #     geo, session,
-    # )
-    # school_attendance_dist['Yes']['metadata'] = \
-    #         school_attendance_dist['metadata']
-    # school_attendance_dist = school_attendance_dist['Yes']
-    # total_attendance = sum(d['numerators']['this'] for d in
-    #                        school_attendance_dist.values()
-    #                        if 'numerators' in d)
-
-    # school attendance
-    school_attendance_dist, total_school_aged = get_stat_data(
-        ['present school attendance'],
-        geo,
-        session,
-        recode=COLLAPSED_ATTENDANCE_CATEGORIES,
-    )
-    total_attendance = school_attendance_dist['Yes']['numerators']['this']
-
-    # education level
-    education17_dist, _ = get_stat_data(
-        ['highest educational level'],
-        geo,
-        session,
-        table_universe="17-year-old children",
-        recode=COLLAPSED_EDUCATION_CATEGORIES,
-        key_order=EDUCATION_KEY_ORDER,
-    )
-
-    # employment
-    employment_dist, total_15to17 = get_stat_data(
-        ['official employment status'],
-        geo,
-        session,
-        table_universe='Children 15 to 17',
-        exclude=['Not applicable'])
-    total_in_labour_force = float(
-        sum(v["numerators"]["this"] for k, v in employment_dist.iteritems() if
-            COLLAPSED_EMPLOYMENT_CATEGORIES.get(k, None) == 'In labour force'))
-
-    employment_indicators = {
-        'percent_in_labour_force': {
-            "name": "Of children between 15 and 17 are in the labour force",
-            "numerators": {
-                "this": total_in_labour_force
-            },
-            "values": {
-                "this": percent(total_in_labour_force, total_15to17)
-            }
-        },
-        'employment_distribution': employment_dist,
-    }
-    # median income
-    # monthly or annual
-    if geo.version == '2011':
-        income_dist_data, total_workers = get_stat_data(
-            ['individual monthly income'],
-            geo,
-            session,
-            table_universe='Children 15 to 17 who are employed',
-            exclude=['Not applicable'],
-            recode=COLLAPSED_MONTHLY_INCOME_CATEGORIES,
-            key_order=COLLAPSED_MONTHLY_INCOME_CATEGORIES.values())
-        median = calculate_median_stat(income_dist_data)
-        median_income = ESTIMATED_MONTHLY_INCOME_CATEGORIES[median]
-        employment_indicators.update({
-            'median_income': {
-                'name':
-                'Average monthly income of employed children between 15 and 17',
-                'values': {
-                    'this': median_income
-                },
-            }
-        })
-    else:
-        income_dist_data, total_workers = get_stat_data(
-            ['individual annual income'],
-            geo,
-            session,
-            table_universe='Children 15 to 17 who are employed',
-            exclude=['Not applicable'],
-            recode=COLLAPSED_ANNUAL_INCOME_CATEGORIES,
-            key_order=COLLAPSED_ANNUAL_INCOME_CATEGORIES.values())
-        median = calculate_median_stat(income_dist_data)
-        median_income = ESTIMATED_ANNUAL_INCOME_CATEGORIES[median]
-        employment_indicators.update({
-            'median_annual_income': {
-                'name':
-                'Average annual income of employed children between 15 and 17',
-                'values': {
-                    'this': median_income
-                },
-            }
-        })
-
-    profile.update({
-        'demographics': {
-            'child_adult_distribution': child_adult_dist,
-            'total_children': {
-                "name": "Children",
-                "values": {
-                    "this":
-                    child_adult_dist['Children (< 18)']['numerators']['this']
-                }
-            },
-            'gender_distribution': gender_dist,
-            'parental_survival_distribution': parental_survival_dist,
-            'percent_no_parent': {
-                "name":
-                "Of children 14 and under have no living biological parents",
-                "values":
-                parental_survival_dist["Neither parent"]['values'],
-                "numerators":
-                parental_survival_dist["Neither parent"]['numerators'],
-            },
-        },
-        'school': {
-            'school_attendance_distribution': school_attendance_dist,
-            'percent_school_attendance': {
-                "name":
-                "School-aged children (5 to 17 years old) are in school",
-                "numerators": {
-                    "this": total_school_aged
-                },
-                "values": {
-                    "this":
-                    percent(float(total_attendance), float(total_school_aged))
-                }
-            },
-            'education17_distribution': education17_dist,
-        },
-        'employment': employment_indicators
-    })
-    return profile
-
-
-def get_child_households_profile(geo, session):
-    # head of household
-    # gender
-    head_gender_dist, total_households = get_stat_data(
-        ['gender of head of household'],
-        geo,
-        session,
-        table_universe='Households headed by children under 18',
-        order_by='gender of head of household')
-    female_heads = head_gender_dist['Female']['numerators']['this']
-
-    # annual household income
-    if geo.version == '2011':
-        HOUSEHOLD_INCOME_RECODE = HOUSEHOLD_INCOME_RECODE_2011
-    else:
-        HOUSEHOLD_INCOME_RECODE = COLLAPSED_ANNUAL_INCOME_CATEGORIES
-    income_dist_data, _ = get_stat_data(
-        ['annual household income'],
-        geo,
-        session,
-        exclude=['Unspecified'],
-        recode=HOUSEHOLD_INCOME_RECODE,
-        key_order=HOUSEHOLD_INCOME_RECODE.values(),
-        table_name='annualhouseholdincomeunder18')
-
-    # median income
-    median = calculate_median_stat(income_dist_data)
-    median_income = HOUSEHOLD_INCOME_ESTIMATE[median]
-
-    # type of dwelling
-    type_of_dwelling_dist, _ = get_stat_data(
-        ['type of main dwelling'],
-        geo,
-        session,
-        recode=TYPE_OF_DWELLING_RECODE,
-        order_by='-total')
-    informal = type_of_dwelling_dist['Shack']['numerators']['this']
-
-    return {
-        'total_households': {
-            'name': 'Households with heads under 18 years old',
-            'values': {
-                'this': total_households
-            },
-        },
-        'type_of_dwelling_distribution': type_of_dwelling_dist,
-        'informal': {
-            'name':
-            'Child-headed households that are informal dwellings (shacks)',
-            'values': {
-                'this': percent(informal, total_households)
-            },
-            'numerators': {
-                'this': informal
-            },
-        },
-        'annual_income_distribution': income_dist_data,
-        'median_annual_income': {
-            'name': 'Average annual child-headed household income',
-            'values': {
-                'this': median_income
-            },
-        },
-        'head_of_household': {
-            'gender_distribution': head_gender_dist,
-            'female': {
-                'name': 'Child-headed households with women as their head',
-                'values': {
-                    'this': percent(female_heads, total_households)
-                },
-                'numerators': {
-                    'this': female_heads
-                },
-            },
-        },
-    }
-
-
-def get_crime_profile(geo, session):
-    with dataset_context(year='2014'):
-        child_crime, total = get_stat_data(
-            ['crime'],
-            geo,
-            session,
-            table_universe='Crimes',
-            only=['Neglect and ill-treatment of children'],
-            percent=False)
-
-    return {
-        'metadata': child_crime['metadata'],
-        'crime_against_children': {
-            'name': 'Crimes of neglect and ill-treatment of children in 2014',
-            'values': {
-                'this': total
-            },
-            'metadata': child_crime['metadata']
-        },
-    }
