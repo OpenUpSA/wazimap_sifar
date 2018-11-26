@@ -3,7 +3,7 @@ import time
 import requests
 
 from django.core.management.base import BaseCommand, CommandError
-from wazimap_sifar.models import PrivatePharmacy
+from wazimap_sifar.models import PrivatePharmacy, HealthFacilities, ProfessionalService
 
 
 class Command(BaseCommand):
@@ -13,7 +13,9 @@ class Command(BaseCommand):
         parser.add_argument(
             '--model', action='store', dest='model', default='PrivatePharmacy')
         parser.add_argument(
-            '--mapit', action='store', dest='mapit',
+            '--mapit',
+            action='store',
+            dest='mapit',
             default='https://mapit.code4sa.org/point/4326/')
 
     def handle(self, *args, **options):
@@ -27,7 +29,7 @@ class Command(BaseCommand):
                 lat = facility.latitude
                 lon = facility.longitude
                 url = options.get(
-                    'mapit') + '{},{}?type=PR,DC,MN&generation=1'.format(
+                    'mapit') + '{},{}?type=PR,DC,MN,SP&generation=2'.format(
                         lon, lat)
                 req = requests.get(url)
                 geo = req.json()
@@ -39,6 +41,5 @@ class Command(BaseCommand):
                     self.stdout.write(self.style.SUCCESS("Geo Inserted"))
                 else:
                     self.stdout.write(self.style.ERROR("No Parent Found"))
-                time.sleep(1)
         except Exception as error:
             raise CommandError(error)
