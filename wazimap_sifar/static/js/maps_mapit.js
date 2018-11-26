@@ -91,6 +91,28 @@ function MapItGeometryLoader() {
             success({features: features});
         });
     };
+    
+    this.loadPointsForHealth = function(geo_code, success){
+        url = '/api/point/v1/sifar/health-services?geo_code=' +geo_code;
+        d3.json(url, function(data){
+            success({'data': data['data']});
+        });
+	
+    };
+    this.loadPointsForProfessional = function(geo_code, success){
+        url = '/api/point/v1/sifar/professional-services?geo_code=' +geo_code;
+        d3.json(url, function(data){
+            success({'data': data['data']});
+        });
+	
+    };
+    this.loadPointsForPharmacies = function(geo_code, success){
+        url = '/api/point/v1/sifar/private-pharmacies?geo_code=' +geo_code;
+        d3.json(url, function(data){
+            success({'data': data['data']});
+        });
+	
+    };
 
 
     this.loadGeometryForGeo = function(geo_level, geo_code, geo_version, success) {

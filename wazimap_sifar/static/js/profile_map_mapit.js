@@ -24,6 +24,72 @@ ProfileMaps = function() {
             });
         }
 
+	if (geo_level == 'municipality'){
+	    L.control.scale().addTo(this.map);
+	    var healthGroup = new L.LayerGroup().addTo(this.map);
+	    var pharmaGroup = new L.LayerGroup().addTo(this.map);
+	    var professionalGroup = new L.LayerGroup().addTo(this.map);
+	    var greenIcon = new L.Icon({
+		iconUrl: '/static/js/vendor/images/marker-icon-green.png',
+		shadowUrl: '/static/js/vendor/images/marker-shadow.png',
+		iconSize: [25, 41],
+		iconAnchor: [12, 41],
+		popupAnchor: [1, -34],
+		shadowSize: [41, 41]
+});
+
+	    var orangeIcon = new L.Icon({
+		iconUrl: '/static/js/vendor/images/marker-icon-orange.png',
+		shadowUrl: '/static/js/vendor/images/marker-shadow.png',
+		iconSize: [25, 41],
+		iconAnchor: [12, 41],
+		popupAnchor: [1, -34],
+		shadowSize: [41, 41]
+	    });
+	    
+	    var violetIcon = new L.Icon({
+		iconUrl: '/static/js/vendor/images/marker-icon-violet.png',
+		shadowUrl: '/static/js/vendor/images/marker-shadow.png',
+		iconSize: [25, 41],
+		iconAnchor: [12, 41],
+		popupAnchor: [1, -34],
+		shadowSize: [41, 41]
+});
+	    GeometryLoader.loadPointsForHealth(geo_code,function(data){
+		var map = self.map;
+		data['data'].forEach(function(facility){
+		    L.marker([facility['latitude'], facility['longitude']],
+			     {icon:greenIcon}).addTo(healthGroup).bindPopup(facility['name']).on('mouseover',
+												 function(e){
+			this.openPopup();
+		    });
+		});
+	    });
+	    GeometryLoader.loadPointsForPharmacies(geo_code,function(data){
+		var map = self.map;
+		data['data'].forEach(function(facility){
+		    L.marker([facility['latitude'], facility['longitude']],
+			     {icon:orangeIcon}).addTo(pharmaGroup).bindPopup(facility['facility']).on('mouseover', function(e){
+				 this.openPopup();
+			     });
+		});
+	    });
+	    GeometryLoader.loadPointsForProfessional(geo_code,function(data){
+		var map = self.map;
+		data['data'].forEach(function(facility){
+		    L.marker([facility['latitude'], facility['longitude']],
+			     {icon:violetIcon}).addTo(professionalGroup).bindPopup(facility['name'] +' '+ facility['surname'] + ' -'+ facility['profession']).on('mouseover', function(e){
+				 this.openPopup();
+			     });
+		});
+	    });
+	    var overlayMap = {"<span style='color:#24ac20'>Health Facilities</span>": healthGroup,
+			      "<span style='color:#cb8325'>Private Pharmacies</span>": pharmaGroup,
+			      "<span style='color:#9823c9'>Professional Services</span>": professionalGroup};
+	    L.control.layers(null,overlayMap, {collapsed:false}).addTo(this.map);
+	}
+	
+
         // peers
         var parents = _.keys(geo.parents);
         if (parents.length > 0) {
