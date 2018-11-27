@@ -19,6 +19,7 @@ tables as necessary.
 """
 
 muni_re = re.compile('^[A-Z]{2,3}\d{0,3}\s*:\s.*$')
+subplace_re = re.compile('^\d{9}\s+')
 
 
 class Command(BaseCommand):
@@ -282,8 +283,10 @@ class Command(BaseCommand):
             count += 1
             geo_level, geo_code = self.determine_geo_id(geo_name)
             if geo_level:
-
-                self.stdout.write("%s-%s" % (geo_level, geo_code))
+                try:
+                    self.stdout.write("%s-%s" % (geo_level, geo_code))
+                except UnicodeDecodeError:
+                    pass
 
                 for category, value in zip(self.categories, values):
                     # prepare the dict of args to pass to the db model for this row
@@ -340,7 +343,7 @@ class Command(BaseCommand):
         else:
             pre = code = geo_name
 
-        if 'Ward' in geo_name:
+        if 'Ward' in geo_name and ":" in geo_name:
             level = 'ward'
             code = pre
         elif geo_name.startswith('DC'):
@@ -349,6 +352,9 @@ class Command(BaseCommand):
         elif muni_re.match(geo_name):
             level = 'municipality'
             code = pre
+        elif subplace_re.match(geo_name):
+            level = 'subplace'
+            code = geo_name[:9]
 
         else:
             matches = []
