@@ -1,7 +1,8 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from wazimap_sifar.models import PrivatePharmacy, ProfessionalService, HealthFacilities
+from wazimap_sifar.models import (
+    HealthFacilities, Library, PrivatePharmacy, ProfessionalService)
 from . import serializers
 
 
@@ -32,6 +33,11 @@ class PrivatePharmacyView(GenericPointView):
 class HealthFacilitiesView(GenericPointView):
     model = HealthFacilities
     model_serializer = serializers.HealthFacilitiesSerializer
+
+
+class LibraryView(GenericPointView):
+    model = Library
+    model_serializer = serializers.LibrarySerializer
 
 
 class ProfessionalServiceView(GenericPointView):
