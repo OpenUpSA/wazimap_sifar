@@ -22,7 +22,7 @@
 
 {% block profile_header_population %}
 <span class="value">{{ demographics.senior_citizen_total_population.values.this|floatformat:"0" }}</span>
-<span class="name">Senior Citizens above the age of 60</span>
+<span class="name">Older Adults above the age of 60</span>
 {% endblock %}
 
 
@@ -64,7 +64,7 @@
                 {% include 'profile/_blocks/_stat_list.html' with stat=demographics.total_population_perc stat_type='percentage' %}
             </div>
             <div class="column-half">
-                <div id="chart-column-demographics-population_group_distribution" data-stat-type="scaled-percentage" data-chart-title="Senior Citizens population by race"></div>
+                <div id="chart-column-demographics-population_group_distribution" data-stat-type="scaled-percentage" data-chart-title="Older Adults population by race"></div>
             </div>
             <div class="column-quarter">
                 <div id="chart-pie-demographics-sex_ratio" data-stat-type="percentage" data-initial-sort="-value" data-chart-title="Senior citizen population by gender"></div>
@@ -76,7 +76,7 @@
                 {% include 'profile/_blocks/_stat_list.html' with stat=demographics.language_most_spoken stat_type='name' stat_name='Language most spoken at home' %}
             </div>
             <div class="column-three-quarters">
-                <div id="chart-histogram-demographics-language_distribution" data-stat-type="scaled-percentage" data-chart-title="Senior Citizens by language most spoken at home"></div>
+                <div id="chart-histogram-demographics-language_distribution" data-stat-type="scaled-percentage" data-chart-title="Older Adults by language most spoken at home"></div>
             </div>
         </section>
     </div>
@@ -94,19 +94,19 @@
             <div class="column-third">
                 {% include 'profile/_blocks/_stat_list.html' with stat=health.senior_seeing_perc stat_type='percentage' decimals='-1' %}
             </div>
-            <div class="column-two-thirds" id="chart-histogram-health-senior_seeing_difficulty" data-stat-type="scaled-percentage" data-chart-title="Senior citizens experiencing difficulty seeing"></div>
+            <div class="column-two-thirds" id="chart-histogram-health-senior_seeing_difficulty" data-stat-type="scaled-percentage" data-chart-title="older adults experiencing difficulty seeing"></div>
 	    <div class="column-third">
                 {% include 'profile/_blocks/_stat_list.html' with stat=health.senior_selfcare_perc stat_type='percentage' decimals='-1' %}
             </div>
-            <div class="column-two-thirds" id="chart-histogram-health-senior_selfcare_difficulty" data-stat-type="scaled-percentage" data-chart-title="Senior citizens experiencing difficulty talking care of themselves"></div>
+            <div class="column-two-thirds" id="chart-histogram-health-senior_selfcare_difficulty" data-stat-type="scaled-percentage" data-chart-title="older adults experiencing difficulty talking care of themselves"></div>
 	    <div class="column-third">
                 {% include 'profile/_blocks/_stat_list.html' with stat=health.senior_walking_perc stat_type='percentage' decimals='-1' %}
             </div>
-            <div class="column-two-thirds" id="chart-histogram-health-senior_walking_difficulty" data-stat-type="scaled-percentage" data-chart-title="Senior citizens experiencing difficulty walking or climbing stairs"></div>
+            <div class="column-two-thirds" id="chart-histogram-health-senior_walking_difficulty" data-stat-type="scaled-percentage" data-chart-title="older adults experiencing difficulty walking or climbing stairs"></div>
 	    <div class="column-third">
                 {% include 'profile/_blocks/_stat_list.html' with stat=health.senior_hearing_perc stat_type='percentage' decimals='-1' %}
             </div>
-            <div class="column-two-thirds" id="chart-histogram-health-senior_hearing_difficulty" data-stat-type="scaled-percentage" data-chart-title="Senior citizens experiencing difficulty hearing"></div>
+            <div class="column-two-thirds" id="chart-histogram-health-senior_hearing_difficulty" data-stat-type="scaled-percentage" data-chart-title="older adults experiencing difficulty hearing"></div>
         </section>
     </div>
 </article>
@@ -121,7 +121,7 @@
             <aside>
 		Average monthly income is <a href="/help#faq-average-hh-income">a median estimate</a>, be careful with this value.
             </aside>
-            <div class="column-two-thirds" id="chart-histogram-economics-senior_individual_income" data-chart-title="Senior citizens monthly income" data-stat-type="scaled-percentage"></div>
+            <div class="column-two-thirds" id="chart-histogram-economics-senior_individual_income" data-chart-title="older adults monthly income" data-stat-type="scaled-percentage"></div>
 	</section>
     </div>
 </article>
