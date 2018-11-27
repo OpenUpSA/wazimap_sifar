@@ -437,7 +437,7 @@ def get_profile(geo, profile_name, request):
 
 def get_health_profile(geo, session):
     """
-    Health informtion for senior citizens
+    Health informtion for older adults
     """
     seeing_dist_data, _ = get_stat_data(
         'seeing',
@@ -470,7 +470,7 @@ def get_health_profile(geo, session):
     final_data = {
         'senior_seeing_difficulty': seeing_dist_data,
         'senior_seeing_perc': {
-            'name': 'Of senior citizens have difficulty seeing',
+            'name': 'Of older adults have difficulty seeing',
             'values': {
                 'this':
                 seeing_dist_data['A lot of difficulty']['values']['this']
@@ -479,7 +479,7 @@ def get_health_profile(geo, session):
         'senior_selfcare_difficulty': selfcare_data,
         'senior_selfcare_perc': {
             'name':
-            'Of senior citizens have difficulty taking care of themselves',
+            'Of older adults have difficulty taking care of themselves',
             'values': {
                 'this': selfcare_data['A lot of difficulty']['values']['this']
             }
@@ -487,14 +487,14 @@ def get_health_profile(geo, session):
         'senior_walking_difficulty': walking_data,
         'senior_walking_perc': {
             'name':
-            'Of senior citizens have difficulty walking or climbing the stairs',
+            'Of older adults have difficulty walking or climbing the stairs',
             'values': {
                 'this': walking_data['A lot of difficulty']['values']['this']
             }
         },
         'senior_hearing_difficulty': hearing_data,
         'senior_hearing_perc': {
-            'name': 'Of senior citizens have difficulty hearing',
+            'name': 'Of older adults have difficulty hearing',
             'values': {
                 'this': hearing_data['A lot of difficulty']['values']['this']
             }
@@ -506,11 +506,15 @@ def get_health_profile(geo, session):
 
 def get_demographics_profile(geo, session):
     #Full population of area
-    pop_dist_data, total_census_pop = get_stat_data(
-        ['population group'],
-        geo,
-        session,
-        table_dataset='Census and Community Survey')
+    if geo.geo_level == 'subplace':
+        pop_dist_data, total_census_pop = get_stat_data(
+            ['population group'], geo, session, table_name='populationgroup')
+    else:
+        pop_dist_data, total_census_pop = get_stat_data(
+            ['population group'],
+            geo,
+            session,
+            table_dataset='Census and Community Survey')
     # population group
     pop_dist_data, total_pop = get_stat_data(
         ['population group'],
@@ -548,7 +552,7 @@ def get_demographics_profile(geo, session):
         'age_group_distribution': age_dist_data,
         'sex_ratio': sex_data,
         'senior_citizen_total_population': {
-            'name': 'Senior Citizens',
+            'name': 'Older Adults',
             'values': {
                 'this': total_pop
             }
@@ -560,7 +564,7 @@ def get_demographics_profile(geo, session):
             },
         },
         'total_population_perc': {
-            'name': 'Of the population are senior citizens',
+            'name': 'Of the population are older adults',
             'values': {
                 'this': senior_age_per
             }
