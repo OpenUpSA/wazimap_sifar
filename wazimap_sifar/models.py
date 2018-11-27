@@ -55,6 +55,21 @@ class HealthFacilities(models.Model):
         return self.name
 
 
+class Library(models.Model):
+    name = models.CharField(max_length=100, blank=True)
+    latitude = models.FloatField()
+    longitude = models.FloatField()
+    library_type = models.CharField(max_length=100, blank=True)
+    members = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'library'
+        unique_together = ('name', 'latitude', 'longitude', 'library_type')
+
+    def __str__(self):
+        return self.name
+
+
 class ProfessionalService(models.Model):
     title = models.CharField(max_length=100)
     name = models.CharField(max_length=100)
