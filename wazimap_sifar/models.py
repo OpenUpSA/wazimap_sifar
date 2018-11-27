@@ -59,8 +59,10 @@ class Library(models.Model):
     name = models.CharField(max_length=100, blank=True)
     latitude = models.FloatField()
     longitude = models.FloatField()
-    library_type = models.CharField(max_length=100, blank=True)
+    geo_levels = ArrayField(
+        models.CharField(max_length=20), blank=True, null=True)
     members = models.IntegerField(blank=True, null=True)
+    library_type = models.CharField(max_length=100, blank=True)
 
     class Meta:
         db_table = 'library'
