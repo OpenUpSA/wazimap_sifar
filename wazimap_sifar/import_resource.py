@@ -77,8 +77,8 @@ class LibraryResource(BaseResource):
     name = Field(attribute='name', column_name='Name', default='')
     members = Field(attribute='members', column_name='Members', default=None)
     library_type = Field(attribute='library_type', column_name='Type')
-    latitude = Field(attribute='latitude', column_name='XCoord')
-    longitude = Field(attribute='longitude', column_name='YCoord')
+    longitude = Field(attribute='longitude', column_name='XCoord')
+    latitude = Field(attribute='latitude', column_name='YCoord')
 
     class Meta:
         model = Library

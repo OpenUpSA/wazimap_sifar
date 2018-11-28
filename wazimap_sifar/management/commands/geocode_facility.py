@@ -2,8 +2,8 @@ import time
 
 import requests
 
+from django.apps import apps
 from django.core.management.base import BaseCommand, CommandError
-from wazimap_sifar.models import PrivatePharmacy, HealthFacilities, ProfessionalService
 
 
 class Command(BaseCommand):
@@ -23,7 +23,8 @@ class Command(BaseCommand):
         Get the district geo code from mapit based on the faclities lat/lon
         """
         try:
-            model = eval(options.get('model'))
+            # https://docs.djangoproject.com/en/dev/ref/applications/#django.apps.apps.get_model
+            model = apps.get_model('wazimap_sifar', options.get('model'))
             for facility in model.objects.all():
                 codes = []
                 lat = facility.latitude
