@@ -96,7 +96,7 @@ ProfileMaps = function() {
 		var map = self.map;
 		data['data'].forEach(function(facility){
 		    L.marker([facility['latitude'], facility['longitude']],
-			     {icon:blueIcon}).addTo(healthGroup).bindPopup(facility['name']).on('mouseover',
+			     {icon:blueIcon}).addTo(libraryGroup).bindPopup(facility['name']).on('mouseover',
 												 function(e){
 			this.openPopup();
 		    });
