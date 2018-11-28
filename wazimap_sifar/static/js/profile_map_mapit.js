@@ -25,45 +25,25 @@ ProfileMaps = function() {
         }
 
 	if (geo_level == 'municipality'){
+    function getIcon(iconUrl) {
+      return new L.Icon({
+        iconUrl: iconUrl,
+        shadowUrl: '/static/js/vendor/images/marker-shadow.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41]
+      });
+    }
 	    L.control.scale().addTo(this.map);
 	    var healthGroup = new L.LayerGroup().addTo(this.map);
 	    var pharmaGroup = new L.LayerGroup().addTo(this.map);
 	    var professionalGroup = new L.LayerGroup().addTo(this.map);
 	    var libraryGroup = new L.LayerGroup().addTo(this.map);
-	    var greenIcon = new L.Icon({
-		iconUrl: '/static/js/vendor/images/marker-icon-green.png',
-		shadowUrl: '/static/js/vendor/images/marker-shadow.png',
-		iconSize: [25, 41],
-		iconAnchor: [12, 41],
-		popupAnchor: [1, -34],
-		shadowSize: [41, 41]
-});
-
-	    var orangeIcon = new L.Icon({
-		iconUrl: '/static/js/vendor/images/marker-icon-orange.png',
-		shadowUrl: '/static/js/vendor/images/marker-shadow.png',
-		iconSize: [25, 41],
-		iconAnchor: [12, 41],
-		popupAnchor: [1, -34],
-		shadowSize: [41, 41]
-	    });
-
-	    var violetIcon = new L.Icon({
-		iconUrl: '/static/js/vendor/images/marker-icon-violet.png',
-		shadowUrl: '/static/js/vendor/images/marker-shadow.png',
-		iconSize: [25, 41],
-		iconAnchor: [12, 41],
-		popupAnchor: [1, -34],
-		shadowSize: [41, 41]
-});
-	    var blueIcon = new L.Icon({
-		iconUrl: '/static/js/vendor/images/marker-icon-blue.png',
-		shadowUrl: '/static/js/vendor/images/marker-shadow.png',
-		iconSize: [25, 41],
-		iconAnchor: [12, 41],
-		popupAnchor: [1, -34],
-		shadowSize: [41, 41]
-});
+	    var greenIcon = getIcon('/static/js/vendor/images/marker-icon-green.png');
+	    var orangeIcon = getIcon('/static/js/vendor/images/marker-icon-orange.png');
+	    var violetIcon = getIcon('/static/js/vendor/images/marker-icon-violet.png');
+	    var blueIcon = getIcon('/static/js/vendor/images/marker-icon-blue.png');
 	    GeometryLoader.loadPointsForHealth(geo_code,function(data){
 		var map = self.map;
 		data['data'].forEach(function(facility){
