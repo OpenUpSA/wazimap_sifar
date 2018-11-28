@@ -63,6 +63,7 @@ class Library(GeoItem):
     library_type = models.CharField(max_length=100, blank=True)
 
     class Meta:
+        verbose_name_plural = 'libraries'
         db_table = 'library'
         unique_together = ('name', 'latitude', 'longitude', 'library_type')
 
