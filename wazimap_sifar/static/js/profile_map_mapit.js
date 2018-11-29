@@ -25,36 +25,25 @@ ProfileMaps = function() {
         }
 
 	if (geo_level == 'municipality'){
+    function getIcon(iconUrl) {
+      return new L.Icon({
+        iconUrl: iconUrl,
+        shadowUrl: '/static/js/vendor/images/marker-shadow.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41]
+      });
+    }
 	    L.control.scale().addTo(this.map);
 	    var healthGroup = new L.LayerGroup().addTo(this.map);
 	    var pharmaGroup = new L.LayerGroup().addTo(this.map);
 	    var professionalGroup = new L.LayerGroup().addTo(this.map);
-	    var greenIcon = new L.Icon({
-		iconUrl: '/static/js/vendor/images/marker-icon-green.png',
-		shadowUrl: '/static/js/vendor/images/marker-shadow.png',
-		iconSize: [25, 41],
-		iconAnchor: [12, 41],
-		popupAnchor: [1, -34],
-		shadowSize: [41, 41]
-});
-
-	    var orangeIcon = new L.Icon({
-		iconUrl: '/static/js/vendor/images/marker-icon-orange.png',
-		shadowUrl: '/static/js/vendor/images/marker-shadow.png',
-		iconSize: [25, 41],
-		iconAnchor: [12, 41],
-		popupAnchor: [1, -34],
-		shadowSize: [41, 41]
-	    });
-	    
-	    var violetIcon = new L.Icon({
-		iconUrl: '/static/js/vendor/images/marker-icon-violet.png',
-		shadowUrl: '/static/js/vendor/images/marker-shadow.png',
-		iconSize: [25, 41],
-		iconAnchor: [12, 41],
-		popupAnchor: [1, -34],
-		shadowSize: [41, 41]
-});
+	    var libraryGroup = new L.LayerGroup().addTo(this.map);
+	    var greenIcon = getIcon('/static/js/vendor/images/marker-icon-green.png');
+	    var orangeIcon = getIcon('/static/js/vendor/images/marker-icon-orange.png');
+	    var violetIcon = getIcon('/static/js/vendor/images/marker-icon-violet.png');
+	    var blueIcon = getIcon('/static/js/vendor/images/marker-icon-blue.png');
 	    GeometryLoader.loadPointsForHealth(geo_code,function(data){
 		var map = self.map;
 		data['data'].forEach(function(facility){
@@ -83,12 +72,25 @@ ProfileMaps = function() {
 			     });
 		});
 	    });
-	    var overlayMap = {"<span style='color:#24ac20'>Health Facilities</span>": healthGroup,
-			      "<span style='color:#cb8325'>Private Pharmacies</span>": pharmaGroup,
-			      "<span style='color:#9823c9'>Professional Services</span>": professionalGroup};
+	    GeometryLoader.loadPointsForLibraries(geo_code,function(data){
+		var map = self.map;
+		data['data'].forEach(function(facility){
+		    L.marker([facility['latitude'], facility['longitude']],
+			     {icon:blueIcon}).addTo(libraryGroup).bindPopup(facility['name']).on('mouseover',
+												 function(e){
+			this.openPopup();
+		    });
+		});
+	    });
+var overlayMap = {
+        "<span style='color:#24ac20'>Health Facilities</span>": healthGroup,
+        "<span style='color:#cb8325'>Private Pharmacies</span>": pharmaGroup,
+        "<span style='color:#9823c9'>Professional Services</span>": professionalGroup,
+        "<span style='color:#2387c9'>Libraries</span>": libraryGroup
+      };
 	    L.control.layers(null,overlayMap, {collapsed:false}).addTo(this.map);
 	}
-	
+
 
         // peers
         var parents = _.keys(geo.parents);
