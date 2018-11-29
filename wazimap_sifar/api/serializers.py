@@ -1,12 +1,25 @@
 from rest_framework import serializers
 
 from wazimap_sifar.models import (
-    PrivatePharmacy, HealthFacilities, ProfessionalService, Library)
+    CommunityPark, DistrictPark, HealthFacilities,
+    Library, PrivatePharmacy, ProfessionalService)
 
 
 class PrivatePharmacySerializer(serializers.ModelSerializer):
     class Meta:
         model = PrivatePharmacy
+        exclude = ('id', )
+
+
+class CommunityParkSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CommunityPark
+        exclude = ('id', )
+
+
+class DistrictParkSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DistrictPark
         exclude = ('id', )
 
 
