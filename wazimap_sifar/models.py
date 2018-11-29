@@ -90,7 +90,7 @@ class DistrictPark(GeoItem):
     suburb = models.CharField(max_length=100, blank=True)
 
     class Meta:
-        db_table = 'distirct_parks'
+        db_table = 'district_parks'
         unique_together = ('name', 'suburb')
 
     def __str__(self):
