@@ -92,35 +92,20 @@ function MapItGeometryLoader() {
         });
     };
 
-    this.loadPointsForHealth = function(geo_code, success){
-        url = '/api/point/v1/sifar/health-services?geo_code=' +geo_code;
-        d3.json(url, function(data){
-            success({'data': data['data']});
-        });
-
+    this.loadPoints = function(dataset, geo_code, success) {
+      var urls = {
+        libraries: '/api/point/v1/sifar/libraries',
+        pharmacies: '/api/point/v1/sifar/private-pharmacies',
+        professional_services: '/api/point/v1/sifar/professional-services',
+        health_services: '/api/point/v1/sifar/health-services',
+        community_parks: '/api/point/v1/sifar/community-parks',
+        district_parks: '/api/point/v1/sifar/district-parks'
+      }
+      var url = urls[dataset] + '?geo_code=' + geo_code;
+      d3.json(url, function(data){
+        success({'data': data['data']});
+      });
     };
-    this.loadPointsForProfessional = function(geo_code, success){
-        url = '/api/point/v1/sifar/professional-services?geo_code=' + geo_code;
-        d3.json(url, function(data){
-            success({'data': data['data']});
-        });
-
-    };
-    this.loadPointsForPharmacies = function(geo_code, success){
-        url = '/api/point/v1/sifar/private-pharmacies?geo_code=' + geo_code;
-        d3.json(url, function(data){
-            success({'data': data['data']});
-        });
-
-    };
-    this.loadPointsForLibraries = function(geo_code, success){
-        url = '/api/point/v1/sifar/libraries?geo_code=' + geo_code;
-        d3.json(url, function(data){
-            success({'data': data['data']});
-        });
-
-    };
-
 
     this.loadGeometryForGeo = function(geo_level, geo_code, geo_version, success) {
         var mapit_type = MAPIT.level_codes[geo_level];
