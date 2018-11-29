@@ -71,6 +71,32 @@ class Library(GeoItem):
         return self.name
 
 
+class CommunityPark(GeoItem):
+    name = models.CharField(max_length=100, blank=True)
+    address = models.CharField(max_length=100, blank=True)
+    suburb = models.CharField(max_length=100, blank=True)
+
+    class Meta:
+        db_table = 'community_parks'
+        unique_together = ('name', 'suburb')
+
+    def __str__(self):
+        return self.name
+
+
+class DistrictPark(GeoItem):
+    name = models.CharField(max_length=100, blank=True)
+    address = models.CharField(max_length=100, blank=True)
+    suburb = models.CharField(max_length=100, blank=True)
+
+    class Meta:
+        db_table = 'distirct_parks'
+        unique_together = ('name', 'suburb')
+
+    def __str__(self):
+        return self.name
+
+
 class ProfessionalService(GeoItem):
     title = models.CharField(max_length=100)
     name = models.CharField(max_length=100)
