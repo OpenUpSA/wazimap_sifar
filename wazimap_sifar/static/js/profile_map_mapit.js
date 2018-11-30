@@ -24,7 +24,7 @@ ProfileMaps = function() {
             });
         }
 
-	if (geo_level == 'municipality'){
+	if (geo_level == 'municipality' || geo_level=='subplace'){
 	    L.control.scale().addTo(this.map);
 	    var healthGroup = new L.LayerGroup().addTo(this.map);
 	    var pharmaGroup = new L.LayerGroup().addTo(this.map);
