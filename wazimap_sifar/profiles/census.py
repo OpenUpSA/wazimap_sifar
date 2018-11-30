@@ -420,8 +420,8 @@ def get_profile(geo, profile_name, request):
     # group_remainder(data['service_delivery']['toilet_facilities_distribution'],
     #                 5)
     group_remainder(data['demographics']['language_distribution'], 7)
-    group_remainder(data['demographics']['province_of_birth_distribution'], 7)
-    group_remainder(data['demographics']['region_of_birth_distribution'], 5)
+    #group_remainder(data['demographics']['province_of_birth_distribution'], 7)
+    #group_remainder(data['demographics']['region_of_birth_distribution'], 5)
     # group_remainder(data['households']['type_of_dwelling_distribution'], 5)
     # group_remainder(data['households']['tenure_distribution'], 6)
     # group_remainder(data['child_households']['type_of_dwelling_distribution'],
@@ -508,7 +508,10 @@ def get_demographics_profile(geo, session):
     #Full population of area
     if geo.geo_level == 'subplace':
         pop_dist_data, total_census_pop = get_stat_data(
-            ['population group'], geo, session, table_name='populationgroup')
+            ['population group'],
+            geo,
+            session,
+            table_name='populationgroup_2016')
     else:
         pop_dist_data, total_census_pop = get_stat_data(
             ['population group'],
@@ -579,100 +582,70 @@ def get_demographics_profile(geo, session):
             },
         }
 
-    # median age/age category
-    age_table = get_datatable('ageincompletedyears')
+    # # citizenship
+    # citizenship_dist, _ = get_stat_data(
+    #     ['citizenship'],
+    #     geo,
+    #     session,
+    #     table_dataset='Census and Community Survey',
+    #     order_by='-total')
 
-    objects = sorted(
-        age_table.get_rows_for_geo(geo, session),
-        key=lambda x: int(getattr(x, 'age in completed years')))
+    # sa_citizen = citizenship_dist['Yes']['numerators']['this']
 
-    # median age
-    median = calculate_median(objects, 'age in completed years')
-    final_data['median_age'] = {
-        "name": "Median age",
-        "values": {
-            "this": median
-        },
-    }
+    # final_data['citizenship_distribution'] = citizenship_dist
+    # final_data['citizenship_south_african'] = {
+    #     'name': 'South African citizens',
+    #     'values': {
+    #         'this': percent(sa_citizen, total_pop)
+    #     },
+    #     'numerators': {
+    #         'this': sa_citizen
+    #     },
+    # }
 
-    # age category
-    age_dist, _ = get_stat_data(
-        ['age in completed years'],
-        geo,
-        session,
-        table_dataset='Census and Community Survey',
-        table_name='ageincompletedyearssimplified',
-        key_order=['Under 18', '18 to 64', '65 and over'],
-        recode={
-            '< 18': 'Under 18',
-            '>= 65': '65 and over'
-        })
-    final_data['age_category_distribution'] = age_dist
+    # # migration
+    # province_of_birth_dist, _ = get_stat_data(
+    #     ['province of birth'],
+    #     geo,
+    #     session,
+    #     table_dataset='Census and Community Survey',
+    #     exclude_zero=True,
+    #     order_by='-total')
 
-    # citizenship
-    citizenship_dist, _ = get_stat_data(
-        ['citizenship'],
-        geo,
-        session,
-        table_dataset='Census and Community Survey',
-        order_by='-total')
+    # final_data['province_of_birth_distribution'] = province_of_birth_dist
 
-    sa_citizen = citizenship_dist['Yes']['numerators']['this']
+    # def region_recode(field, key):
+    #     if key == 'Born in South Africa':
+    #         return 'South Africa'
+    #     else:
+    #         return {
+    #             'Not applicable': 'Other',
+    #         }.get(key, key)
 
-    final_data['citizenship_distribution'] = citizenship_dist
-    final_data['citizenship_south_african'] = {
-        'name': 'South African citizens',
-        'values': {
-            'this': percent(sa_citizen, total_pop)
-        },
-        'numerators': {
-            'this': sa_citizen
-        },
-    }
+    # region_of_birth_dist, _ = get_stat_data(
+    #     ['region of birth'],
+    #     geo,
+    #     session,
+    #     table_dataset='Census and Community Survey',
+    #     exclude_zero=True,
+    #     order_by='-total',
+    #     recode=region_recode)
 
-    # migration
-    province_of_birth_dist, _ = get_stat_data(
-        ['province of birth'],
-        geo,
-        session,
-        table_dataset='Census and Community Survey',
-        exclude_zero=True,
-        order_by='-total')
+    # if 'South Africa' in region_of_birth_dist:
+    #     born_in_sa = region_of_birth_dist['South Africa']['numerators']['this']
+    # else:
+    #     born_in_sa = 0
 
-    final_data['province_of_birth_distribution'] = province_of_birth_dist
-
-    def region_recode(field, key):
-        if key == 'Born in South Africa':
-            return 'South Africa'
-        else:
-            return {
-                'Not applicable': 'Other',
-            }.get(key, key)
-
-    region_of_birth_dist, _ = get_stat_data(
-        ['region of birth'],
-        geo,
-        session,
-        table_dataset='Census and Community Survey',
-        exclude_zero=True,
-        order_by='-total',
-        recode=region_recode)
-
-    if 'South Africa' in region_of_birth_dist:
-        born_in_sa = region_of_birth_dist['South Africa']['numerators']['this']
-    else:
-        born_in_sa = 0
-
-    final_data['region_of_birth_distribution'] = region_of_birth_dist
-    final_data['born_in_south_africa'] = {
-        'name': 'Born in South Africa',
-        'values': {
-            'this': percent(born_in_sa, total_pop)
-        },
-        'numerators': {
-            'this': born_in_sa
-        },
-    }
+    # final_data['region_of_birth_distribution'] = region_of_birth_dist
+    # final_data['born_in_south_africa'] = {
+    #     'name': 'Born in South Africa',
+    #     'values': {
+    #         'this': percent(born_in_sa, total_pop)
+    #     },
+    #     'numerators': {
+    #         'this': born_in_sa
+    #     },
+    # }
 
     return final_data
 
@@ -810,14 +783,14 @@ def get_economics_profile(geo, session):
         table_name='senior_individual_monthly_income',
         key_order=COLLAPSED_MONTHLY_INCOME_CATEGORIES.values())
 
-    # employment status
-    employ_status, total_workers = get_stat_data(
-        ['official employment status'],
-        geo,
-        session,
-        exclude=['Age less than 15 years', 'Not applicable'],
-        order_by='official employment status',
-        table_name='officialemploymentstatus')
+    # # employment status
+    # employ_status, total_workers = get_stat_data(
+    #     ['official employment status'],
+    #     geo,
+    #     session,
+    #     exclude=['Age less than 15 years', 'Not applicable'],
+    #     order_by='official employment status',
+    #     table_name='officialemploymentstatus')
 
     return {'senior_individual_income': senior_income}
 
