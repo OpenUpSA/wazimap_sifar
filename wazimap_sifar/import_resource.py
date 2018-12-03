@@ -2,7 +2,8 @@ from django.core.exceptions import ValidationError
 from import_export.fields import Field as BaseField
 from import_export.resources import ModelResource
 
-from wazimap_sifar.models import Library, PrivatePharmacy
+from wazimap_sifar.models import (
+    CommunityPark, DistrictPark, Library, PrivatePharmacy)
 
 
 class FieldWithDBValidation(BaseField):
@@ -87,6 +88,46 @@ class LibraryResource(BaseResource):
             'name',
             'members',
             'library_type',
+            'latitude',
+            'longitude',
+        ]
+
+
+class CommunityParkResource(BaseResource):
+    Field = field_factory(CommunityPark)
+    name = Field(attribute='name', column_name='Name')
+    address = Field(attribute='address', column_name='Address')
+    suburb = Field(attribute='suburb', column_name='Suburb')
+    longitude = Field(attribute='longitude', column_name='XCoord')
+    latitude = Field(attribute='latitude', column_name='YCoord')
+
+    class Meta:
+        model = CommunityPark
+        import_id_fields = CommunityPark._meta.unique_together[0]
+        fields = [
+            'name',
+            'address',
+            'suburb',
+            'latitude',
+            'longitude',
+        ]
+
+
+class DistrictParkResource(BaseResource):
+    Field = field_factory(DistrictPark)
+    name = Field(attribute='name', column_name='Name')
+    address = Field(attribute='address', column_name='Address')
+    suburb = Field(attribute='suburb', column_name='Suburb')
+    longitude = Field(attribute='longitude', column_name='XCoord')
+    latitude = Field(attribute='latitude', column_name='YCoord')
+
+    class Meta:
+        model = DistrictPark
+        import_id_fields = DistrictPark._meta.unique_together[0]
+        fields = [
+            'name',
+            'address',
+            'suburb',
             'latitude',
             'longitude',
         ]
