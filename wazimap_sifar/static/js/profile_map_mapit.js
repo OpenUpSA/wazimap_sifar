@@ -25,15 +25,21 @@ ProfileMaps = function() {
         }
 
 	if (geo_level == 'municipality' || geo_level == 'subplace'){
-    function getIcon(iconUrl) {
-      return new L.Icon({
-        iconUrl: iconUrl,
-        shadowUrl: '/static/js/vendor/images/marker-shadow.png',
-        iconSize: [25, 41],
-        iconAnchor: [12, 41],
-        popupAnchor: [1, -34],
-        shadowSize: [41, 41]
-      });
+	    function getIcon(icon, colour) {
+		return L.AwesomeMarkers.icon({
+		    prefix: 'fa',
+		    icon: icon,
+		    markerColor: colour,
+		});
+	//     function getIcon(iconUrl, name, colour) {
+      // return new L.Icon({
+      //   iconUrl: iconUrl,
+      //   shadowUrl: '/static/js/vendor/images/marker-shadow.png',
+      //   iconSize: [25, 41],
+      //   iconAnchor: [12, 41],
+      //   popupAnchor: [1, -34],
+      //   shadowSize: [41, 41]
+      // });
     }
     function showPoints(dataset, geo_code, icon, group) {
       GeometryLoader.loadPoints(dataset, geo_code, function(data){
@@ -50,33 +56,36 @@ ProfileMaps = function() {
         });
       });
     }
+	    
+	    
     L.control.scale().addTo(this.map);
-    var healthGroup = new L.LayerGroup().addTo(this.map);
-    var pharmaGroup = new L.LayerGroup().addTo(this.map);
-    var professionalGroup = new L.LayerGroup().addTo(this.map);
-    var libraryGroup = new L.LayerGroup().addTo(this.map);
-    var communityParksGroup = new L.LayerGroup().addTo(this.map);
-    var districtParksGroup = new L.LayerGroup().addTo(this.map);
-    var greenIcon = getIcon('/static/js/vendor/images/marker-icon-green.png');
-    var orangeIcon = getIcon('/static/js/vendor/images/marker-icon-orange.png');
-    var violetIcon = getIcon('/static/js/vendor/images/marker-icon-violet.png');
-    var blueIcon = getIcon('/static/js/vendor/images/marker-icon-blue.png');
-    var yellowIcon = getIcon('/static/js/vendor/images/marker-icon-yellow.png');
-    var redIcon = getIcon('/static/js/vendor/images/marker-icon-red.png');
-    showPoints('health_services', geo_code, greenIcon, healthGroup);
-    showPoints('pharmacies', geo_code, orangeIcon, pharmaGroup);
-    showPoints('professional_services', geo_code, violetIcon, professionalGroup);
-    showPoints('libraries', geo_code, blueIcon, libraryGroup);
-    showPoints('community_parks', geo_code, yellowIcon, communityParksGroup);
-    showPoints('district_parks', geo_code, redIcon, districtParksGroup);
+	    var healthGroup = new L.LayerGroup().addTo(this.map);
+	    var pharmaGroup = new L.LayerGroup().addTo(this.map);
+	    var professionalGroup = new L.LayerGroup().addTo(this.map);
+	    var libraryGroup = new L.LayerGroup().addTo(this.map);
+	    var communityParksGroup = new L.LayerGroup().addTo(this.map);
+	    var districtParksGroup = new L.LayerGroup().addTo(this.map);
+
+	    var healthIcon = getIcon('ambulance', 'blue');
+	    var pharmacyIcon = getIcon('medkit', 'orange');
+	    var professionalIcon = getIcon('user-md', 'purple');
+	    var libraryIcon = getIcon('book', 'red');
+	    var commParksIcon = getIcon('tree', 'green');
+	    var distParksIcon = getIcon('tree', 'green');
+    showPoints('health_services', geo_code, healthIcon, healthGroup);
+    showPoints('pharmacies', geo_code, pharmacyIcon, pharmaGroup);
+    showPoints('professional_services', geo_code, professionalIcon, professionalGroup);
+    showPoints('libraries', geo_code, libraryIcon, libraryGroup);
+    showPoints('community_parks', geo_code, commParksIcon, communityParksGroup);
+    showPoints('district_parks', geo_code, distParksIcon, districtParksGroup);
 
     var overlayMap = {
-        "<span style='color:#24ac20'>Health Facilities</span>": healthGroup,
+        "<span style='color:#2387c9'>Health Facilities</span>": healthGroup,
         "<span style='color:#cb8325'>Private Pharmacies</span>": pharmaGroup,
         "<span style='color:#9823c9'>Professional Services</span>": professionalGroup,
-        "<span style='color:#2387c9'>Libraries</span>": libraryGroup,
-        "<span style='color:#d3bf19'>Community Parks</span>": communityParksGroup,
-        "<span style='color:#c42238'>District Parks</span>": districtParksGroup
+        "<span style='color:red'>Libraries</span>": libraryGroup,
+        "<span style='color:#24ac20'>Community Parks</span>": communityParksGroup,
+        "<span style='color:#24ac20'>District Parks</span>": districtParksGroup
       };
 	    L.control.layers(null,overlayMap, {collapsed:false}).addTo(this.map);
 	}
