@@ -10,8 +10,7 @@ class Command(BaseCommand):
     help = "Search and find in which geographies a point belongs to"
 
     def add_arguments(self, parser):
-        parser.add_argument(
-            '--model', action='store', dest='model', default='PrivatePharmacy')
+        parser.add_argument('--model', action='store', dest='model')
         parser.add_argument(
             '--mapit',
             action='store',
@@ -23,7 +22,6 @@ class Command(BaseCommand):
         Get the district geo code from mapit based on the faclities lat/lon
         """
         try:
-            # https://docs.djangoproject.com/en/dev/ref/applications/#django.apps.apps.get_model
             model = apps.get_model('wazimap_sifar', options.get('model'))
             for facility in model.objects.all():
                 codes = []
