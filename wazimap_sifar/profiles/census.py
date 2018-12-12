@@ -504,6 +504,21 @@ def get_health_profile(geo, session):
     return final_data
 
 
+def birth_in_sa(birth_data):
+    """
+    Calculate all those born in South Africa
+    """
+    provinces = [
+        'Western Cape', 'Eastern Cape', 'Northern Cape', "Free State",
+        'North West', 'Limpopo', 'Gauteng', 'Mpumalanga'
+    ]
+    total = 0
+    for key in birth_data:
+        if key in provinces:
+            total += birth_data[key]['numerators']['this']
+    return total
+
+
 def get_demographics_profile(geo, session):
     #Full population of area
     if geo.geo_level == 'subplace':
@@ -548,7 +563,37 @@ def get_demographics_profile(geo, session):
         table_name='senior_population_gender',
     )
 
+    citizen_data, _ = get_stat_data(
+        ['citizenship'],
+        geo,
+        session,
+        table_name='senior_citizenship',
+        order_by='-total')
+    sa_citizen = citizen_data['Yes']['numerators']['this']
+
+    birth_data, _ = get_stat_data(
+        ['birth'],
+        geo,
+        session,
+        table_name='senior_birth',
+        order_by='-total',
+    )
+
     final_data = {
+        'citizenship': citizen_data,
+        'citizen_sa': {
+            'name': 'Of older adults are South African',
+            'values': {
+                'this': sa_citizen
+            }
+        },
+        'province_of_birth_dist': birth_data,
+        'province_of_birth_total': {
+            'name': 'older adults born in South Africa',
+            'values': {
+                'this': birth_in_sa(birth_data)
+            }
+        },
         'language_distribution': language_data,
         'language_most_spoken': language_most_spoken,
         'population_group_distribution': pop_dist_data,
@@ -581,27 +626,6 @@ def get_demographics_profile(geo, session):
                 "this": total_pop / geo.square_kms
             },
         }
-
-    # # citizenship
-    # citizenship_dist, _ = get_stat_data(
-    #     ['citizenship'],
-    #     geo,
-    #     session,
-    #     table_dataset='Census and Community Survey',
-    #     order_by='-total')
-
-    # sa_citizen = citizenship_dist['Yes']['numerators']['this']
-
-    # final_data['citizenship_distribution'] = citizenship_dist
-    # final_data['citizenship_south_african'] = {
-    #     'name': 'South African citizens',
-    #     'values': {
-    #         'this': percent(sa_citizen, total_pop)
-    #     },
-    #     'numerators': {
-    #         'this': sa_citizen
-    #     },
-    # }
 
     # # migration
     # province_of_birth_dist, _ = get_stat_data(

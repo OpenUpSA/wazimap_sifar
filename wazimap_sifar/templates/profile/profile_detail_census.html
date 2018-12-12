@@ -77,12 +77,38 @@
             <div class="column-three-quarters">
                 <div id="chart-histogram-demographics-language_distribution" data-stat-type="scaled-percentage" data-chart-title="Older Adults by language most spoken at home"></div>
             </div>
-        </section>
+	</section>
+	<section class="clearfix stat-row">
+	    <h2 class="header-for-columns">
+		<a class="permalink" href="#citizenship" id="citizenship"> Citizenship
+		</a>
+	    </h2>
+	    <div class="column-quarter">
+                {% include 'profile/_blocks/_stat_list.html' with stat=demographics.citizen_sa stat_type='percent' stat_name='Language most spoken at home' %}
+	    </div>
+	    <div class="column-three-quarters">
+		<div id="chart-histogram-demographics-citizenship" data-stat-type="scaled-percentage" data-chart-title="South African Citizenship">
+		</div>
+	    </div>
+	</section>
+	<section class="clearfix stat-row">
+	    <h2 class="header-for-columns">
+		<a class="permalink" href="#migration" id="migration"> Migration
+		</a>
+	    </h2>
+	    <div class="column-quarter">
+                {% include 'profile/_blocks/_stat_list.html' with stat=demographics.province_of_birth_total stat_type='number' stat_name='' %}
+	    </div>
+	    <div class="column-three-quarters">
+                <div id="chart-histogram-demographics-province_of_birth_dist" data-stat-type="scaled-percentage" data-chart-title="Province of birth">
+		</div>
+            </div>
+	</section>
     </div>
 </article>
 <article id="health" class="clearfix">
     <header class="section-contents">
-        <h1><i class="fa fa-fw fa-heartbeat"></i> Senior health and wellness</h1>
+        <h1><i class="fa fa-fw fa-heartbeat"></i> Older Adult health and wellness</h1>
     </header>
     <div class="section-container">
         <section class="clearfix stat-row">
