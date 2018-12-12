@@ -24,71 +24,63 @@ ProfileMaps = function() {
             });
         }
 
-	if (geo_level == 'municipality' || geo_level=='subplace'){
-	    L.control.scale().addTo(this.map);
-	    var healthGroup = new L.LayerGroup().addTo(this.map);
-	    var pharmaGroup = new L.LayerGroup().addTo(this.map);
-	    var professionalGroup = new L.LayerGroup().addTo(this.map);
-	    var greenIcon = new L.Icon({
-		iconUrl: '/static/js/vendor/images/marker-icon-green.png',
-		shadowUrl: '/static/js/vendor/images/marker-shadow.png',
-		iconSize: [25, 41],
-		iconAnchor: [12, 41],
-		popupAnchor: [1, -34],
-		shadowSize: [41, 41]
-});
+	if (geo_level == 'municipality' || geo_level == 'subplace'){
+    function getIcon(iconUrl) {
+      return new L.Icon({
+        iconUrl: iconUrl,
+        shadowUrl: '/static/js/vendor/images/marker-shadow.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41]
+      });
+    }
+    function showPoints(dataset, geo_code, icon, group) {
+      GeometryLoader.loadPoints(dataset, geo_code, function(data){
+        var map = self.map;
+        data['data'].forEach(function(facility){
+          L.marker(
+            [facility['latitude'], facility['longitude']],
+            {icon: icon})
+          .addTo(group)
+          .bindPopup(facility['name']).on(
+            'mouseover', function(e){
+              this.openPopup();
+            });
+        });
+      });
+    }
+    L.control.scale().addTo(this.map);
+    var healthGroup = new L.LayerGroup().addTo(this.map);
+    var pharmaGroup = new L.LayerGroup().addTo(this.map);
+    var professionalGroup = new L.LayerGroup().addTo(this.map);
+    var libraryGroup = new L.LayerGroup().addTo(this.map);
+    var communityParksGroup = new L.LayerGroup().addTo(this.map);
+    var districtParksGroup = new L.LayerGroup().addTo(this.map);
+    var greenIcon = getIcon('/static/js/vendor/images/marker-icon-green.png');
+    var orangeIcon = getIcon('/static/js/vendor/images/marker-icon-orange.png');
+    var violetIcon = getIcon('/static/js/vendor/images/marker-icon-violet.png');
+    var blueIcon = getIcon('/static/js/vendor/images/marker-icon-blue.png');
+    var yellowIcon = getIcon('/static/js/vendor/images/marker-icon-yellow.png');
+    var redIcon = getIcon('/static/js/vendor/images/marker-icon-red.png');
+    showPoints('health_services', geo_code, greenIcon, healthGroup);
+    showPoints('pharmacies', geo_code, orangeIcon, pharmaGroup);
+    showPoints('professional_services', geo_code, violetIcon, professionalGroup);
+    showPoints('libraries', geo_code, blueIcon, libraryGroup);
+    showPoints('community_parks', geo_code, yellowIcon, communityParksGroup);
+    showPoints('district_parks', geo_code, redIcon, districtParksGroup);
 
-	    var orangeIcon = new L.Icon({
-		iconUrl: '/static/js/vendor/images/marker-icon-orange.png',
-		shadowUrl: '/static/js/vendor/images/marker-shadow.png',
-		iconSize: [25, 41],
-		iconAnchor: [12, 41],
-		popupAnchor: [1, -34],
-		shadowSize: [41, 41]
-	    });
-	    
-	    var violetIcon = new L.Icon({
-		iconUrl: '/static/js/vendor/images/marker-icon-violet.png',
-		shadowUrl: '/static/js/vendor/images/marker-shadow.png',
-		iconSize: [25, 41],
-		iconAnchor: [12, 41],
-		popupAnchor: [1, -34],
-		shadowSize: [41, 41]
-});
-	    GeometryLoader.loadPointsForHealth(geo_code,function(data){
-		var map = self.map;
-		data['data'].forEach(function(facility){
-		    L.marker([facility['latitude'], facility['longitude']],
-			     {icon:greenIcon}).addTo(healthGroup).bindPopup(facility['name']).on('mouseover',
-												 function(e){
-			this.openPopup();
-		    });
-		});
-	    });
-	    GeometryLoader.loadPointsForPharmacies(geo_code,function(data){
-		var map = self.map;
-		data['data'].forEach(function(facility){
-		    L.marker([facility['latitude'], facility['longitude']],
-			     {icon:orangeIcon}).addTo(pharmaGroup).bindPopup(facility['facility']).on('mouseover', function(e){
-				 this.openPopup();
-			     });
-		});
-	    });
-	    GeometryLoader.loadPointsForProfessional(geo_code,function(data){
-		var map = self.map;
-		data['data'].forEach(function(facility){
-		    L.marker([facility['latitude'], facility['longitude']],
-			     {icon:violetIcon}).addTo(professionalGroup).bindPopup(facility['name'] +' '+ facility['surname'] + ' -'+ facility['profession']).on('mouseover', function(e){
-				 this.openPopup();
-			     });
-		});
-	    });
-	    var overlayMap = {"<span style='color:#24ac20'>Health Facilities</span>": healthGroup,
-			      "<span style='color:#cb8325'>Private Pharmacies</span>": pharmaGroup,
-			      "<span style='color:#9823c9'>Professional Services</span>": professionalGroup};
+    var overlayMap = {
+        "<span style='color:#24ac20'>Health Facilities</span>": healthGroup,
+        "<span style='color:#cb8325'>Private Pharmacies</span>": pharmaGroup,
+        "<span style='color:#9823c9'>Professional Services</span>": professionalGroup,
+        "<span style='color:#2387c9'>Libraries</span>": libraryGroup,
+        "<span style='color:#d3bf19'>Community Parks</span>": communityParksGroup,
+        "<span style='color:#c42238'>District Parks</span>": districtParksGroup
+      };
 	    L.control.layers(null,overlayMap, {collapsed:false}).addTo(this.map);
 	}
-	
+
 
         // peers
         var parents = _.keys(geo.parents);

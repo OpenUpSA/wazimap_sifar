@@ -1,13 +1,32 @@
 from django.contrib import admin
 from import_export.admin import ImportExportModelAdmin
 
-from wazimap_sifar.models import PrivatePharmacy, HealthFacilities, ProfessionalService
-from wazimap_sifar.import_resource import PrivatePharmacyResource
+from wazimap_sifar.models import (
+    CommunityPark, DistrictPark, HealthFacilities,
+    Library, PrivatePharmacy, ProfessionalService)
+from wazimap_sifar.import_resource import (
+    CommunityParkResource, DistrictParkResource,
+    LibraryResource, PrivatePharmacyResource)
 
 
 class PrivatePharmacyAdmin(ImportExportModelAdmin):
     resource_class = PrivatePharmacyResource
     search_fields = ['facility']
+
+
+class CommunityParkAdmin(ImportExportModelAdmin):
+    resource_class = CommunityParkResource
+    search_fields = ['name', 'address', 'suburb']
+
+
+class DistrictParkAdmin(ImportExportModelAdmin):
+    resource_class = DistrictParkResource
+    search_fields = ['name', 'address', 'suburb']
+
+
+class LibraryAdmin(ImportExportModelAdmin):
+    resource_class = LibraryResource
+    search_fields = ['name', 'library_type']
 
 
 class HealthFacilitiesAdmin(admin.ModelAdmin):
@@ -21,3 +40,6 @@ class ProfessionalServiceAdmin(admin.ModelAdmin):
 admin.site.register(PrivatePharmacy, PrivatePharmacyAdmin)
 admin.site.register(HealthFacilities, HealthFacilitiesAdmin)
 admin.site.register(ProfessionalService, ProfessionalServiceAdmin)
+admin.site.register(Library, LibraryAdmin)
+admin.site.register(CommunityPark, CommunityParkAdmin)
+admin.site.register(DistrictPark, DistrictParkAdmin)

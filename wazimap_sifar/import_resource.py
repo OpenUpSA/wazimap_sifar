@@ -1,25 +1,48 @@
 from django.core.exceptions import ValidationError
-from import_export.fields import Field
+from import_export.fields import Field as BaseField
 from import_export.resources import ModelResource
 
-from wazimap_sifar.models import PrivatePharmacy
+from wazimap_sifar.models import (
+    CommunityPark, DistrictPark, Library, PrivatePharmacy)
 
 
-class FieldWithDBValidation(Field):
+class FieldWithDBValidation(BaseField):
+
+    empty_values = [None, '', 'NULL']
+
+    def __init__(self, model, *args, **kwargs):
+        self.model = model
+        super(FieldWithDBValidation, self).__init__(*args, **kwargs)
 
     def clean(self, data):
         value = super(FieldWithDBValidation, self).clean(data)
         try:
-            model_field = PrivatePharmacy._meta.get_field(self.attribute)
+            model_field = self.model._meta.get_field(self.attribute)
             model_field.validate(value, None)
         except ValidationError as e:
             raise ValueError("Column '%s': %s" % (self.column_name, e))
         return value
 
 
-class PrivatePharmacyResource(ModelResource):
-    DEFAULT_RESOURCE_FIELD = FieldWithDBValidation
+def field_factory(model):
+    def inner(*args, **kwargs):
+        field = FieldWithDBValidation(model, *args, **kwargs)
+        return field
+    return inner
 
+
+class BaseResource(ModelResource):
+
+    def before_import(self, dataset, using_transactions, dry_run, **kwargs):
+        required_fields = {f.column_name for f in self.fields.values()}
+        fields_in_file = set(dataset.headers)
+        missing_fields = required_fields - fields_in_file
+        if missing_fields:
+            raise ValueError('Missing headers: %s' % list(missing_fields))
+
+
+class PrivatePharmacyResource(BaseResource):
+    Field = field_factory(PrivatePharmacy)
     province = Field(attribute='province', column_name='Province')
     district = Field(attribute='district', column_name='District')
     sub_district = Field(attribute='sub_district', column_name='Sub-District')
@@ -36,7 +59,7 @@ class PrivatePharmacyResource(ModelResource):
 
     class Meta:
         model = PrivatePharmacy
-        import_id_fields = ['facility', 'latitude', 'longitude']
+        import_id_fields = PrivatePharmacy._meta.unique_together[0]
         fields = [
             'province',
             'district',
@@ -49,9 +72,62 @@ class PrivatePharmacyResource(ModelResource):
             'address',
         ]
 
-    def before_import(self, dataset, using_transactions, dry_run, **kwargs):
-        required_fields = {f.column_name for f in self.fields.values()}
-        fields_in_file = set(dataset.headers)
-        missing_fields = required_fields - fields_in_file
-        if missing_fields:
-            raise ValueError('Missing headers: %s' % list(missing_fields))
+
+class LibraryResource(BaseResource):
+    Field = field_factory(Library)
+    name = Field(attribute='name', column_name='Name', default='')
+    members = Field(attribute='members', column_name='Members', default=None)
+    library_type = Field(attribute='library_type', column_name='Type')
+    longitude = Field(attribute='longitude', column_name='XCoord')
+    latitude = Field(attribute='latitude', column_name='YCoord')
+
+    class Meta:
+        model = Library
+        import_id_fields = Library._meta.unique_together[0]
+        fields = [
+            'name',
+            'members',
+            'library_type',
+            'latitude',
+            'longitude',
+        ]
+
+
+class CommunityParkResource(BaseResource):
+    Field = field_factory(CommunityPark)
+    name = Field(attribute='name', column_name='Name')
+    address = Field(attribute='address', column_name='Address')
+    suburb = Field(attribute='suburb', column_name='Suburb')
+    longitude = Field(attribute='longitude', column_name='XCoord')
+    latitude = Field(attribute='latitude', column_name='YCoord')
+
+    class Meta:
+        model = CommunityPark
+        import_id_fields = CommunityPark._meta.unique_together[0]
+        fields = [
+            'name',
+            'address',
+            'suburb',
+            'latitude',
+            'longitude',
+        ]
+
+
+class DistrictParkResource(BaseResource):
+    Field = field_factory(DistrictPark)
+    name = Field(attribute='name', column_name='Name')
+    address = Field(attribute='address', column_name='Address')
+    suburb = Field(attribute='suburb', column_name='Suburb')
+    longitude = Field(attribute='longitude', column_name='XCoord')
+    latitude = Field(attribute='latitude', column_name='YCoord')
+
+    class Meta:
+        model = DistrictPark
+        import_id_fields = DistrictPark._meta.unique_together[0]
+        fields = [
+            'name',
+            'address',
+            'suburb',
+            'latitude',
+            'longitude',
+        ]
