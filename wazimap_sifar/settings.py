@@ -95,7 +95,6 @@ WAZIMAP['levels'] = {
         'children': []
     },
 }
-
 WAZIMAP['mapit'] = {
     'generations': {
         '2011': '1',
