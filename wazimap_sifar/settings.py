@@ -33,12 +33,9 @@ WSGI_APPLICATION = 'wazimap_sifar.wsgi.application'
 
 # Application definition
 INSTALLED_APPS = [
-    'wazimap_sifar',
-    'rest_framework',
-    'django.contrib.postgres',
-    'django_admin_hstore_widget',
-    'elasticapm.contrib.django',
-    'import_export',
+    'wazimap_sifar', 'rest_framework', 'django.contrib.postgres',
+    'django_admin_hstore_widget', 'elasticapm.contrib.django', 'import_export',
+    'explorer', 'leaflet'
 ] + INSTALLED_APPS
 
 MIDDLEWARE_CLASSES = (
@@ -49,9 +46,6 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware'
 ) + MIDDLEWARE_CLASSES
-
-TEMPLATE_CONTEXT_PROCESSORS = ('django.contrib.auth.context_processors.auth',
-                               ) + TEMPLATE_CONTEXT_PROCESSORS
 
 DATABASE_URL = os.environ.get(
     'DATABASE_URL',
@@ -122,6 +116,14 @@ LOGSTASH_URL = os.environ.get('LOGSTASH_URL', '')
 APM_SERVER_URL = os.environ.get('APM_SERVER_URL', '')
 
 ELASTIC_APM = {'SERVICE_NAME': 'Wazimap Sifar', 'SERVER_URL': APM_SERVER_URL}
+
+LEAFLET_CONFIG = {
+    'DEFAULT_CENTER': (-29.440, 29.443),
+    'DEFAULT_ZOOM': 5,
+    'MIN_ZOOM': 3,
+    'MAX_ZOOM': 18,
+    'RESET_VIEW': False
+}
 
 LOGGING = {
     'version': 1,
