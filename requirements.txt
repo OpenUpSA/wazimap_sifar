@@ -5,7 +5,7 @@ chardet==3.0.4
 coreapi==2.3.3
 coreschema==0.0.4
 dj-database-url==0.5.0
-Django==1.9.13
+Django==1.11.20
 django-admin-hstore-widget==1.0.1
 django-appconf==1.0.2
 django-compressor==2.2
@@ -46,5 +46,6 @@ unicodecsv==0.14.1
 uritemplate==3.0.0
 urllib3==1.23
 git+https://github.com/OpenUpSA/wazimap.git@releases#egg=wazimap[gdal]
+git+https://github.com/OpenUpSA/explorer.git
 whitenoise==4.0
 django-storages==1.1.8
