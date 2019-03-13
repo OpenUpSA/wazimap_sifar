@@ -19,7 +19,7 @@ class PrivatePharmacy(GeoItem):
     province = models.CharField(blank=True, max_length=100)
     district = models.CharField(blank=True, max_length=100)
     sub_district = models.CharField(blank=True, max_length=100)
-    facility = models.CharField(max_length=100)
+    name = models.CharField(max_length=100)
     address = models.CharField(max_length=200, blank=True)
     organization_unit = models.CharField(max_length=200, blank=True)
     organization_unit_type = models.CharField(max_length=200, blank=True)
@@ -33,7 +33,7 @@ class PrivatePharmacy(GeoItem):
     class Meta:
         verbose_name_plural = 'private pharmacies'
         db_table = 'private_pharmacy'
-        unique_together = ('facility', 'latitude', 'longitude',
+        unique_together = ('name', 'latitude', 'longitude',
                            'organization_unit_type')
 
     def __unicode__(self):
