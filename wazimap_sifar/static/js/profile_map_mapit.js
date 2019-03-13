@@ -33,13 +33,13 @@ ProfileMaps = function() {
 		});
 	    }
 
-	    function showPoints(dataset, geo_code, icon, group) {
+	    function showPoints(dataset, geo_code, colour, group) {
 		GeometryLoader.loadPoints(dataset, geo_code, function(data){
 		    var map = self.map;
 		    data['data'].forEach(function(facility){
-			L.marker(
+			L.circleMarker(
 			    [facility['latitude'], facility['longitude']],
-			    {icon: icon})
+			    {color: colour, radius:4})
 			    .addTo(group)
 			    .bindPopup(facility['name']).on(
 				'mouseover', function(e){
@@ -58,21 +58,21 @@ ProfileMaps = function() {
 	    var communityParksGroup = new L.LayerGroup();
 	    var districtParksGroup = new L.LayerGroup();
 
-	    var healthIcon = getIcon('ambulance', 'blue');
-	    var pharmacyIcon = getIcon('medkit', 'orange');
-	    var professionalIcon = getIcon('user-md', 'purple');
-	    var libraryIcon = getIcon('book', 'red');
-	    var commParksIcon = getIcon('tree', 'green');
-	    var distParksIcon = getIcon('tree', 'green');
-	    showPoints('health_services', geo_code, healthIcon, healthGroup);
-	    showPoints('pharmacies', geo_code, pharmacyIcon, pharmaGroup);
-	    showPoints('professional_services', geo_code, professionalIcon, professionalGroup);
-	    showPoints('libraries', geo_code, libraryIcon, libraryGroup);
-	    showPoints('community_parks', geo_code, commParksIcon, communityParksGroup);
-	    showPoints('district_parks', geo_code, distParksIcon, districtParksGroup);
+	    // var healthIcon = getIcon('ambulance', 'blue');
+	    // var pharmacyIcon = getIcon('medkit', 'orange');
+	    // var professionalIcon = getIcon('user-md', 'purple');
+	    // var libraryIcon = getIcon('book', 'red');
+	    // var commParksIcon = getIcon('tree', 'green');
+	    // var distParksIcon = getIcon('tree', 'green');
+	    showPoints('health_services', geo_code, '#0000A0', healthGroup);
+	    showPoints('pharmacies', geo_code, '#cb8325', pharmaGroup);
+	    showPoints('professional_services', geo_code, '#9823c9', professionalGroup);
+	    showPoints('libraries', geo_code, 'red', libraryGroup);
+	    showPoints('community_parks', geo_code, '#24ac20', communityParksGroup);
+	    showPoints('district_parks', geo_code, '#24ac20', districtParksGroup);
 
 	    var overlayMap = {
-		"<span style='color:#2387c9'>Health Facilities</span>": healthGroup,
+		"<span style='color:#0000A0'>Health Facilities</span>": healthGroup,
 		"<span style='color:#cb8325'>Private Pharmacies</span>": pharmaGroup,
 		"<span style='color:#9823c9'>Professional Services</span>": professionalGroup,
 		"<span style='color:red'>Libraries</span>": libraryGroup,
