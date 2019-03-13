@@ -25,14 +25,7 @@ ProfileMaps = function() {
         }
 
 	if (geo_level == 'municipality' || geo_level == 'subplace'){
-	    function getIcon(icon, colour) {
-		return L.AwesomeMarkers.icon({
-		    prefix: 'fa',
-		    icon: icon,
-		    markerColor: colour,
-		});
-	    }
-
+	    
 	    function showPoints(dataset, geo_code, colour, group) {
 		GeometryLoader.loadPoints(dataset, geo_code, function(data){
 		    var map = self.map;
@@ -58,12 +51,6 @@ ProfileMaps = function() {
 	    var communityParksGroup = new L.LayerGroup();
 	    var districtParksGroup = new L.LayerGroup();
 
-	    // var healthIcon = getIcon('ambulance', 'blue');
-	    // var pharmacyIcon = getIcon('medkit', 'orange');
-	    // var professionalIcon = getIcon('user-md', 'purple');
-	    // var libraryIcon = getIcon('book', 'red');
-	    // var commParksIcon = getIcon('tree', 'green');
-	    // var distParksIcon = getIcon('tree', 'green');
 	    showPoints('health_services', geo_code, '#0000A0', healthGroup);
 	    showPoints('pharmacies', geo_code, '#cb8325', pharmaGroup);
 	    showPoints('professional_services', geo_code, '#9823c9', professionalGroup);
