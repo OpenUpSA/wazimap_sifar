@@ -100,7 +100,7 @@ function MapItGeometryLoader() {
         health_services: '/api/point/v1/sifar/health-services',
         community_parks: '/api/point/v1/sifar/community-parks',
         district_parks: '/api/point/v1/sifar/district-parks'
-      }
+      };
       var url = urls[dataset] + '?geo_code=' + geo_code;
       d3.json(url, function(data){
         success({'data': data['data']});
