@@ -23,7 +23,7 @@ django-storages==1.1.8
 django-test-without-migrations==0.4
 djangorestframework==3.9.1
 ecdsa==0.13
-elastic-apm==3.0.1
+elastic-apm==4.1.0
 enum34==1.1.6
 et-xmlfile==1.0.1
 futures==3.2.0
