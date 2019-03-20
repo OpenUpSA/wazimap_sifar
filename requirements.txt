@@ -31,7 +31,7 @@ GDAL==1.10
 geojson==2.4.1
 gevent==1.2.2
 greenlet==0.4.13
-gunicorn==19.7.1
+gunicorn==19.9.0
 idna==2.7
 ipaddress==1.0.22
 itypes==1.1.0
