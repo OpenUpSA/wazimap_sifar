@@ -37,7 +37,7 @@ ipaddress==1.0.22
 itypes==1.1.0
 jdcal==1.4
 Jinja2==2.10
-libsass==0.14.5
+libsass==0.18.0
 Markdown==3.0.1
 MarkupSafe==1.0
 numpy==1.16.2
