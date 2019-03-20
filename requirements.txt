@@ -12,7 +12,7 @@ diff-match-patch==20181111
 dj-database-url==0.5.0
 Django==1.11.20
 django-admin-hstore-widget==1.0.1
-django-appconf==1.0.2
+django-appconf==1.0.3
 django-compressor==2.2
 django-cors-headers==2.4.0
 django-import-export==1.1.0
