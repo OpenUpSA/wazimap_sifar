@@ -49,13 +49,11 @@ MIDDLEWARE_CLASSES = (
 
 DATABASE_URL = os.environ.get(
     'DATABASE_URL',
-    'postgresql://wazimap_sifar:wazimap_sifar@10.186.210.252/wazimap_sifar')
+    'postgresql://wazimap_sifar:wazimap_sifar@10.192.8.59/wazimap_sifar')
 DATABASES = {
     'default': dj_database_url.parse(DATABASE_URL),
 }
 
-# Password validation
-# https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
 WAZIMAP['ga_tracking_id'] = 'UA-93649482-12'
 WAZIMAP['profile_builder'] = 'wazimap_sifar.profiles.census.get_profile'
 WAZIMAP['default_profile'] = 'census'
@@ -65,13 +63,11 @@ WAZIMAP['default_geo_version'] = '2016'
 WAZIMAP['name'] = 'Samson Institute for Ageing Research'
 WAZIMAP['url'] = 'http://wazimap-sifar.openup.org.za'
 WAZIMAP['country_code'] = 'ZA'
-WAZIMAP['latest_release_year'] = '2016'
+WAZIMAP['latest_release_year'] = '2016',
+WAZIMAP['primary_release_year'] = {'subplace': 2011}
 WAZIMAP['primary_dataset_name'] = 'Census and Community Survey'
 WAZIMAP['available_release_years'] = {
-    # Release years with data for geo_levels.
-    # Only specify geo_levels with limited releases.
-    # Other geo_levels have data for all releases.
-    'ward': [2011]
+    'subplace': [2011],
 }
 WAZIMAP['levels'] = {
     'country': {
