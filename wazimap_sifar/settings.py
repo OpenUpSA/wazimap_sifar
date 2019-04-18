@@ -49,7 +49,7 @@ MIDDLEWARE_CLASSES = (
 
 DATABASE_URL = os.environ.get(
     'DATABASE_URL',
-    'postgresql://wazimap_sifar:wazimap_sifar@10.192.8.59/wazimap_sifar')
+    'postgresql://wazimap_sifar:wazimap_sifar@development/wazimap_sifar')
 DATABASES = {
     'default': dj_database_url.parse(DATABASE_URL),
 }
