@@ -4388,4 +4388,9 @@ button.action-button {
   #change-release .release-name {
     margin-right: 1em; }
 
+.footer-logos img {
+  height: 75px;
+  margin: 10px 5% 10px 0px;
+  vertical-align: baseline; }
+
 /*# sourceMappingURL=../../../../../../../../static/css/wazimap_za.css.map */
