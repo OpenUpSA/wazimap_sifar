@@ -1,39 +1,42 @@
 {% load staticfiles %}
 
-<div class="column-quarter">
-    <ul class="ul-icon-list">
-	<li>
-            <i class="fa fa-info"></i> <a href="/about">About {{ WAZIMAP.name }}</a>
-	</li>
-	<li>
-            <i class="fa fa-info"></i> <a href="/help">Help</a>
-	</li>
-    </ul>
-
-    <ul class="ul-icon-list">
-	<li>
-            <i class="fa fa-bar-chart-o"></i> <a href="http://www.statssa.gov.za/" target="_blank">Census 2011 data from Stats SA</a>
-	</li>
-    </ul>
-</div>
-<div class="column-quarter">
-    <ul class="ul-icon-list">
-    </ul>
-
-    <div>
+<div class="clearfix">
+    <div class="column-quarter">
+	<ul class="ul-icon-list">
+	    <li>
+		<i class="fa fa-info"></i> <a href="/about">About {{ WAZIMAP.name }}</a>
+	    </li>
+	    <li>
+		<i class="fa fa-info"></i> <a href="/help">Help</a>
+	    </li>
+	</ul>
     </div>
+    <div class="column-quarter">
+	<ul class="ul-icon-list">
+	    <li>
+		<i class="fa fa-github"></i> <a href="https://github.com/OpenUpSA/wazimap_sifar" target="_blank">Source on Github</a>
+	    </li>
+	    <li>
+		<i class="fa fa-github"></i> <a href="https://github.com/OpenUpSA/wazimap" target="_blank">Built on Wazimap</a>
+	    </li>
+	    <li>
+		<i class="fa fa-bar-chart-o"></i> <a href="http://www.statssa.gov.za/" target="_blank">Census 2011 data from Stats SA</a>
+	    </li>
+	</ul>
+    </div>
+
 </div>
-<div class="column-quarter">
-    <ul class="ul-icon-list">
-	<li>
-            <i class="fa fa-github"></i> <a href="https://github.com/OpenUpSA/wazimap_sifar" target="_blank">Github</a>
-	</li>
-    </ul>
-</div>
-<div class="column-quarter">
-    <ul class="ul-icon-list">
-	<li>
-            <a href="https://openup.org.za/"><img src="{% static 'img/openup-logo-small.png' %}"></a>
-	</li>
-    </ul>
+
+<div class="clearfix">
+    <div class="footer-logos">
+	<a href="https://www.sifar.org.za/" target="_blank">
+	    <img img class="footer-logo" src="{% static 'img/sifar-logo.png' %}">
+	</a>
+	<a href="http://www.statssa.gov.za/" target="_blank">
+	    <img img class="footer-logo" src="{% static 'img/statssa-logo.png' %}">
+	</a>
+	<a href="https://openup.org.za/">
+	    <img img class="footer-logo" src="{% static 'img/openup-logo-small.png' %}">
+	</a>
+    </div>
 </div>

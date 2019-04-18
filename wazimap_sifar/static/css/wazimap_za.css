@@ -4387,3 +4387,8 @@ button.action-button {
   margin-bottom: 1em; }
   #change-release .release-name {
     margin-right: 1em; }
+
+.footer-logos img {
+  height: 75px;
+  margin: 10px 5% 10px 0px;
+  vertical-align: baseline; }
