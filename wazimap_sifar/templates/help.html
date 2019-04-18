@@ -59,18 +59,65 @@
             <h3 id="faq-2011">Why is the data from 2011?</h3>
             <p>Most of the {{ WAZIMAP.name }} data is from the 2011 Census conducted by <a href="http://www.statssa.gov.za/">Stats SA</a>. A full census is only conducted every 10 years. The <a href="http://cs2016.statssa.gov.za/">Community Survey 2016</a> has additional data and we're looking at how to make it available in {{ WAZIMAP.name }}. The Community Survey data is not available at ward level and is not as comprehensive as the 2011 Census.</p>
           </li>
-
-          <li>
-            <h3 id="faq-municipal-elections">What does the Municipal Election data show?</h3>
-            <p>The municipal election "voter turnout" is based on the sum of the larger of the Ward and Proportional Representation ballots in each voting district. "Voters by party" shows the sum of the Ward and Proportional Representation ballots.</p>
-            <p>Elections in local municipalities that fall in district municipalities actually have a third ballot (DC40), because the district council is elected partly by the councils of the costituent local municipalities, and partly by this third ballot. However, we only use the Ward and PR ballots so that comparison between ward, municipality and provincial regions are valid. You can find all the data, as well as a more detailed explanation of how municipal elections work, from the <a href="http://www.elections.org.za/">Independent Electoral Commission</a>. LocalGovernmentAction.org provides <a href="http://www.localgovernmentaction.org/activists-guide/key-processes/elections">another explanation of how local government elections work</a>.</p>
-          </li>
-
-          <li>
-            <h3 id="faq-newsletter">How can I stay up to date?</h3>
-            <p>Follow <a href="https://twitter.com/@Wazimap">@Wazimap on Twitter</a> or <a href="http://eepurl.com/cOswIj">sign up to our newsletter</a>.</p>
-          </li>
         </ul>
+      </section>
+      <section>
+	  <h2 class="subhead"> Tutorial on using the explorer Service</h2>
+	  <p>The <a href="{% url 'explorer:home' %}">explorer application</a> allows users to select,view and filter point data.</p>
+	  <p>Upon accessing the application the user will be presented with the interface.</p>
+	  <img width="auto" height="480" src="{% static 'img/explorer-home.png' %}"/>
+	  <br/>
+	  <br>
+	  <p>To add point data click on Add Layer.</p>
+	  <p> A popup menu will appear showing various datasets which are avaliable.</p>
+	  <img width="auto" height="480" src="{% static 'img/explorer-choices.png' %}"/>
+	  <br/>
+	  <br>
+	  <p>Upon selecting a dataset, in this case Private Pharmacies, the points from the dataset will appear on the map.</p>
+	  <img width="auto" height="480" src="{% static 'img/explorer-show-points.png' %}"/>
+	  <br/>
+	  <br>
+	  <p>Upon hovering over the point, by default the latitude/longitude of that point will be shown
+	  </p>
+	  <img width="auto" height="480" src="{% static 'img/explorer-hover-points.png' %}"/>
+	  <br/>
+	  <br>
+	  <p>
+	      The information that is shown when hovering over a point can be changed.
+	  </p>
+	  <p>
+	      Click on the tooltip icon towards the top of the menu.
+	  </p>
+	  <h3 class="subhead">Tooltips</h3>
+	  <img width="auto" height="480" src="{% static 'img/explorer-tooltip.png' %}"/>
+	  <br/>
+	  <br>
+	  <p>The tooltip menu allows you to select which columns of the dataset will be made visible when hovering over a point.
+	  </p>
+	  <img width="auto" height="480" src="{% static 'img/explorer-points-change.png' %}"/>
+	  
+	  <br/>
+	  <br>
+	  <p>After selecting the desired columns, click on update, this will update the data on the points</p>
+	  <h3 class="subhead">Filtering Points</h3>
+	  <p>Points on the map can be filtred according to certain citeria.</p>
+	  <p>Click on the filter icon so see the filter menu.</p>
+	  <img width="auto" height="480" src="{% static 'img/explorer-filter.png' %}"/>
+	  <br/>
+	  <br>
+	  <p>To add a new filter, click on Add Condition</p>
+	  <ul>
+	      <li>Datasource - The dataset in which the filter will be applied on</li>
+	      <li>Column - The column in the dataset</li>
+	      <li>Value - The value in the column</li>
+	  </ul>
+	  <img width="auto" height="480" src="{% static 'img/explorer-tooltip-column.png' %}"/>
+	  <p>After entring these values click on Done.</p>
+	  <p> This will apply the filter to the map.</p>
+	  <img width="auto" height="480" src="{% static 'img/explorer-filter-filtered.png' %}"/>
+	  <br/>
+	  <br>
+	  <p>Multiple filters can be added to a map.
       </section>
       {% endif %}
   </article>
