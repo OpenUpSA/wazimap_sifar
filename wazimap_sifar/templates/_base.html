@@ -4,17 +4,11 @@
 
 {% block head_css %}
 <link rel="stylesheet" href="{% static 'css/vendor/featherlight.min.css' %}">
-
-{% if WAZIMAP.default_profile == 'youth' %}
-<link rel="stylesheet" href="{% sass_src 'css/wazimap_youth.scss' %}">
-{% else %}
 <link rel="stylesheet" href="{% sass_src 'css/wazimap_za.scss' %}">
-{% endif %}
 {% endblock %}
 
 
 {% block favicon %}
-
 {% endblock %}
 
 {% block header_logo %}
@@ -31,11 +25,5 @@
 
 {% block body_javascript_extra %}
 {{ block.super }}
-<!--Start of Zendesk Chat Script-->
 
-
-{% if WAZIMAP.default_profile == 'census' %}
-<script type="text/javascript" src="{% static 'js/wazimap-za.js' %}"></script>
-{% endif %}
-<!--End of Zendesk Chat Script-->
 {% endblock %}
