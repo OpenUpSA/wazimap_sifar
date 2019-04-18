@@ -25,7 +25,7 @@ urlpatterns = [
     url(r'^api/point/v1/sifar/professional-services$',
         api.ProfessionalServiceView.as_view(),
         name='professional_service'),
-    url('^explorer/', include('explorer.urls'))
+    url('^explorer/', include('explorer.urls', namespace='explorer'))
 ]
 
 urlpatterns += urls.urlpatterns
