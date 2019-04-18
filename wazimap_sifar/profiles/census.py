@@ -1,6 +1,7 @@
 from __future__ import division
 from collections import OrderedDict
 import logging
+import pdb
 
 from wazimap.data.tables import get_datatable, get_table_id
 from wazimap.data.utils import get_session, add_metadata
@@ -443,28 +444,32 @@ def get_health_profile(geo, session):
         'seeing',
         geo,
         session,
-        table_name='senior_population_seeing',
+        table_universe='Senior',
+        table_dataset='Census and Community Survey',
         order_by='-total')
 
     selfcare_data, _ = get_stat_data(
         'self care',
         geo,
         session,
-        table_name='senior_population_selfcare',
+        table_universe='Senior',
+        table_dataset='Census and Community Survey',
         order_by='-total')
 
     walking_data, _ = get_stat_data(
         'walking or climbing stairs',
         geo,
         session,
-        table_name='senior_population_walking',
+        table_universe='Senior',
+        table_dataset='Census and Community Survey',
         order_by='-total')
 
     hearing_data, _ = get_stat_data(
         'hearing',
         geo,
         session,
-        table_name='senior_population_hearing',
+        table_universe='Senior',
+        table_dataset='Census and Community Survey',
         order_by='-total')
 
     final_data = {
@@ -521,53 +526,53 @@ def birth_in_sa(birth_data):
 
 def get_demographics_profile(geo, session):
     #Full population of area
-    if geo.geo_level == 'subplace':
-        pop_dist_data, total_census_pop = get_stat_data(
-            ['population group'],
-            geo,
-            session,
-            table_name='populationgroup_2016')
-    else:
-        pop_dist_data, total_census_pop = get_stat_data(
-            ['population group'],
-            geo,
-            session,
-            table_dataset='Census and Community Survey')
-    # population group
-    pop_dist_data, total_pop = get_stat_data(
+    #pdb.set_trace()
+    pop_dist_data, total_census_pop = get_stat_data(
         ['population group'],
         geo,
         session,
-        table_name='senior_population_group')
+        table_dataset='Census and Community Survey')
+    age_dist_data, senior_total_pop = get_stat_data(
+        ['age'], geo, session, table_name='senior_population_age')
+    #table_universe='Senior',
+    #table_dataset='Census and Community Survey')
 
     # language
     language_data, _ = get_stat_data(
         ['language'],
         geo,
         session,
-        table_name='senior_language_age',
+        table_universe='Senior',
+        table_dataset='Census and Community Survey',
         order_by='-total')
     language_most_spoken = language_data[language_data.keys()[0]]
 
     # age groups
-    age_dist_data, total_age = get_stat_data(
-        ['age'], geo, session, table_name='senior_population_age')
+    pop_group_dist_data, _ = get_stat_data(
+        ['population group'],
+        geo,
+        session,
+        table_universe='Senior',
+        table_dataset='Census and Community Survey',
+    )
 
-    senior_age_per = (total_pop / total_census_pop) * 100
+    senior_age_per = (senior_total_pop / total_census_pop) * 100
 
     # sex
     sex_data, _ = get_stat_data(
         ['gender'],
         geo,
         session,
-        table_name='senior_population_gender',
+        table_universe='Senior',
+        table_dataset='Census and Community Survey',
     )
 
     citizen_data, _ = get_stat_data(
         ['citizenship'],
         geo,
         session,
-        table_name='senior_citizenship',
+        table_universe='Senior',
+        table_dataset='Census and Community Survey',
         order_by='-total')
     sa_citizen = citizen_data['Yes']['numerators']['this']
 
@@ -575,7 +580,8 @@ def get_demographics_profile(geo, session):
         ['birth'],
         geo,
         session,
-        table_name='senior_birth',
+        table_universe='Senior',
+        table_dataset='Census and Community Survey',
         order_by='-total',
     )
 
@@ -596,13 +602,13 @@ def get_demographics_profile(geo, session):
         },
         'language_distribution': language_data,
         'language_most_spoken': language_most_spoken,
-        'population_group_distribution': pop_dist_data,
+        'population_group_distribution': pop_group_dist_data,
         'age_group_distribution': age_dist_data,
         'sex_ratio': sex_data,
         'senior_citizen_total_population': {
             'name': 'Older Adults',
             'values': {
-                'this': total_pop
+                'this': senior_total_pop
             }
         },
         'total_population': {
@@ -623,53 +629,9 @@ def get_demographics_profile(geo, session):
         final_data['population_density'] = {
             'name': "people per square kilometre",
             'values': {
-                "this": total_pop / geo.square_kms
+                "this": senior_total_pop / geo.square_kms
             },
         }
-
-    # # migration
-    # province_of_birth_dist, _ = get_stat_data(
-    #     ['province of birth'],
-    #     geo,
-    #     session,
-    #     table_dataset='Census and Community Survey',
-    #     exclude_zero=True,
-    #     order_by='-total')
-
-    # final_data['province_of_birth_distribution'] = province_of_birth_dist
-
-    # def region_recode(field, key):
-    #     if key == 'Born in South Africa':
-    #         return 'South Africa'
-    #     else:
-    #         return {
-    #             'Not applicable': 'Other',
-    #         }.get(key, key)
-
-    # region_of_birth_dist, _ = get_stat_data(
-    #     ['region of birth'],
-    #     geo,
-    #     session,
-    #     table_dataset='Census and Community Survey',
-    #     exclude_zero=True,
-    #     order_by='-total',
-    #     recode=region_recode)
-
-    # if 'South Africa' in region_of_birth_dist:
-    #     born_in_sa = region_of_birth_dist['South Africa']['numerators']['this']
-    # else:
-    #     born_in_sa = 0
-
-    # final_data['region_of_birth_distribution'] = region_of_birth_dist
-    # final_data['born_in_south_africa'] = {
-    #     'name': 'Born in South Africa',
-    #     'values': {
-    #         'this': percent(born_in_sa, total_pop)
-    #     },
-    #     'numerators': {
-    #         'this': born_in_sa
-    #     },
-    # }
 
     return final_data
 
@@ -798,6 +760,8 @@ def get_households_profile(geo, session):
 
 
 def get_economics_profile(geo, session):
+    if geo.version == '2016':
+        return {'senior_individual_income': ''}
     senior_income, total_pop = get_stat_data(
         'individual monthly income',
         geo,
@@ -806,16 +770,6 @@ def get_economics_profile(geo, session):
         recode=COLLAPSED_MONTHLY_INCOME_CATEGORIES,
         table_name='senior_individual_monthly_income',
         key_order=COLLAPSED_MONTHLY_INCOME_CATEGORIES.values())
-
-    # # employment status
-    # employ_status, total_workers = get_stat_data(
-    #     ['official employment status'],
-    #     geo,
-    #     session,
-    #     exclude=['Age less than 15 years', 'Not applicable'],
-    #     order_by='official employment status',
-    #     table_name='officialemploymentstatus')
-
     return {'senior_individual_income': senior_income}
 
 
