@@ -1,39 +1,55 @@
-{% extends 'homepage.html' %}{% load staticfiles %}
+{% extends 'homepage.html' %}
+{% load staticfiles %}
 
 {% block head_title %}
 {% endblock %}
 
 {% block head_meta_description %}
-
 {% endblock %}
 
 {% block place_finder %}
-{{ block.super }}
+{% include 'place_finder.html' %}
 {% endblock %}
 
 {% block homepage_detail %}
-{{ block.super }}
+<div class="content-container clearfix tan-stripe callouts">
+    <article class="wrapper">
+        <section class="column-full clearfix">
+            <div id="slippy-map"></div>
+        </section>
+        <section class="column-full clearfix">
+            <div class="column-third callout with-icon">
+                <h3>
+                    <i class="fa fa-search"></i>
+                    Explore
+                </h3>
+                <p>Type in the name of an area in the top right-hand bar or click on an area in the map</p>
+            </div>
+            <div class="column-third callout with-icon">
+                <h3>
+                    <i class="fa fa-bar-chart-o"></i>
+                    Visualise
+                </h3>
+                <p>Scroll down to view statistics and charts about young people and the context in which they live</p>
+            </div>
+            <div class="column-third callout with-icon">
+                <h3>
+                    <i class="fa fa-refresh"></i>
+                    Compare
+                </h3>
+                <p>Compare any two areas by typing a second area in the bar below the map</p>
+            </div>
+        </section>
+    </article>
+</div>
 {% endblock %}
 
-{% block tips %}
-  {% if WAZIMAP.video_links %}
-    <div class="column-quarter">&nbsp;</div>
-    <span class="column-half card">
-      <div class="video-wrapper">
-        <iframe width="560" height="315" src="{{ WAZIMAP.video_links.intro }}" frameborder="0" allowfullscreen></iframe>
-      </div>
-      <span class="caption"><a href="{% url 'help' %}">More tips on using {{ WAZIMAP.name }}</a></span>
-    </span>
-  {% endif %}
-
-  {{ block.super }}
+{% block nav_tools %}
 {% endblock %}
 
 {% block showcase %}
 {% endblock %}
 
-    {% block about %}
-    {% endblock %}
 {% block homepage_javascripb_libs %}
 {{ block.super }}
 <script src="{% static 'js/maps_mapit.js' %}"></script>
