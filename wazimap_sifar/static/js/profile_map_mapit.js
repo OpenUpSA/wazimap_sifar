@@ -24,51 +24,6 @@ ProfileMaps = function() {
             });
         }
 
-	if (geo_level == 'municipality' || geo_level == 'subplace'){
-	    
-	    function showPoints(dataset, geo_code, colour, group) {
-		GeometryLoader.loadPoints(dataset, geo_code, function(data){
-		    var map = self.map;
-		    data['data'].forEach(function(facility){
-			L.circleMarker(
-			    [facility['latitude'], facility['longitude']],
-			    {color: colour, radius:4})
-			    .addTo(group)
-			    .bindPopup(facility['name']).on(
-				'mouseover', function(e){
-				    this.openPopup();
-				});
-		    });
-		});
-	    }
-	    
-	    
-	    L.control.scale().addTo(this.map);
-	    var healthGroup = new L.LayerGroup();
-	    var pharmaGroup = new L.LayerGroup();
-	    var professionalGroup = new L.LayerGroup();
-	    var libraryGroup = new L.LayerGroup();
-	    var communityParksGroup = new L.LayerGroup();
-	    var districtParksGroup = new L.LayerGroup();
-
-	    showPoints('health_services', geo_code, '#0000A0', healthGroup);
-	    showPoints('pharmacies', geo_code, '#cb8325', pharmaGroup);
-	    showPoints('professional_services', geo_code, '#9823c9', professionalGroup);
-	    showPoints('libraries', geo_code, 'red', libraryGroup);
-	    showPoints('community_parks', geo_code, '#24ac20', communityParksGroup);
-	    showPoints('district_parks', geo_code, '#24ac20', districtParksGroup);
-
-	    var overlayMap = {
-		"<span style='color:#0000A0'>Health Facilities</span>": healthGroup,
-		"<span style='color:#cb8325'>Private Pharmacies</span>": pharmaGroup,
-		"<span style='color:#9823c9'>Professional Services</span>": professionalGroup,
-		"<span style='color:red'>Libraries</span>": libraryGroup,
-		"<span style='color:#24ac20'>Community Parks</span>": communityParksGroup,
-		"<span style='color:#24ac20'>District Parks</span>": districtParksGroup
-	    };
-	    L.control.layers(null,overlayMap, {collapsed:false}).addTo(this.map);
-	}
-
 
         // peers
         var parents = _.keys(geo.parents);
