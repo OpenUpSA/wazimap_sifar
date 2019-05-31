@@ -2,29 +2,52 @@
 
 {% block profile_javascript_libs %}
 {{ block.super }}
+
 <script src="{% static 'js/maps_mapit.js' %}"></script>
 <script src="{% static 'js/profile_map_mapit.js' %}"></script>
 <script src="{% static 'js/affix.js' %}"></script>
 <script src="{% static 'js/profiles.js' %}"></script>
 <script src="{% static 'js/leaflet.awesome-markers.min.js' %}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+<script src="{% static 'js/vue.js' %}"></script>
+<script src="{% static 'js/datasets.js' %}"></script>
+
+
 <link rel="stylesheet" href="{% static 'css/leaflet.awesome-markers.css' %}">
+<link rel="stylesheet" href="{% static 'css/custom-download.css' %}">
+<link rel="stylesheet" href="{% static 'css/profile-menu.css' %}">
 {% endblock %}
+
 
 {% block body_javascript_extra %}
 {{ block.super }}
 
 <script type="text/javascript">
-$('.release-list').hover(function() {
-    $(this).find('.sub-group').toggle();
-});
+ $('.release-list').hover(function() {
+     $(this).find('.sub-group').toggle();
+ });
+ $(document).ready(function(){
+     $('.collapsible').collapsible();
+     $('.dropbtn').click(function(){
+	 $('#myDropdown').toggleClass('show');
+     })
+     $(window).click(function(e){
+	 if (!e.target.matches('.dropbtn')){
+	     $('#myDropdown').removeClass('show');
+	 }
+	 
+     });
+     dataset.map = maps.map;
+ });
 </script>
+
 
 {% if head2head %}
 <script type="text/javascript">
-  var releaseLinks = $('.release-list').find('li a');
-  $.each(releaseLinks, function(i, a) {
-    a.pathname = parent.location.pathname;
-  });
+ var releaseLinks = $('.release-list').find('li a');
+ $.each(releaseLinks, function(i, a) {
+     a.pathname = parent.location.pathname;
+ });
 </script>
 
 {% endif %}
