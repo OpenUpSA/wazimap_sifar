@@ -1,41 +1,17 @@
 from rest_framework import serializers
 
-from wazimap_sifar.models import (
-    CommunityPark, DistrictPark, HealthFacilities,
-    Library, PrivatePharmacy, ProfessionalService)
+from wazimap_sifar.models import DatasetCategory, Contributer, Dataset
 
 
-class PrivatePharmacySerializer(serializers.ModelSerializer):
+class ContributerSerializer(serializers.ModelSerializer):
     class Meta:
-        model = PrivatePharmacy
-        exclude = ('id', )
+        model = Contributer
+        fields = '__all__'
 
 
-class CommunityParkSerializer(serializers.ModelSerializer):
+class DatasetCategorySerializer(serializers.ModelSerializer):
+    contributer_set = ContributerSerializer(read_only=True, many=True)
+
     class Meta:
-        model = CommunityPark
-        exclude = ('id', )
-
-
-class DistrictParkSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = DistrictPark
-        exclude = ('id', )
-
-
-class HealthFacilitiesSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = HealthFacilities
-        exclude = ('id', )
-
-
-class LibrarySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Library
-        exclude = ('id', )
-
-
-class ProfessionalServiceSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ProfessionalService
-        exclude = ('id', )
+        model = DatasetCategory
+        fields = '__all__'
