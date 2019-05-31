@@ -6,7 +6,7 @@
 <div class="floating-nav-wrapper">
     <nav class="floating-nav">
         <div class="wrapper clearfix">
-            <h3><img src="{% static 'img/wazi-logo.png' %}">{{ geography.this.name }}</h3>
+            <h3 style="font-size:1.17rem"><img src="{% static 'img/wazi-logo.png' %}">{{ geography.this.name }}</h3>
             <ul>
                 <li><a href="#demographics"><i class="fa fa-user"></i> <span>Demographics</span></a></li>
                 <li><a href="#health"><i class="fa fa-heartbeat"></i> <span>Health</span></a></li>
@@ -15,31 +15,248 @@
         </div>
     </nav>
 </div>
+<style>
+  .wazi-text{
+         font-family: Lato;
+         font-style: normal;
+         font-weight: bold;
+         font-size: 13px;
+         align-items: center;
+         letter-spacing: 0.02em;
+  }
 
-{{ block.super }}
-{% endblock %}
+  .wazi-text li{
+         margin-left:16px;
+  }
+  .dropbtn {
+         background-color: #F3F3F3;
+         color: black;
+         padding: 16px;
+         font-size: 16px;
+         border: none;
+         cursor: pointer;
+  }
 
-{% block profile_header_population %}
-<span class="value">{{ demographics.senior_citizen_total_population.values.this|floatformat:"0" }}</span>
-<span class="name">Older Adults above the age of 60</span>
-{% endblock %}
+  .dropbtn:hover, .dropbtn:focus {
+         background-color: #2980B9;
+  }
 
+  .dropdownRelease {
+         position: relative;
+         display: inline-block;
+  }
 
-{% block profile_header_tail %}
-<div class="column-full">
-    <strong>{{ primary_releases.active.name }} {{ primary_releases.active.year }}</strong>
-    {% if primary_releases.other %}
-    <div class="tool-group toggle-sub-group release-list">
-        <a>Change release<i class="fa fa-chevron-circle-down"></i></a>
-        <ul class="sub-group" style="display: none;">
-        {% for release in primary_releases.other %}
-            <li><a href="{{ request.path }}?release={{release.year}}">{{ release.name }} {{ release.year }}</a></li>
-        {% endfor %}
-        </ul>
+  .release-content {
+         display: none;
+         position: absolute;
+         background-color: #F3F3F3;
+         min-width: 160px;
+         overflow: auto;
+         box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+         z-index: 1;
+         margin-left:16px;
+         opacity: 1;
+  }
+
+  .release-content a {
+         color: black;
+         padding: 12px 16px;
+         text-decoration: none;
+         display: block;
+  }
+
+  .dropdownRelease a:hover {background-color: #2980B9;}
+
+  .show {display: block;}
+  .collapsible-text {
+         font-family: Lato;
+         font-style: normal;
+         font-weight: bold;
+         font-size: 18px;
+         line-height: 16px;
+         display: flex;
+         align-items: center;
+         letter-spacing: 0.02em;
+         color: rgba(0, 0, 0, 0.73);
+  }
+
+  .wazi-margin{
+         margin-left:16px;
+  } 
+  .wazi-header{
+         font-size: 18px;
+         margin-left:16px;
+         
+  }
+
+  .wazi-collapsible{
+         border-left:0;
+         border-right:0;
+         box-shadow:0;
+  }
+
+  .contributer-text{
+         font-family: Lato;
+         font-style: normal;
+         font-weight: bold;
+         font-size: 13px;
+         align-items: center;
+         letter-spacing: 0.02em;
+         margin-left:16px;
+         
+  }
+  .contributer span:hover{
+         background-color: #2980B9;
+  }
+  
+  .dot {
+         height: 10px;
+         width: 10px;
+         border-radius: 50%;
+         display: inline-block;
+         float: right;
+  }
+
+  
+</style>
+<div id="cover-map">
+    <div id="slippy-map"></div>
+    <div id="cover-profile" class="wrapper">
+	<ul class="collapsible" style="float:left;background-color:white">
+	    <li>
+		<div class="collapsible-header">
+		    <img src="{% static 'img/settings_48px.svg' %}" height="48px" width="48px"/> <span class="wazi-text">Map Options
+		    </span>
+		</div>
+		<div class="collapsible-body">
+		    <h1 class="wazi-header wazi-text">Map Data Source</h1>
+		    <div class="dropdownRelease" style="background:#F3F3F3;">
+			<button class="dropbtn">
+			    {{ primary_releases.active.name }} {{ primary_releases.active.year }} <i class="fa fa-caret-down"aria-hidden="true"></i>
+			</button>
+			{% if primary_releases.other %}
+			<div id="myDropdown" class="release-content">
+			    {% for release in primary_releases.other %}
+			    <a style="font-size: 16px;" href="{{ request.path }}?release={{release.year}}">{{ release.name }} {{ release.year }}
+			    </a>
+			    {% endfor %}
+			</div>
+			{% endif %}
+			
+		    </div>
+		    <h1 class="wazi-header wazi-text">Service & Resources</h1>
+		    <ul id="dataset-category" class="collapsible wazi-collapsible">
+				    <dataset-item
+			        v-for="c in category"
+			        v-bind:key="c.name"
+			        v-bind:dataset="c"></dataset-item>
+		    </ul>
+		</div>
+	    </li>
+				</ul>
+	<ul class="collapsible" style="background-color:white;float:right">
+	    <li>
+		<div class="collapsible-header">
+		    <h1 class="wazi-header">
+			{{ geography.this.short_name }}<i class="fa fa-caret-down" style="float:right;top:50px" aria-hidden="true"></i>
+
+		    </h1>
+		</div>
+		<div class="collapsible-body">
+		    <div>
+			<p style="padding:0;margin-left:16px">
+			    <span class="wazi-text">
+				A {{ geography.this.geo_level|capfirst }} in
+			    </span> </br>
+			    
+			    {% if geography.parents %}
+			    <span>
+				{% for level, g in geography.parents.items %}
+				<a class="geography" href="/profiles/{{ g.full_geoid }}-{{ g.short_name|slugify }}/">
+				    {{ g.short_name }}
+				</a>{% if not forloop.last %}{%endif%}
+				{% endfor %}
+			    </span>
+			    {% endif %}
+			    
+			</p>
+		    </div>
+		    <table>
+			<tr style="border-bottom: 1px solid grey;">
+			    <td><span class="region">Older Adults above the age of 60</span></td>
+			    <td><span class="region">{{ demographics.senior_citizen_total_population.values.this|floatformat:"0" }}</span></td>
+			</tr>
+			<tr style="border-bottom: 1px solid grey;">
+			    <td><span class="region">Region Size (km<sup>2</sup>)</span></td>
+			    <td><span class="region">{% if geography.this.square_kms < 1.0 %}{{ geography.this.square_kms|floatformat:"3" }}{% else %}{{ geography.this.square_kms|floatformat:"1" }}{% endif %}</span></td>
+			</tr>
+			{% if demographics.population_density.values.this %}
+			<tr>
+			    <td>
+				<span class="region">Density (people/km<sup>2</sup>)
+				</span>
+			    </td>
+			    <td>
+				<span class="region">{{ demographics.population_density.values.this|floatformat:"1" }}
+				</span>
+			    </td>
+			</tr>
+			{% endif %}
+			
+		    </table>
+		</div>
+	    </li>
+	    <li id="contact" v-bind:style="contactDisplay">
+		<div class="collapsible-header">
+		    <h1 class="wazi-header">
+			[[name]]<i class="fa fa-caret-down" style="float:right;top:50px" aria-hidden="true"></i>
+
+		    </h1>
+		</div>
+		<div class="collapsible-body">
+		    <div>
+			<p style="padding:0;margin-left:16px">
+			    <span class="wazi-text">
+				Contact Information
+			    </span> 
+			</p>
+		    </div>
+		    <table>
+			<tr style="border-bottom: 1px solid grey;">
+			    <td><span class="region">Address</span></td>
+			    <td><span class="region">[[address]]</span></td>
+			</tr>
+			<tr style="border-bottom: 1px solid grey;">
+			    <td><span class="region">Email</span></td>
+			    <td><span class="region">[[email]]</span></td>
+			</tr>
+			<tr style="border-bottom: 1px solid grey;">
+			    <td><span class="region">Website</span></td>
+			    <td><span class="region">[[website]]</span></td>
+			</tr>
+			<tr style="border-bottom: 1px solid grey;">
+			    <td><span class="region">Phone Number</span></td>
+			    <td><span class="region">[[phone]]</span></td>
+			</tr>
+			<tr style="border-bottom: 1px solid grey;">
+			    <td><span class="region">Latitude</span></td>
+			    <td><span class="region">[[latitude]]</span></td>
+			</tr>
+			<tr style="border-bottom: 1px solid grey;">
+			    <td><span class="region">Longitude</span></td>
+			    <td><span class="region">[[longitude]]</span></td>
+			</tr>
+			
+		    </table>
+		</div>
+	    </li>
+	    
+	</ul>
     </div>
-    {% endif %}
 </div>
+
 {% endblock %}
+
 
 {% block profile_detail %}
 <article id="demographics" class="clearfix">
@@ -150,128 +367,6 @@
 	</section>
     </div>
 </article>
-
-<!-- <article id="households" class="clearfix">
-     <header class="section-contents">
-     <h1><i class="fa fa-fw fa-home"></i> Households</h1>
-     </header>
-     <div class="section-container">
-
-     <section class="clearfix stat-row">
-     <h2><a class="permalink" href="#households" id="households">Households <i class="fa fa-link"></i></a></h2>
-     <div class="column-third">
-     {% include 'profile/_blocks/_stat_list.html' with stat=households.total_households stat_type='number' %}
-     </div>
-     <div class="column-third">
-     {% include 'profile/_blocks/_stat_list.html' with stat=households.informal stat_type='percentage' %}
-     </div>
-     <div class="column-third" id="chart-pie-households-type_of_dwelling_distribution" data-stat-type="percentage" data-chart-title="Households by type of dwelling"></div>
-     </section>
-     <section class="clearfix stat-row grouped-row">
-     <h2><a class="permalink" href="#tenure" id="tenure">Household ownership <i class="fa fa-link"></i></a></h2>
-     <div class="column-third">
-     {% include 'profile/_blocks/_stat_list.html' with stat=households.owned stat_type='percentage' %}
-     </div>
-     <div class="column-third" id="chart-pie-households-tenure_distribution" data-stat-type="percentage" data-initial-sort="-value" data-chart-title="Households by ownership"></div>
-     </section>
-     <section class="clearfix stat-row grouped-row">
-     <h2><a class="permalink" href="#household-head" id="household-head">Head of household <i class="fa fa-link"></i></a></h2>
-     <div class="column-third">
-     {% include 'profile/_blocks/_stat_list.html' with stat=households.head_of_household.female stat_type='percentage' %}
-     </div>
-     <div class="column-third" id="chart-pie-households-head_of_household-gender_distribution" data-stat-type="percentage" data-initial-sort="-value" data-chart-title="Head of household by gender"></div>
-     <div class="column-third">
-     {% include 'profile/_blocks/_stat_list.html' with stat=households.head_of_household.under_18 stat_type='number' %}
-     </div>
-     </section>
-     <section class="clearfix stat-row">
-     <h2><a class="permalink" href="#household-income" id="household-income">Annual household income<i class="fa fa-link"></i></a></h2>
-     <aside>
-     Average annual household income is <a href="/help#faq-average-hh-income">a median estimate</a>, be careful with this value.
-     </aside>
-     <div class="column-quarter">
-     {% include 'profile/_blocks/_stat_list.html' with stat=households.median_annual_income stat_type='dollar' %}
-     </div>
-     <div class="column-three-quarters" id="chart-column-households-annual_income_distribution" data-stat-type="scaled-percentage" data-chart-title="Annual household income"></div>
-     </section>
-     <section class="clearfix stat-row">
-     <h2><a class="permalink" href="#household_goods" id="household_goods">Household goods <i class="fa fa-link"></i></a></h2>
-     <div class="column-full" id="chart-column-households-household_goods" data-stat-type="scaled-percentage" data-chart-title="Goods available by household"></div>
-     </section>
-     </div>
-     </article>
-
-     <article id="service_delivery" class="clearfix">
-     <header class="section-contents">
-     <h1><i class="fa fa-fw fa-bolt"></i> Service delivery</h1>
-     </header>
-     <div class="section-container">
-
-     <section class="clearfix stat-row">
-     <h2><a class="permalink" href="#water" id="water">Water <i class="fa fa-link"></i></a></h2>
-     <aside>
-     </aside>
-     <div class="column-third">
-     {% include 'profile/_blocks/_stat_list.html' with stat=service_delivery.percentage_water_from_service_provider stat_type='percentage' %}
-     </div>
-     <div class="column-third" id="chart-pie-service_delivery-water_source_distribution" data-stat-type="percentage" data-chart-title="Population by water source"></div>
-     {% if primary_release_year == 'latest' %}
-     <div class="column-third" id="chart-pie-service_delivery-water_supplier_distribution" data-stat-type="percentage" data-chart-title="Population by water supplier"></div>
-     {% endif %}
-     </section>
-
-     {% if geography.this.version == "2011" %}
-     <section class="clearfix stat-row">
-     <h2><a class="permalink" href="#electricity" id="electricity">Electricity <i class="fa fa-link"></i></a></h2>
-     <aside>
-     </aside>
-     <div class="column-third">
-     {% include 'profile/_blocks/_stat_list.html' with stat=service_delivery.percentage_electricity_access stat_type='percentage' %}
-     </div>
-     <div class="column-third" id="chart-pie-service_delivery-electricity_access_distribution" data-stat-type="percentage" data-chart-title="Households by electricity usage"></div>
-     </section>
-     {% endif %}
-
-     {% if primary_release_year == 'latest' %}
-     <section class="clearfix stat-row">
-     <h2><a class="permalink" href="#electricity" id="electricity">Electricity <i class="fa fa-link"></i></a></h2>
-     <aside>
-     </aside>
-     <div class="column-third">
-     {% include 'profile/_blocks/_stat_list.html' with stat=service_delivery.percentage_no_electricity_access stat_type='percentage' %}
-     </div>
-     <div class="column-third" id="chart-pie-service_delivery-electricity_access" data-stat-type="percentage" data-chart-title="Population by electricity access"></div>
-     </section>
-     {% endif %}
-
-     <section class="clearfix stat-row">
-     <h2><a class="permalink" href="#toilets" id="toilets">Toilet facilities <i class="fa fa-link"></i></a></h2>
-     <aside>
-     </aside>
-     <div class="column-third">
-     {% include 'profile/_blocks/_stat_list.html' with stat=service_delivery.percentage_flush_toilet_access stat_type='percentage' %}
-     </div>
-     <div class="column-third">
-     {% include 'profile/_blocks/_stat_list.html' with stat=service_delivery.percentage_no_toilet_access stat_type='percentage' %}
-     </div>
-     <div class="column-third" id="chart-pie-service_delivery-toilet_facilities_distribution" data-stat-type="percentage" data-chart-title="Population by toilet facilities"></div>
-     </section>
-
-     <section class="clearfix stat-row">
-     <h2><a class="permalink" href="#refuse" id="refuse">Refuse disposal <i class="fa fa-link"></i></a></h2>
-     <aside>
-     </aside>
-     <div class="column-third">
-     {% include 'profile/_blocks/_stat_list.html' with stat=service_delivery.percentage_ref_disp_from_service_provider stat_type='percentage' %}
-     </div>
-     <div class="column-third" id="chart-pie-service_delivery-refuse_disposal_distribution" data-chart-title="Population by refuse disposal" data-stat-type="percentage"></div>
-     </section>
-
-     </div>
-     </article> -->
-
-
-
 
 
 {% block citations %}
