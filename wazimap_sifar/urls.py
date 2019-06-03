@@ -32,8 +32,6 @@ urlpatterns = [
     #     api.ProfessionalServiceView.as_view(),
     #     name='professional_service'),
     url('^explorer/', include('explorer.urls', namespace='explorer')),
-    url('^contributers/', include(
-        'contributers.urls', namespace='contributers'))
 ]
 
 urlpatterns += urls.urlpatterns
