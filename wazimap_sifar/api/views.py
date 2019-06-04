@@ -21,5 +21,5 @@ class DatasetCategoryView(APIView):
 
 class DatasetContributers(APIView):
     def get(self, request, contrib_id):
-        data = to_geojson(Dataset)
+        data = to_geojson(Dataset, contrib_id)
         return Response(data)
