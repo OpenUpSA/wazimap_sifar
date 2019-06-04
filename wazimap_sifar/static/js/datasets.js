@@ -1,7 +1,7 @@
 function getRandomColor() {
     var colours = ['red', 'orange', 'yellow', 'olive', 'green',
 		   'teal', 'blue', 'violet', 'purple', 'pink',
-		   'brown', 'grey', 'black'];
+		   'brown', 'black'];
     var colorIndex = Math.floor(Math.random() * ((colours.length -1) - 0 + 1)) + 0;
     return colours[colorIndex];
 }
@@ -10,8 +10,8 @@ function getRandomColor() {
 Vue.component('contributer-item',{
     props:['contributer'],
     template:`<ul>
-	<li>
-	<a ref="myPoint" href="#" class="contributer contributer-text" style="margin-left:16px;" v-on:click="showPoints(contributer.id)">
+	<li class="contributer">
+	<a ref="myPoint" href="#" class="contributer-text" style="margin-left:16px;" v-on:click="showPoints(contributer.id,contributer.subcategory)">
 	<span v-bind:style="{color: color}">
 	{{contributer.subcategory}}
 	</span>
@@ -27,17 +27,21 @@ Vue.component('contributer-item',{
 	}
     },
      methods:{
-	showPoints: function(contribID){
+	 showPoints: function(contribID, category){
+	     var deleted = false;
+	      var self = this;
 	    //show points or remove them
 	    dataset.map.eachLayer(function(layer){
-		if (layer.myTag == contribID){
+		if (layer.myTag == category){
 		    dataset.map.removeLayer(layer);
-		    this.color = '#bbb';
+		    self.color = '#bbb';
+		    console.log(this.color);
+		    deleted = true;
 		    return;
 		}
 	    });
-	    var self = this;
-	    $.ajax({
+	     if (deleted == false){
+		 $.ajax({
 		dataType:'json',
 		url: '/api/v1/dataset/contributer/'+contribID,
 		method: 'GET',
@@ -48,7 +52,7 @@ Vue.component('contributer-item',{
 		    self.color = new_color;
 		    L.geoJson(result.features,{
 			onEachFeature: function(feature,layer){
-			    layer.myTag = contribID;
+			    layer.myTag = category;
 			    contact.name = feature.properties.name;
 			    contact.longitude = feature.geometry.coordinates[0];
 			    contact.latitude = feature.geometry.coordinates[1];
@@ -77,6 +81,9 @@ Vue.component('contributer-item',{
 		    
 		}
 	    });
+	     }
+	    
+	    
 	}
     },
 });
