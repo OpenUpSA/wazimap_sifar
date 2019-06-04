@@ -105,7 +105,7 @@
          margin-left:16px;
          
   }
-  .contributer span:hover{
+  .contributer:hover{
          background-color: #2980B9;
   }
   
@@ -125,10 +125,10 @@
 	<ul class="collapsible" style="float:left;background-color:white">
 	    <li>
 		<div class="collapsible-header">
-		    <img src="{% static 'img/settings_48px.svg' %}" height="48px" width="48px"/> <span class="wazi-text">Map Options
+		    <img src="{% static 'img/settings_48px.svg' %}" height="48px" width="48px"/> <span class="wazi-header">Map Options
 		    </span>
 		</div>
-		<div class="collapsible-body">
+		<div class="collapsible-body" style="overflow-y: scroll;">
 		    <h1 class="wazi-header wazi-text">Map Data Source</h1>
 		    <div class="dropdownRelease" style="background:#F3F3F3;">
 			<button class="dropbtn">
