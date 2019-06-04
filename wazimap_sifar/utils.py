@@ -1,12 +1,12 @@
 from geojson import FeatureCollection, Feature, Point
 
 
-def to_geojson(model):
+def to_geojson(model, contrib_id):
     """
     Convert django model to geojson
     """
     feature_collection = []
-    for record in model.objects.all():
+    for record in model.objects.filter(contributer_id=contrib_id):
         properies = {
             'name': record.name,
             'address': record.address,
