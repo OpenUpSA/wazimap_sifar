@@ -283,7 +283,7 @@
                 <div id="chart-column-demographics-population_group_distribution" data-stat-type="scaled-percentage" data-chart-title="Older Adults population by race"></div>
             </div>
             <div class="column-quarter">
-                <div id="chart-pie-demographics-sex_ratio" data-stat-type="percentage" data-initial-sort="-value" data-chart-title="Senior citizen population by gender"></div>
+                <div id="chart-pie-demographics-sex_ratio" data-stat-type="percentage" data-initial-sort="-value" data-chart-title="Older Adults population by gender"></div>
             </div>
         </section>
         <section class="clearfix stat-row">
@@ -370,10 +370,7 @@
 
 
 {% block citations %}
+{{ block.super }}
 {% include "profile/_blocks/_change_release.html" %}
-<div id="citations">
-    <h2>Citations:</h2>
-    <ul></ul>
-</div>
 {% endblock %}
 {% endblock %}
