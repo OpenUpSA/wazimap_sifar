@@ -1,7 +1,9 @@
 function getRandomColor() {
-    var colours = ['red', 'orange', 'yellow', 'olive', 'green',
-		   'teal', 'blue', 'violet', 'purple', 'pink',
-		   'brown', 'black'];
+    var colours = [
+	'#4E6CeF', '#3949AB', '#5E35B1', '#8E24AA', '#D81B60', '#E00032',
+	'#039BE5', '#00ACC1', '#00897B', '#0A8F08', '#7CB342', '#C0CA33',
+	'#FDD835', '#FDD835', '#FB8C00', '#F4511E'
+    ];
     var colorIndex = Math.floor(Math.random() * ((colours.length -1) - 0 + 1)) + 0;
     return colours[colorIndex];
 }
@@ -35,7 +37,6 @@ Vue.component('contributer-item',{
 		if (layer.myTag == category){
 		    dataset.map.removeLayer(layer);
 		    self.color = '#bbb';
-		    console.log(this.color);
 		    deleted = true;
 		    return;
 		}
@@ -96,7 +97,7 @@ Vue.component('dataset-item',{
     	'<i class="fa fa-caret-down" style="float:right;top:50px" aria-hidden="true"></i>'+
     	'</div>'+
     	'<div class="collapsible-body">'+
-    	'<contributer-item v-for="contrib in dataset.contributer_set" v-bind:contributer="contrib"></contributer-item>'+
+    	'<contributer-item v-for="contrib in dataset.contributer_set" v-bind:contributer="contrib" v-bind:key="contrib.id"></contributer-item>'+
     	'</div>'+
     	'</li>',
 });
@@ -139,5 +140,13 @@ var contact = new Vue({
 	contactDisplay:{
 	    display: 'none'
 	}
+    }
+});
+
+$('#col-header').on('click', function(){
+    if ($('#col-header li').hasClass('active')){
+	$(this).css({"overflow-y":"", "height":"0px"});
+    }else{
+	$(this).css({"overflow-y":"scroll", "height":"400px"});
     }
 });
