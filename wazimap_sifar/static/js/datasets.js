@@ -2,7 +2,7 @@ function getRandomColor() {
     var colours = [
 	'#4E6CeF', '#3949AB', '#5E35B1', '#8E24AA', '#D81B60', '#E00032',
 	'#039BE5', '#00ACC1', '#00897B', '#0A8F08', '#7CB342', '#C0CA33',
-	'#FDD835', '#FDD835', '#FB8C00', '#F4511E'
+	'#FDD835', '#FB8C00', '#F4511E'
     ];
     var colorIndex = Math.floor(Math.random() * ((colours.length -1) - 0 + 1)) + 0;
     return colours[colorIndex];
@@ -11,33 +11,28 @@ function getRandomColor() {
 
 Vue.component('contributer-item',{
     props:['contributer'],
-    template:`<ul>
-	<li class="contributer">
-	<a ref="myPoint" href="#" class="contributer-text" style="margin-left:16px;" v-on:click="showPoints(contributer.id,contributer.subcategory)">
-	<span v-bind:style="{color: color}">
-	{{contributer.subcategory}}
-	</span>
-	<span class="dot" v-bind:style="{'background-color':color}">
-	</span>
-	</a>
-	</span>
-	</li>
-	</ul>`,
+    template:`<div v-bind:class="{selected: isSelected}" class="accordion-radio-item" v-on:click="showPoints(contributer.id,contributer.subcategory)" v-bind:style="{color: color}">
+					    <div class="accordion-item-heading">{{contributer.subcategory}}</div>
+					</div>`,
     data: function(){
 	return {
-	    color: '#bbb'
+	    isSelected: false,
+	    color: ''
 	}
     },
      methods:{
 	 showPoints: function(contribID, category){
 	     var deleted = false;
-	      var self = this;
+	     var self = this;
+	     contact.display = 'none';
 	    //show points or remove them
 	    dataset.map.eachLayer(function(layer){
 		if (layer.myTag == category){
 		    dataset.map.removeLayer(layer);
-		    self.color = '#bbb';
+		    self.color = '';
+		    self.isSelected = false;
 		    deleted = true;
+		    contact.display = 'none';
 		    return;
 		}
 	    });
@@ -47,25 +42,21 @@ Vue.component('contributer-item',{
 		url: '/api/v1/dataset/contributer/'+contribID,
 		method: 'GET',
 		success: function(result){
-		    console.log("Fetched the data from api");
 		    //change color of dot background-color:
 		    var new_color = getRandomColor();
+		    self.isSelected = true;
 		    self.color = new_color;
 		    L.geoJson(result.features,{
 			onEachFeature: function(feature,layer){
 			    layer.myTag = category;
-			    contact.name = feature.properties.name;
-			    contact.longitude = feature.geometry.coordinates[0];
-			    contact.latitude = feature.geometry.coordinates[1];
-			    contact.email = feature.properties.email;
-			    contact.address = feature.properties.address;
-			    contact.website = feature.properties.website;
-			    contact.phone = feature.properties['phone_number'];
 			    layer.on('click', function(){
+				contact.name = feature.properties.name;
+			    contact.email = feature.properties.email ? feature.properties.email :'Unavailable';
+			    contact.address = feature.properties.address ? feature.properties.address :'Unavailable';
+			    contact.website = feature.properties.website ? feature.properties.website :'Unavailable';
+			    contact.phone = feature.properties['phone_number'] ? feature.properties['phone_number'] :'Unavailable';
 				console.log('We clicked on the button');
-				self.$set(contact.contactDisplay,
-					  'display', 'block');
-				//contact.show = 'block';
+				contact.display = 'block';
 			    });
 			},
 			pointToLayer: function(feature, latlng){
@@ -89,18 +80,36 @@ Vue.component('contributer-item',{
     },
 });
 
+
 Vue.component('dataset-item',{
     props:['dataset'],
-    template: '<li>'+
-    	'<div class="collapsible-header collapsible-text">'+
-    	'{{dataset.name}}' +
-    	'<i class="fa fa-caret-down" style="float:right;top:50px" aria-hidden="true"></i>'+
-    	'</div>'+
-    	'<div class="collapsible-body">'+
-    	'<contributer-item v-for="contrib in dataset.contributer_set" v-bind:contributer="contrib" v-bind:key="contrib.id"></contributer-item>'+
-    	'</div>'+
-    	'</li>',
+    template:`<div class="accordion-item">
+				<div class="accordion-item-trigger" v-on:click="showCategory()">
+				    <div class="dropdown-heading-wrapper">
+                                        <img src="/static/img/baseline-work-24px.svg" alt="" class="grey-icon-left">
+					<h5 class="card-heading-3 indent">{{dataset.name}}</h5>
+				    </div><img src="/static/img/baseline-arrow_drop_down-24px.svg" style="-webkit-transform:translate3d(0, 0, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0DEG) skew(0, 0);-moz-transform:translate3d(0, 0, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0DEG) skew(0, 0);-ms-transform:translate3d(0, 0, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0DEG) skew(0, 0);transform:translate3d(0, 0, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0DEG) skew(0, 0)" alt="" class="icon-right"></div>
+                                      <div v-bind:style="{display: display}" class="accordion-item-content">
+                                     <contributer-item v-for="contrib in dataset.contributer_set" v-bind:contributer="contrib" v-bind:key="contrib.id"></contributer-item>
+                                    </div>
+			    </div>`,
+    data: function(){
+	return {
+	    display: 'none'
+	}
+    },
+    methods:{
+	showCategory: function(){
+	    contact.display = 'none';
+	    if (this.display == 'none'){
+		this.display = 'block';
+	    }else{
+		this.display = 'none';
+	    }
+	}
+    } 
 });
+
 
 var dataset = new Vue({
     el:'#dataset-category',
@@ -116,7 +125,6 @@ var dataset = new Vue({
 		method: 'GET',
 		success: function(result){
 		    self.category = result.data;
-		    console.log(self.category);
 		},
 		error: function(error){
 		    console.log(error);
@@ -137,16 +145,13 @@ var contact = new Vue({
 	phone:'',
 	latitude:'',
 	longitude:'',
-	contactDisplay:{
-	    display: 'none'
+	display: 'none'
+    },
+    methods:{
+	closePoint: function(event){
+	    console.log('Hiding the point menu');
+	    this.display = 'none';
 	}
     }
 });
 
-$('#col-header').on('click', function(){
-    if ($('#col-header li').hasClass('active')){
-	$(this).css({"overflow-y":"", "height":"0px"});
-    }else{
-	$(this).css({"overflow-y":"scroll", "height":"400px"});
-    }
-});
