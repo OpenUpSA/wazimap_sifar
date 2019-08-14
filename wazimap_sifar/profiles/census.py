@@ -1,44 +1,45 @@
 from __future__ import division
 from collections import OrderedDict
 import logging
-import pdb
 
 from wazimap.data.tables import get_datatable, get_table_id
 from wazimap.data.utils import get_session, add_metadata
 from wazimap.geo import geo_data
 
 from wazimap.data.utils import (
-    collapse_categories, calculate_median, calculate_median_stat, merge_dicts,
-    group_remainder, get_stat_data, percent, current_context, dataset_context)
+    collapse_categories,
+    calculate_median,
+    calculate_median_stat,
+    merge_dicts,
+    group_remainder,
+    get_stat_data,
+    percent,
+    current_context,
+    dataset_context,
+)
+from dynamic_profile.models import Profile, IndicatorProfile
 
 log = logging.getLogger(__name__)
 
-PROFILE_SECTIONS = (
-    'demographics',  # population group, age group in 5 years, age in completed years
-    'economics',  # individual monthly income, type of sector, official employment status
-    #'service_delivery',  # source of water, refuse disposal
-    #'households',  # household heads, etc.
-    #'children',  # child-related stats
-    #'child_households',  # households headed by children
-    'health')
+PROFILE_SECTIONS = ("indicator",)
 
 # Education categories
 
 COLLAPSED_ATTENDANCE_CATEGORIES = {
-    'Unspecified': 'Other',
-    'Not applicable': 'Other',
-    'Do not know': 'Other',
+    "Unspecified": "Other",
+    "Not applicable": "Other",
+    "Do not know": "Other",
 }
 
 # Age categories
 
 COLLAPSED_AGE_CATEGORIES = {
-    '60 - 64': '60-69',
-    '65 - 69': '60-69',
-    '70 - 74': '70-79',
-    '75 - 79': '70-79',
-    '80 - 84': '80-84',
-    '85 - 120': '85+',
+    "60 - 64": "60-69",
+    "65 - 69": "60-69",
+    "70 - 74": "70-79",
+    "75 - 79": "70-79",
+    "80 - 84": "80-84",
+    "85 - 120": "85+",
 }
 
 # Income categories
@@ -105,22 +106,22 @@ ESTIMATED_ANNUAL_INCOME_CATEGORIES["Unspecified"] = None
 
 # Household income
 HOUSEHOLD_INCOME_RECODE_2011 = OrderedDict()
-HOUSEHOLD_INCOME_RECODE_2011['No income'] = 'R0'
-HOUSEHOLD_INCOME_RECODE_2011['R 1 - R 4800'] = 'Under R4800'
-HOUSEHOLD_INCOME_RECODE_2011['R 4801 - R 9600'] = 'R5k - R10k'
-HOUSEHOLD_INCOME_RECODE_2011['R 9601 - R 19 600'] = 'R10k - R20k'
-HOUSEHOLD_INCOME_RECODE_2011['R 19 601 - R 38 200'] = 'R20k - R40k'
-HOUSEHOLD_INCOME_RECODE_2011['R 38 201 - R 76 400'] = 'R40k - R75k'
-HOUSEHOLD_INCOME_RECODE_2011['R 76 401 - R 153 800'] = 'R75k - R150k'
-HOUSEHOLD_INCOME_RECODE_2011['R 153 801 - R 307 600'] = 'R150k - R300k'
-HOUSEHOLD_INCOME_RECODE_2011['R 307 601 - R 614 400'] = 'R300k - R600k'
-HOUSEHOLD_INCOME_RECODE_2011['R 614 001 - R 1 228 800'] = 'R600k - R1.2M'
-HOUSEHOLD_INCOME_RECODE_2011['R 1 228 801 - R 2 457 600'] = 'R1.2M - R2.5M'
-HOUSEHOLD_INCOME_RECODE_2011['R 2 457 601 or more'] = 'Over R2.5M'
+HOUSEHOLD_INCOME_RECODE_2011["No income"] = "R0"
+HOUSEHOLD_INCOME_RECODE_2011["R 1 - R 4800"] = "Under R4800"
+HOUSEHOLD_INCOME_RECODE_2011["R 4801 - R 9600"] = "R5k - R10k"
+HOUSEHOLD_INCOME_RECODE_2011["R 9601 - R 19 600"] = "R10k - R20k"
+HOUSEHOLD_INCOME_RECODE_2011["R 19 601 - R 38 200"] = "R20k - R40k"
+HOUSEHOLD_INCOME_RECODE_2011["R 38 201 - R 76 400"] = "R40k - R75k"
+HOUSEHOLD_INCOME_RECODE_2011["R 76 401 - R 153 800"] = "R75k - R150k"
+HOUSEHOLD_INCOME_RECODE_2011["R 153 801 - R 307 600"] = "R150k - R300k"
+HOUSEHOLD_INCOME_RECODE_2011["R 307 601 - R 614 400"] = "R300k - R600k"
+HOUSEHOLD_INCOME_RECODE_2011["R 614 001 - R 1 228 800"] = "R600k - R1.2M"
+HOUSEHOLD_INCOME_RECODE_2011["R 1 228 801 - R 2 457 600"] = "R1.2M - R2.5M"
+HOUSEHOLD_INCOME_RECODE_2011["R 2 457 601 or more"] = "Over R2.5M"
 
 COLLAPSED_ANNUAL_INCOME_CATEGORIES = OrderedDict()
-COLLAPSED_ANNUAL_INCOME_CATEGORIES['No income'] = 'R0'
-COLLAPSED_ANNUAL_INCOME_CATEGORIES['R 1 - R 4800'] = 'Under R4800'
+COLLAPSED_ANNUAL_INCOME_CATEGORIES["No income"] = "R0"
+COLLAPSED_ANNUAL_INCOME_CATEGORIES["R 1 - R 4800"] = "Under R4800"
 COLLAPSED_ANNUAL_INCOME_CATEGORIES["R 4801 - R 9600"] = "R5k - R10k"
 COLLAPSED_ANNUAL_INCOME_CATEGORIES["R 9601 - R 19200"] = "R10k - R20k"
 COLLAPSED_ANNUAL_INCOME_CATEGORIES["R 19201 - R 38400"] = "R20k - R40k"
@@ -136,249 +137,24 @@ COLLAPSED_ANNUAL_INCOME_CATEGORIES["R 1228801 - R 2457600"] = "R1.2M - R2.5M"
 COLLAPSED_ANNUAL_INCOME_CATEGORIES["R2457601 or more"] = "Over R2.5M"
 
 HOUSEHOLD_INCOME_ESTIMATE = {}
-HOUSEHOLD_INCOME_ESTIMATE['R0'] = 0
-HOUSEHOLD_INCOME_ESTIMATE['Under R4800'] = 2400
-HOUSEHOLD_INCOME_ESTIMATE['R5k - R10k'] = 7200
-HOUSEHOLD_INCOME_ESTIMATE['R10k - R20k'] = 14600
-HOUSEHOLD_INCOME_ESTIMATE['R20k - R40k'] = 29400
-HOUSEHOLD_INCOME_ESTIMATE['R40k - R75k'] = 57300
-HOUSEHOLD_INCOME_ESTIMATE['R75k - R150k'] = 115100
-HOUSEHOLD_INCOME_ESTIMATE['R150k - R300k'] = 230700
-HOUSEHOLD_INCOME_ESTIMATE['R300k - R600k'] = 461000
-HOUSEHOLD_INCOME_ESTIMATE['R600k - R1.2M'] = 921400
-HOUSEHOLD_INCOME_ESTIMATE['R1.2M - R2.5M'] = 1843200
-HOUSEHOLD_INCOME_ESTIMATE['Over R2.5M'] = 2500000
-HOUSEHOLD_INCOME_ESTIMATE['Unspecified'] = None
+HOUSEHOLD_INCOME_ESTIMATE["R0"] = 0
+HOUSEHOLD_INCOME_ESTIMATE["Under R4800"] = 2400
+HOUSEHOLD_INCOME_ESTIMATE["R5k - R10k"] = 7200
+HOUSEHOLD_INCOME_ESTIMATE["R10k - R20k"] = 14600
+HOUSEHOLD_INCOME_ESTIMATE["R20k - R40k"] = 29400
+HOUSEHOLD_INCOME_ESTIMATE["R40k - R75k"] = 57300
+HOUSEHOLD_INCOME_ESTIMATE["R75k - R150k"] = 115100
+HOUSEHOLD_INCOME_ESTIMATE["R150k - R300k"] = 230700
+HOUSEHOLD_INCOME_ESTIMATE["R300k - R600k"] = 461000
+HOUSEHOLD_INCOME_ESTIMATE["R600k - R1.2M"] = 921400
+HOUSEHOLD_INCOME_ESTIMATE["R1.2M - R2.5M"] = 1843200
+HOUSEHOLD_INCOME_ESTIMATE["Over R2.5M"] = 2500000
+HOUSEHOLD_INCOME_ESTIMATE["Unspecified"] = None
 
 HOUSEHOLD_OWNERSHIP_RECODE = {
-    'Unspecified': 'Other',
-    'Not applicable': 'Other',
-    'Do not know': 'Other',
-}
-
-# Sanitation categories
-
-SHORT_WATER_SOURCE_CATEGORIES = {
-    "Regional/local water scheme (operated by municipality or other water services provider)":
-    "Service provider",
-    "Water tanker":
-    "Tanker",
-    "Spring":
-    "Spring",
-    "Other":
-    "Other",
-    "Dam/pool/stagnant water":
-    "Dam",
-    "River/stream":
-    "River",
-    "Not applicable":
-    "N/A",
-    "Borehole":
-    "Borehole",
-    "Rain water tank":
-    "Rainwater tank",
-    "Water vendor":
-    "Vendor",
-    # CS 2016:
-    "Borehole in the yard":
-    "Borehole in yard",
-    "Borehole outside the yard":
-    "Borehole outside yard",
-    "Neighbours tap":
-    "Neighbours tap",
-    "Flowing water/stream/river":
-    "River",
-    "Piped (tap) water inside the dwelling/house":
-    "Piped water inside house",
-    "Piped (tap) water inside yard":
-    "Piped water inside yard",
-    "Piped water on community stand":
-    "Piped water on community stand",
-    "Public/communal tap":
-    "Public/communal tap",
-    "Rain-water tank in yard":
-    "Rainwater tank",
-    "Water-carrier/tanker":
-    "Tanker",
-    "Well":
-    "Well"
-}
-
-SHORT_WATER_SUPPLIER_CATEGORIES = {
-    "A municipality": "Service provider",
-    "Other water scheme (e.g. community water supply)": "Water scheme",
-    "A water vendor": "Vendor",
-    "Own service (e.g. private borehole; own source on a farm; et":
-    "Own service",
-    "Flowing water/stream/river/spring/rain water": "Natural source",
-    "Do not know": "Do not know",
-    "Unspecified": "Unspecified"
-}
-
-SHORT_REFUSE_DISPOSAL_CATEGORIES = {
-    "Removed by local authority/private company less often":
-    "Service provider (not regularly)",
-    "Own refuse dump":
-    "Own dump",
-    "Communal refuse dump":
-    "Communal dump",
-    "Other":
-    "Other",
-    "Not applicable":
-    "N/A",
-    "No rubbish disposal":
-    "None",
-    "Unspecified":
-    "Unspecified",
-    "Removed by local authority/private company at least once a week":
-    "Service provider (regularly)",
-    # CS 2016:
-    "Removed by local authority/private company/community members at least once a week":
-    "Service provider (regularly)",
-    "Removed by local authority/private company/community members less often than once a week":
-    "Service provider (not regularly)",
-    "Communal container/central collection point":
-    "Communal container",
-    "Dump or leave rubbish anywhere (no rubbish disposal)":
-    " None"
-}
-
-COLLAPSED_TOILET_CATEGORIES = {
-    "Flush toilet (connected to sewerage system)":
-    "Flush toilet",
-    "Flush toilet (with septic tank)":
-    "Flush toilet",
-    "Chemical toilet":
-    "Chemical toilet",
-    "Pit toilet with ventilation (VIP)":
-    "Pit toilet",
-    "Pit toilet without ventilation":
-    "Pit toilet",
-    "Bucket toilet":
-    "Bucket toilet",
-    "Other":
-    "Other",
-    "None":
-    "None",
-    "Unspecified":
-    "Unspecified",
-    "Not applicable":
-    "N/A",
-    # CS 2016:
-    "Flush toilet connected to a public sewerage system":
-    "Flush toilet",
-    "Flush toilet connected to a septic tank or conservancy tank":
-    "Flush toilet",
-    "Chemical toilet":
-    "Chemical toilet",
-    "Pit latrine/toilet with ventilation pipe":
-    "Pit toilet",
-    "Pit latrine/toilet without ventilation pipe":
-    "Pit toilet",
-    "Ecological toilet (e.g. urine diversion; enviroloo; etc.)":
-    "Ecological toilet",
-    "Bucket toilet (collected by municipality)":
-    "Bucket toilet",
-    "Bucket toilet (emptied by household)":
-    "Bucket toilet"
-}
-
-HOUSEHOLD_GOODS_RECODE = {
-    'cell phone': 'Cellphone',
-    'computer': 'Computer',
-    'dvd player': 'DVD player',
-    'electric/gas stove': 'Stove',
-    'landline/telephone': 'Telephone',
-    'motor-car': 'Car',
-    'radio': 'Radio',
-    'refrigerator': 'Fridge',
-    'satellite television': 'Satellite TV',
-    'television': 'TV',
-    'vacuum cleaner': 'Vacuum cleaner',
-    'washing machine': 'Washing machine',
-}
-
-# Type of dwelling
-
-TYPE_OF_DWELLING_RECODE = {
-    'House or brick/concrete block structure on a separate stand or yard or on a farm':
-    'House',
-    'Traditional dwelling/hut/structure made of traditional materials':
-    'Traditional',
-    'Flat or apartment in a block of flats':
-    'Apartment',
-    'Cluster house in complex':
-    'Cluster house',
-    'Townhouse (semi-detached house in a complex)':
-    'Townhouse',
-    'Semi-detached house':
-    'Semi-detached house',
-    'House/flat/room in backyard':
-    'Flat in backyard',
-    'Informal dwelling (shack; in backyard)':
-    'Shack',
-    'Informal dwelling (shack; not in backyard; e.g. in an informal/squatter settlement or on a farm)':
-    'Shack',
-    'Room/flatlet on a property or larger dwelling/servants quarters/granny flat':
-    'Room or flatlet',
-    'Caravan/tent':
-    'Caravan/tent',
-    'Other':
-    'Other',
-    'Unspecified':
-    'Unspecified',
-    'Not applicable':
-    'N/A',
-    #Cs 2016:
-    'Formal dwelling/house/flat/room in backyard':
-    'Flat in backyard',
-    'Informal dwelling/shack in backyard':
-    'Shack',
-    'Traditional dwelling/hut/structure made of traditional mater':
-    'Traditional',
-    'Room/flatlet on a property or larger dwelling/servants quart':
-    'Room or flatlet',
-    'Formal dwelling/house or brick/concrete block structure on a':
-    'House',
-    'Informal dwelling/shack not in backyard (e.g. in an informal':
-    'Shack'
-}
-
-COLLAPSED_EMPLOYMENT_CATEGORIES = {
-    'Employed': 'In labour force',
-    'Unemployed': 'In labour force',
-    'Discouraged work-seeker': 'In labour force',
-    'Other not economically active': 'Not in labour force',
-    'Age less than 15 years': 'Not in labour force',
-    'Not applicable': 'Not in labour force'
-}
-
-INTERNET_ACCESS_RECODE = {
-    "Connection from a library":
-    "Library",
-    "Connection in the dwelling":
-    "In dwelling",
-    "Other":
-    "Other",
-    "Any place via other mobile access service":
-    "Other mobile service",
-    "Any place via cellphone":
-    "Cellphone",
-    "Internet cafe > 2km from dwelling":
-    "Internet cafe > 2km from dwelling",
-    "Internet cafe 2km or less from dwelling":
-    "Internet cafe < 2km from dwelling",
-    "Connection at place of work":
-    "Place of work",
-    "At school/university/college":
-    "Place of education"
-}
-
-ELECTRICITY_ACCESS_RECODE = {
-    "Connected to other source which household is not paying for":
-    "Other source (paying for)",
-    "Connected to other source which household pays for (e.g. con":
-    "Other source (not paying for)"
+    "Unspecified": "Other",
+    "Not applicable": "Other",
+    "Do not know": "Other",
 }
 
 
@@ -388,14 +164,12 @@ def get_profile(geo, profile_name, request):
     try:
         comparative_geos = geo_data.get_comparative_geos(geo)
         data = {}
-        data['primary_release_year'] = current_context().get('year')
+        data["primary_release_year"] = current_context().get("year")
 
         sections = list(PROFILE_SECTIONS)
-        if geo.geo_level in ['country', 'province']:
-            sections.append('crime')
 
         for section in sections:
-            function_name = 'get_%s_profile' % section
+            function_name = "get_%s_profile" % section
             if function_name in globals():
                 func = globals()[function_name]
                 data[section] = func(geo, session)
@@ -403,107 +177,195 @@ def get_profile(geo, profile_name, request):
                 # get profiles for comparative geometries
                 for comp_geo in comparative_geos:
                     try:
-                        merge_dicts(data[section], func(comp_geo, session),
-                                    comp_geo.geo_level)
+                        merge_dicts(
+                            data[section], func(comp_geo, session), comp_geo.geo_level
+                        )
                     except KeyError as e:
-                        msg = "Error merging data into %s for section '%s' from %s: KeyError: %s" % (
-                            geo.geoid, section, comp_geo.geoid, e)
+                        msg = (
+                            "Error merging data into %s for section '%s' from %s: KeyError: %s"
+                            % (geo.geoid, section, comp_geo.geoid, e)
+                        )
                         log.fatal(msg, exc_info=e)
                         raise ValueError(msg)
     finally:
         session.close()
 
-    # tweaks to make the data nicer
-    # show 3 largest groups on their own and group the rest as 'Other'
-    #group_remainder(data['service_delivery']['water_source_distribution'], 5)
-    # group_remainder(data['service_delivery']['refuse_disposal_distribution'],
-    #                 5)
-    # group_remainder(data['service_delivery']['toilet_facilities_distribution'],
-    #                 5)
-    group_remainder(data['demographics']['language_distribution'], 7)
-    #group_remainder(data['demographics']['province_of_birth_distribution'], 7)
-    #group_remainder(data['demographics']['region_of_birth_distribution'], 5)
-    # group_remainder(data['households']['type_of_dwelling_distribution'], 5)
-    # group_remainder(data['households']['tenure_distribution'], 6)
-    # group_remainder(data['child_households']['type_of_dwelling_distribution'],
-    #                 5)
+    import json
 
-    # if current_context().get('year') == 'latest':
-    #     group_remainder(
-    #         data['service_delivery']['water_supplier_distribution'], 5)
-    #     group_remainder(data['service_delivery']['electricity_access'], 5)
+    with open("example.json", "w") as f:
+        json.dump(data, f)
 
     return data
+
+
+def indicator_calculation(
+    geo,
+    session,
+    column_name,
+    table_name,
+    order_by=False,
+    percent=False,
+    exclude_zero=False,
+):
+    """
+    Get the statistics for the indicator
+    """
+    if order_by:
+        data, total = get_stat_data(
+            [column_name],
+            geo,
+            session,
+            table_universe="Senior",
+            table_dataset="Census and Community Survey",
+            order_by="-total",
+            exclude_zero=exclude_zero,
+        )
+    else:
+        data, total = get_stat_data(
+            [column_name],
+            geo,
+            session,
+            table_dataset="Census and Community Survey",
+            exclude_zero=exclude_zero,
+        )
+
+    return data, total
+
+
+def calculate_highest(distribution, total, highest_type):
+    """
+    Calculate the highest in the distribution or the entire total
+    """
+    if highest_type == "Total":
+        return total
+    elif highest_type == "Distribution":
+        return distribution[distribution.keys()[0]]
+
+    else:
+        return None
+
+
+def column_field_value(distribution, column_field=None):
+    if column_field:
+        return distribution[column_field]["values"]["this"]
+    return None
+
+
+def group_indicators(indicator_profiles):
+    for profile, values in indicator_profiles.items():
+        for indicator in values:
+            if indicator["grouped"]:
+                for i in values:
+                    if i["header"] == indicator["grouped"]:
+                        indicator["group_result"] = i
+                        values.remove(i)
+                        break
+    return indicator_profiles
+
+
+def get_indicator_profile(geo, session):
+    indicator_profiles = {p.name: [] for p in Profile.objects.all()}
+    for profile in IndicatorProfile.objects.all():
+        distribution, total = indicator_calculation(
+            geo,
+            session,
+            column_name=profile.column_name,
+            table_name=profile.table_name.name,
+            order_by=profile.order_by,
+            exclude_zero=profile.exclude_zero,
+        )
+        if profile.group_remainder:
+            group_remainder(distribution, profile.group_remainder)
+        indicator_profiles[profile.profile.name].append(
+            {
+                "header": profile.header,
+                "summary": profile.summary,
+                "chart_title": profile.chart_title,
+                "stat_values": distribution,
+                "total": total,
+                "distribution_maxima": calculate_highest(
+                    distribution, total, profile.maximum_value
+                ),
+                "chart_type": profile.chart_type,
+                "column_field": column_field_value(distribution, profile.column_field),
+                "display_order": profile.display_order,
+                "grouped": profile.grouped_profile.header
+                if profile.grouped_profile
+                else None,
+            }
+        )
+        indicator_profiles[profile.profile.name] = sorted(
+            indicator_profiles[profile.profile.name],
+            key=lambda profile: profile["display_order"],
+        )
+        indicator_profiles = group_indicators(indicator_profiles)
+
+    return indicator_profiles
 
 
 def get_health_profile(geo, session):
     """
     Health informtion for older adults
-    """
+s    """
     seeing_dist_data, _ = get_stat_data(
-        'seeing',
+        "seeing",
         geo,
         session,
-        table_universe='Senior',
-        table_dataset='Census and Community Survey',
-        order_by='-total')
+        table_universe="Senior",
+        table_dataset="Census and Community Survey",
+        order_by="-total",
+    )
 
     selfcare_data, _ = get_stat_data(
-        'self care',
+        "self care",
         geo,
         session,
-        table_universe='Senior',
-        table_dataset='Census and Community Survey',
-        order_by='-total')
+        table_universe="Senior",
+        table_dataset="Census and Community Survey",
+        order_by="-total",
+    )
 
     walking_data, _ = get_stat_data(
-        'walking or climbing stairs',
+        "walking or climbing stairs",
         geo,
         session,
-        table_universe='Senior',
-        table_dataset='Census and Community Survey',
-        order_by='-total')
+        table_universe="Senior",
+        table_dataset="Census and Community Survey",
+        order_by="-total",
+    )
 
     hearing_data, _ = get_stat_data(
-        'hearing',
+        "hearing",
         geo,
         session,
-        table_universe='Senior',
-        table_dataset='Census and Community Survey',
-        order_by='-total')
+        table_universe="Senior",
+        table_dataset="Census and Community Survey",
+        order_by="-total",
+    )
 
     final_data = {
-        'senior_seeing_difficulty': seeing_dist_data,
-        'senior_seeing_perc': {
-            'name': 'Of older adults have difficulty seeing',
-            'values': {
-                'this':
-                seeing_dist_data['A lot of difficulty']['values']['this']
-            }
+        "senior_seeing_difficulty": seeing_dist_data,
+        "senior_seeing_perc": {
+            "name": "Of older adults have difficulty seeing",
+            "values": {
+                "this": seeing_dist_data["A lot of difficulty"]["values"]["this"]
+            },
         },
-        'senior_selfcare_difficulty': selfcare_data,
-        'senior_selfcare_perc': {
-            'name':
-            'Of older adults have difficulty taking care of themselves',
-            'values': {
-                'this': selfcare_data['A lot of difficulty']['values']['this']
-            }
+        "senior_selfcare_difficulty": selfcare_data,
+        "senior_selfcare_perc": {
+            "name": "Of older adults have difficulty taking care of themselves",
+            "values": {"this": selfcare_data["A lot of difficulty"]["values"]["this"]},
         },
-        'senior_walking_difficulty': walking_data,
-        'senior_walking_perc': {
-            'name':
-            'Of older adults have difficulty walking or climbing the stairs',
-            'values': {
-                'this': walking_data['A lot of difficulty']['values']['this']
-            }
+        "senior_walking_difficulty": walking_data,
+        "senior_walking_perc": {
+            "name": "Of older adults have difficulty walking or climbing the stairs",
+            "values": {"this": walking_data["A lot of difficulty"]["values"]["this"]},
         },
-        'senior_hearing_difficulty': hearing_data,
-        'senior_hearing_perc': {
-            'name': 'Of older adults have difficulty hearing',
-            'values': {
-                'this': hearing_data['A lot of difficulty']['values']['this']
-            }
-        }
+        "senior_hearing_difficulty": hearing_data,
+        "senior_hearing_perc": {
+            "name": "Of older adults have difficulty hearing",
+            "values": {"this": hearing_data["A lot of difficulty"]["values"]["this"]},
+        },
     }
 
     return final_data
@@ -514,123 +376,115 @@ def birth_in_sa(birth_data):
     Calculate all those born in South Africa
     """
     provinces = [
-        'Western Cape', 'Eastern Cape', 'Northern Cape', "Free State",
-        'North West', 'Limpopo', 'Gauteng', 'Mpumalanga'
+        "Western Cape",
+        "Eastern Cape",
+        "Northern Cape",
+        "Free State",
+        "North West",
+        "Limpopo",
+        "Gauteng",
+        "Mpumalanga",
     ]
     total = 0
     for key in birth_data:
         if key in provinces:
-            total += birth_data[key]['numerators']['this']
+            total += birth_data[key]["numerators"]["this"]
     return total
 
 
 def get_demographics_profile(geo, session):
-    #Full population of area
-    #pdb.set_trace()
+    # Full population of area
+    # pdb.set_trace()
     pop_dist_data, total_census_pop = get_stat_data(
-        ['population group'],
-        geo,
-        session,
-        table_dataset='Census and Community Survey')
+        ["population group"], geo, session, table_dataset="Census and Community Survey"
+    )
     age_dist_data, senior_total_pop = get_stat_data(
-        ['age'], geo, session, table_name='senior_population_age')
-    #table_universe='Senior',
-    #table_dataset='Census and Community Survey')
+        ["age"], geo, session, table_name="senior_population_age"
+    )
+    # table_universe='Senior',
+    # table_dataset='Census and Community Survey')
 
     # language
     language_data, _ = get_stat_data(
-        ['language'],
+        ["language"],
         geo,
         session,
-        table_universe='Senior',
-        table_dataset='Census and Community Survey',
-        order_by='-total')
+        table_universe="Senior",
+        table_dataset="Census and Community Survey",
+        order_by="-total",
+    )
     language_most_spoken = language_data[language_data.keys()[0]]
 
     # age groups
     pop_group_dist_data, _ = get_stat_data(
-        ['population group'],
+        ["population group"],
         geo,
         session,
-        table_universe='Senior',
-        table_dataset='Census and Community Survey',
+        table_universe="Senior",
+        table_dataset="Census and Community Survey",
     )
 
     senior_age_per = (senior_total_pop / total_census_pop) * 100
 
     # sex
     sex_data, _ = get_stat_data(
-        ['gender'],
+        ["gender"],
         geo,
         session,
-        table_universe='Senior',
-        table_dataset='Census and Community Survey',
+        table_universe="Senior",
+        table_dataset="Census and Community Survey",
     )
 
     citizen_data, _ = get_stat_data(
-        ['citizenship'],
+        ["citizenship"],
         geo,
         session,
-        table_universe='Senior',
-        table_dataset='Census and Community Survey',
-        order_by='-total')
-    sa_citizen = citizen_data['Yes']['numerators']['this']
+        table_universe="Senior",
+        table_dataset="Census and Community Survey",
+        order_by="-total",
+    )
+    sa_citizen = citizen_data["Yes"]["numerators"]["this"]
 
     birth_data, _ = get_stat_data(
-        ['birth'],
+        ["birth"],
         geo,
         session,
-        table_universe='Senior',
-        table_dataset='Census and Community Survey',
-        order_by='-total',
+        table_universe="Senior",
+        table_dataset="Census and Community Survey",
+        order_by="-total",
     )
 
     final_data = {
-        'citizenship': citizen_data,
-        'citizen_sa': {
-            'name': 'Of older adults are South African',
-            'values': {
-                'this': sa_citizen
-            }
+        "citizenship": citizen_data,
+        "citizen_sa": {
+            "name": "Of older adults are South African",
+            "values": {"this": sa_citizen},
         },
-        'province_of_birth_dist': birth_data,
-        'province_of_birth_total': {
-            'name': 'older adults born in South Africa',
-            'values': {
-                'this': birth_in_sa(birth_data)
-            }
+        "province_of_birth_dist": birth_data,
+        "province_of_birth_total": {
+            "name": "older adults born in South Africa",
+            "values": {"this": birth_in_sa(birth_data)},
         },
-        'language_distribution': language_data,
-        'language_most_spoken': language_most_spoken,
-        'population_group_distribution': pop_group_dist_data,
-        'age_group_distribution': age_dist_data,
-        'sex_ratio': sex_data,
-        'senior_citizen_total_population': {
-            'name': 'Older Adults',
-            'values': {
-                'this': senior_total_pop
-            }
+        "language_distribution": language_data,
+        "language_most_spoken": language_most_spoken,
+        "population_group_distribution": pop_group_dist_data,
+        "age_group_distribution": age_dist_data,
+        "sex_ratio": sex_data,
+        "senior_citizen_total_population": {
+            "name": "Older Adults",
+            "values": {"this": senior_total_pop},
         },
-        'total_population': {
-            "name": "People",
-            "values": {
-                "this": total_census_pop
-            },
+        "total_population": {"name": "People", "values": {"this": total_census_pop}},
+        "total_population_perc": {
+            "name": "Of the population are older adults",
+            "values": {"this": senior_age_per},
         },
-        'total_population_perc': {
-            'name': 'Of the population are older adults',
-            'values': {
-                'this': senior_age_per
-            }
-        }
     }
 
     if geo.square_kms:
-        final_data['population_density'] = {
-            'name': "people per square kilometre",
-            'values': {
-                "this": senior_total_pop / geo.square_kms
-            },
+        final_data["population_density"] = {
+            "name": "people per square kilometre",
+            "values": {"this": senior_total_pop / geo.square_kms},
         }
 
     return final_data
@@ -640,45 +494,48 @@ def get_households_profile(geo, session):
     # head of household
     # gender
     head_gender_dist, total_households = get_stat_data(
-        ['gender of household head'],
+        ["gender of household head"],
         geo,
         session,
-        table_universe='Households',
-        order_by='gender of household head')
-    female_heads = head_gender_dist['Female']['numerators']['this']
+        table_universe="Households",
+        order_by="gender of household head",
+    )
+    female_heads = head_gender_dist["Female"]["numerators"]["this"]
 
     # age
-    u18_table = get_datatable('genderofheadofhouseholdunder18')
+    u18_table = get_datatable("genderofheadofhouseholdunder18")
     objects = u18_table.get_rows_for_geo(geo, session)
 
     total_under_18 = float(sum(o[0] for o in objects))
 
     # tenure
     tenure_data, _ = get_stat_data(
-        ['tenure status'],
+        ["tenure status"],
         geo,
         session,
-        table_universe='Households',
+        table_universe="Households",
         recode=HOUSEHOLD_OWNERSHIP_RECODE,
-        order_by='-total')
+        order_by="-total",
+    )
     owned = 0
     for key, data in tenure_data.iteritems():
-        if key.startswith('Owned'):
-            owned += data['numerators']['this']
+        if key.startswith("Owned"):
+            owned += data["numerators"]["this"]
 
     # annual household income
-    if geo.version == '2011':
+    if geo.version == "2011":
         HOUSEHOLD_INCOME_RECODE = HOUSEHOLD_INCOME_RECODE_2011
     else:
         HOUSEHOLD_INCOME_RECODE = COLLAPSED_ANNUAL_INCOME_CATEGORIES
     income_dist_data, _ = get_stat_data(
-        ['annual household income'],
+        ["annual household income"],
         geo,
         session,
-        table_universe='Households',
-        exclude=['Unspecified', 'Not applicable'],
+        table_universe="Households",
+        exclude=["Unspecified", "Not applicable"],
         recode=HOUSEHOLD_INCOME_RECODE,
-        key_order=HOUSEHOLD_INCOME_RECODE.values())
+        key_order=HOUSEHOLD_INCOME_RECODE.values(),
+    )
 
     # median income
     median = calculate_median_stat(income_dist_data)
@@ -686,145 +543,131 @@ def get_households_profile(geo, session):
 
     # type of dwelling
     type_of_dwelling_dist, _ = get_stat_data(
-        ['type of dwelling'],
+        ["type of dwelling"],
         geo,
         session,
-        table_universe='Households',
+        table_universe="Households",
         recode=TYPE_OF_DWELLING_RECODE,
-        order_by='-total')
-    informal = type_of_dwelling_dist['Shack']['numerators']['this']
+        order_by="-total",
+    )
+    informal = type_of_dwelling_dist["Shack"]["numerators"]["this"]
 
     # household goods
     household_goods, _ = get_stat_data(
-        ['household goods'],
+        ["household goods"],
         geo,
         session,
-        table_universe='Households',
+        table_universe="Households",
         recode=HOUSEHOLD_GOODS_RECODE,
-        key_order=sorted(HOUSEHOLD_GOODS_RECODE.values()))
+        key_order=sorted(HOUSEHOLD_GOODS_RECODE.values()),
+    )
 
     return {
-        'total_households': {
-            'name': 'Households',
-            'values': {
-                'this': total_households
-            },
+        "total_households": {
+            "name": "Households",
+            "values": {"this": total_households},
         },
-        'owned': {
-            'name': 'Households fully owned or being paid off',
-            'values': {
-                'this': percent(owned, total_households)
-            },
-            'numerators': {
-                'this': owned
-            },
+        "owned": {
+            "name": "Households fully owned or being paid off",
+            "values": {"this": percent(owned, total_households)},
+            "numerators": {"this": owned},
         },
-        'type_of_dwelling_distribution': type_of_dwelling_dist,
-        'informal': {
-            'name': 'Households that are informal dwellings (shacks)',
-            'values': {
-                'this': percent(informal, total_households)
-            },
-            'numerators': {
-                'this': informal
-            },
+        "type_of_dwelling_distribution": type_of_dwelling_dist,
+        "informal": {
+            "name": "Households that are informal dwellings (shacks)",
+            "values": {"this": percent(informal, total_households)},
+            "numerators": {"this": informal},
         },
-        'tenure_distribution': tenure_data,
-        'household_goods': household_goods,
-        'annual_income_distribution': income_dist_data,
-        'median_annual_income': {
-            'name': 'Average annual household income',
-            'values': {
-                'this': median_income
-            },
+        "tenure_distribution": tenure_data,
+        "household_goods": household_goods,
+        "annual_income_distribution": income_dist_data,
+        "median_annual_income": {
+            "name": "Average annual household income",
+            "values": {"this": median_income},
         },
-        'head_of_household': {
-            'gender_distribution': head_gender_dist,
-            'female': {
-                'name': 'Households with women as their head',
-                'values': {
-                    'this': percent(female_heads, total_households)
-                },
-                'numerators': {
-                    'this': female_heads
-                },
+        "head_of_household": {
+            "gender_distribution": head_gender_dist,
+            "female": {
+                "name": "Households with women as their head",
+                "values": {"this": percent(female_heads, total_households)},
+                "numerators": {"this": female_heads},
             },
-            'under_18': {
-                'name': 'Households with heads under 18 years old',
-                'values': {
-                    'this': total_under_18
-                },
-            }
+            "under_18": {
+                "name": "Households with heads under 18 years old",
+                "values": {"this": total_under_18},
+            },
         },
     }
 
 
 def get_economics_profile(geo, session):
-    if geo.version == '2016':
-        return {'senior_individual_income': ''}
+    if geo.version == "2016":
+        return {"senior_individual_income": ""}
     senior_income, total_pop = get_stat_data(
-        'individual monthly income',
+        "individual monthly income",
         geo,
         session,
-        exclude=['Not applicable'],
+        exclude=["Not applicable"],
         recode=COLLAPSED_MONTHLY_INCOME_CATEGORIES,
-        table_name='senior_individual_monthly_income',
-        key_order=COLLAPSED_MONTHLY_INCOME_CATEGORIES.values())
-    return {'senior_individual_income': senior_income}
+        table_name="senior_individual_monthly_income",
+        key_order=COLLAPSED_MONTHLY_INCOME_CATEGORIES.values(),
+    )
+    return {"senior_individual_income": senior_income}
 
 
 def get_education_profile(geo, session):
     edu_dist_data, total_over_20 = get_stat_data(
-        ['highest educational level'],
+        ["highest educational level"],
         geo,
         session,
         recode=COLLAPSED_EDUCATION_CATEGORIES,
-        table_universe='Individuals 20 and older',
-        key_order=EDUCATION_KEY_ORDER)
+        table_universe="Individuals 20 and older",
+        key_order=EDUCATION_KEY_ORDER,
+    )
 
-    GENERAL_EDU = EDUCATION_GET_OR_HIGHER if str(current_context().get(
-        'year')) == '2011' else EDUCATION_GET_OR_HIGHER_2016
+    GENERAL_EDU = (
+        EDUCATION_GET_OR_HIGHER
+        if str(current_context().get("year")) == "2011"
+        else EDUCATION_GET_OR_HIGHER_2016
+    )
     general_edu, total_general_edu = get_stat_data(
-        ['highest educational level'],
+        ["highest educational level"],
         geo,
         session,
-        table_universe='Individuals 20 and older',
-        only=GENERAL_EDU)
+        table_universe="Individuals 20 and older",
+        only=GENERAL_EDU,
+    )
 
-    FURTHER_EDU = EDUCATION_FET_OR_HIGHER if str(current_context().get(
-        'year')) == '2011' else EDUCATION_FET_OR_HIGHER_2016
+    FURTHER_EDU = (
+        EDUCATION_FET_OR_HIGHER
+        if str(current_context().get("year")) == "2011"
+        else EDUCATION_FET_OR_HIGHER_2016
+    )
     further_edu, total_further_edu = get_stat_data(
-        ['highest educational level'],
+        ["highest educational level"],
         geo,
         session,
-        table_universe='Individuals 20 and older',
-        only=FURTHER_EDU)
+        table_universe="Individuals 20 and older",
+        only=FURTHER_EDU,
+    )
 
     edu_split_data = {
-        'percent_general_edu': {
+        "percent_general_edu": {
             "name": "Completed Grade 9 or higher",
-            "numerators": {
-                "this": total_general_edu
-            },
-            "values": {
-                "this": round(total_general_edu / total_over_20 * 100, 2)
-            }
+            "numerators": {"this": total_general_edu},
+            "values": {"this": round(total_general_edu / total_over_20 * 100, 2)},
         },
-        'percent_further_edu': {
+        "percent_further_edu": {
             "name": "Completed Matric or higher",
-            "numerators": {
-                "this": total_further_edu
-            },
-            "values": {
-                "this": round(total_further_edu / total_over_20 * 100, 2)
-            }
+            "numerators": {"this": total_further_edu},
+            "values": {"this": round(total_further_edu / total_over_20 * 100, 2)},
         },
-        'metadata': general_edu['metadata']
+        "metadata": general_edu["metadata"],
     }
 
     profile = {
-        'educational_attainment_distribution': edu_dist_data,
-        'educational_attainment': edu_split_data
+        "educational_attainment_distribution": edu_dist_data,
+        "educational_attainment": edu_split_data,
     }
 
     return profile

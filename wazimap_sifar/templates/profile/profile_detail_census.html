@@ -3,255 +3,113 @@
 {% block head_meta_description %}Population data and election figures from {{ geography.this.short_name}}, broken down by category: Demographics, Service delivery, Economics and Education.{% endblock %}
 
 {% block header_content %}
-<div class="floating-nav-wrapper">
-    <nav class="floating-nav">
-        <div class="wrapper clearfix">
-            <h3 style="font-size:1.17rem"><img src="{% static 'img/wazi-logo.png' %}">{{ geography.this.name }}</h3>
-            <ul>
-                <li><a href="#demographics"><i class="fa fa-user"></i> <span>Demographics</span></a></li>
-                <li><a href="#health"><i class="fa fa-heartbeat"></i> <span>Health</span></a></li>
-                <li><a href="#economics"><i class="fa fa-money"></i> <span>Economics</span></a></li>
-            </ul>
-        </div>
-    </nav>
+<div data-collapse="none" data-animation="default" data-duration="400" data-no-scroll="1" class="map-navbar w-nav">
+    <div class="map-nav">
+	<div class="responsive-nav-container">
+            <div class="map-search-wrapper">
+		<div class="map-search"><img src="{% static 'img/Search.svg' %}" alt="" class="icon-left">
+		    <div class="search-placeholder">Find a location</div>
+		</div>
+            </div>
+            <div class="nav-location">
+		<div class="nav-crumbs">
+		    <div class="nav-discription">Selected:</div>
+		    <div class="small-button-wrapper"><a href="#" class="small-button grey hidden-desktop w-inline-block"><img src="{% static 'imag/baseline-more_vert-24px.svg' %}" alt="" class="small-icon"></a>
+			{% if geography.parents %}
+			{% for level,g in geography.parents.items %}
+			<a href="/profiles/{{ g.full_geoid }}-{{ g.short_name|slugify }}/" class="map-nav-link hidden-tablet w-inline-block">
+			    <div class="button-label">{{g.short_name}}</div>
+			</a>{% if not forloop.last %}{%endif%}
+			{% endfor %}
+			<a href="#" class="map-nav-link selected w-inline-block">
+			    <div class="button-label">{{ geography.this.short_name }}</div>
+			</a>
+			{% endif %}
+				    </div>
+		</div>
+		<div class="vertical-divider"></div>
+		<div class="recenter-button">
+		    <a href="#" class="map-nav-link recenter w-inline-block">
+			<img src="{% static 'img/center.svg' %}" alt="" class="recenter-icon">
+			<div class="button-label hidden-mobile">Recenter</div>
+		    </a>
+		</div>
+            </div>
+	</div>
+    </div>
 </div>
-<style>
-  .wazi-text{
-         font-family: Lato;
-         font-style: normal;
-         font-weight: bold;
-         font-size: 13px;
-         align-items: center;
-         letter-spacing: 0.02em;
-  }
 
-  .wazi-text li{
-         margin-left:16px;
-  }
-  .dropbtn {
-         background-color: #F3F3F3;
-         color: black;
-         padding: 16px;
-         font-size: 16px;
-         border: none;
-         cursor: pointer;
-  }
-
-  .dropbtn:hover, .dropbtn:focus {
-         background-color: #2980B9;
-  }
-
-  .dropdownRelease {
-         position: relative;
-         display: inline-block;
-  }
-
-  .release-content {
-         display: none;
-         position: absolute;
-         background-color: #F3F3F3;
-         min-width: 160px;
-         overflow: auto;
-         box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-         z-index: 1;
-         margin-left:16px;
-         opacity: 1;
-  }
-
-  .release-content a {
-         color: black;
-         padding: 12px 16px;
-         text-decoration: none;
-         display: block;
-  }
-
-  .dropdownRelease a:hover {background-color: #2980B9;}
-
-  .show {display: block;}
-  .collapsible-text {
-         font-family: Lato;
-         font-style: normal;
-         font-weight: bold;
-         font-size: 18px;
-         line-height: 16px;
-         display: flex;
-         align-items: center;
-         letter-spacing: 0.02em;
-         color: rgba(0, 0, 0, 0.73);
-  }
-
-  .wazi-margin{
-         margin-left:16px;
-  } 
-  .wazi-header{
-         font-size: 18px;
-         margin-left:16px;
-         
-  }
-
-  .wazi-collapsible{
-         border-left:0;
-         border-right:0;
-         box-shadow:0;
-  }
-
-  .contributer-text{
-         font-family: Lato;
-         font-style: normal;
-         font-weight: bold;
-         font-size: 13px;
-         align-items: center;
-         letter-spacing: 0.02em;
-         margin-left:16px;
-         
-  }
-  .contributer:hover{
-         background-color: #2980B9;
-  }
-  
-  .dot {
-         height: 10px;
-         width: 10px;
-         border-radius: 50%;
-         display: inline-block;
-         float: right;
-  }
-
-  
-</style>
 <div id="cover-map">
     <div id="slippy-map"></div>
     <div id="cover-profile" class="wrapper">
-	<ul class="collapsible" style="float:left;background-color:white">
-	    <li>
-		<div class="collapsible-header">
-		    <img src="{% static 'img/settings_48px.svg' %}" height="48px" width="48px"/> <span class="wazi-header">Map Options
-		    </span>
+	<div class="map-settings">
+	    <div class="map-height">
+		<div class="card-plate">
+		    <div data-w-id="5ee07729-a8de-1800-31cf-680ec35708bb" class="dropdown-item-trigger">
+			<div class="dropdown-heading-wrapper"><img src="{% static 'img/baseline-sort-24px.svg' %}" alt="" class="icon-left">
+			    <h3 class="card-heading-1 with-icon">Resources &amp; Services</h3>
+			</div><img src="{% static 'img/baseline-arrow_drop_down-24px.svg' %}" alt="" class="dropdown-arrow"></div>
+			    <div class="dropdown-item-content" id="dataset-category"  style="display:none">
+				<dataset-item
+			            v-for="c in category"
+			            v-bind:key="c.name"
+			            v-bind:dataset="c"></dataset-item>
+			    </div>
 		</div>
-		<div class="collapsible-body" style="overflow-y: scroll;">
-		    <h1 class="wazi-header wazi-text">Map Data Source</h1>
-		    <div class="dropdownRelease" style="background:#F3F3F3;">
-			<button class="dropbtn">
-			    {{ primary_releases.active.name }} {{ primary_releases.active.year }} <i class="fa fa-caret-down"aria-hidden="true"></i>
-			</button>
-			{% if primary_releases.other %}
-			<div id="myDropdown" class="release-content">
-			    {% for release in primary_releases.other %}
-			    <a style="font-size: 16px;" href="{{ request.path }}?release={{release.year}}">{{ release.name }} {{ release.year }}
-			    </a>
-			    {% endfor %}
-			</div>
-			{% endif %}
-			
-		    </div>
-		    <h1 class="wazi-header wazi-text">Service & Resources</h1>
-		    <ul id="dataset-category" class="collapsible wazi-collapsible">
-				    <dataset-item
-			        v-for="c in category"
-			        v-bind:key="c.name"
-			        v-bind:dataset="c"></dataset-item>
-		    </ul>
-		</div>
-	    </li>
-				</ul>
-	<ul class="collapsible" style="background-color:white;float:right">
-	    <li>
-		<div class="collapsible-header">
-		    <h1 class="wazi-header">
-			{{ geography.this.short_name }}<i class="fa fa-caret-down" style="float:right;top:50px" aria-hidden="true"></i>
-
-		    </h1>
-		</div>
-		<div class="collapsible-body">
-		    <div>
-			<p style="padding:0;margin-left:16px">
-			    <span class="wazi-text">
-				A {{ geography.this.geo_level|capfirst }} in
-			    </span> </br>
-			    
-			    {% if geography.parents %}
-			    <span>
-				{% for level, g in geography.parents.items %}
-				<a class="geography" href="/profiles/{{ g.full_geoid }}-{{ g.short_name|slugify }}/">
-				    {{ g.short_name }}
-				</a>{% if not forloop.last %}{%endif%}
-				{% endfor %}
-			    </span>
-			    {% endif %}
-			    
-			</p>
-		    </div>
-		    <table>
-			<tr style="border-bottom: 1px solid grey;">
-			    <td><span class="region">Older Adults above the age of 60</span></td>
-			    <td><span class="region">{{ demographics.senior_citizen_total_population.values.this|floatformat:"0" }}</span></td>
-			</tr>
-			<tr style="border-bottom: 1px solid grey;">
-			    <td><span class="region">Region Size (km<sup>2</sup>)</span></td>
-			    <td><span class="region">{% if geography.this.square_kms < 1.0 %}{{ geography.this.square_kms|floatformat:"3" }}{% else %}{{ geography.this.square_kms|floatformat:"1" }}{% endif %}</span></td>
-			</tr>
-			{% if demographics.population_density.values.this %}
-			<tr>
-			    <td>
-				<span class="region">Density (people/km<sup>2</sup>)
-				</span>
-			    </td>
-			    <td>
-				<span class="region">{{ demographics.population_density.values.this|floatformat:"1" }}
-				</span>
-			    </td>
-			</tr>
-			{% endif %}
-			
-		    </table>
-		</div>
-	    </li>
-	    <li id="contact" v-bind:style="contactDisplay">
-		<div class="collapsible-header">
-		    <h1 class="wazi-header">
-			[[name]]<i class="fa fa-caret-down" style="float:right;top:50px" aria-hidden="true"></i>
-
-		    </h1>
-		</div>
-		<div class="collapsible-body">
-		    <div>
-			<p style="padding:0;margin-left:16px">
-			    <span class="wazi-text">
-				Contact Information
-			    </span> 
-			</p>
-		    </div>
-		    <table>
-			<tr style="border-bottom: 1px solid grey;">
-			    <td><span class="region">Address</span></td>
-			    <td><span class="region">[[address]]</span></td>
-			</tr>
-			<tr style="border-bottom: 1px solid grey;">
-			    <td><span class="region">Email</span></td>
-			    <td><span class="region">[[email]]</span></td>
-			</tr>
-			<tr style="border-bottom: 1px solid grey;">
-			    <td><span class="region">Website</span></td>
-			    <td><span class="region">[[website]]</span></td>
-			</tr>
-			<tr style="border-bottom: 1px solid grey;">
-			    <td><span class="region">Phone Number</span></td>
-			    <td><span class="region">[[phone]]</span></td>
-			</tr>
-			<tr style="border-bottom: 1px solid grey;">
-			    <td><span class="region">Latitude</span></td>
-			    <td><span class="region">[[latitude]]</span></td>
-			</tr>
-			<tr style="border-bottom: 1px solid grey;">
-			    <td><span class="region">Longitude</span></td>
-			    <td><span class="region">[[longitude]]</span></td>
-			</tr>
-			
-		    </table>
-		</div>
-	    </li>
-	    
-	</ul>
+	    </div>
+	</div>
+	<div v-bind:style="{display:display}" class="point-data" id="contact">
+			    <div class="card-plate">
+				    <div class="card-content">
+				    <div class="point-data-heading">
+					<h3 class="card-heading-1">[[name]] </h3>
+					<img src="{% static 'img/baseline-close-24px.svg' %}" alt="" class="close" v-on:click="closePoint()">
+				    </div>
+				    <div class="point-data-content">
+					    <div class="card-list-item">
+					    <div class="card-list-item-title"><img src="{% static 'img/baseline-location_on-24px.svg' %}" alt="" class="grey-icon-left">
+						    <h5 class="card-heading-3 indent">Address:</h5>
+			    </div>
+					    <div class="card-list-item-content">
+						<a href="#" target="_blank" class="point-data-link-block w-inline-block">
+						    <div class="text-block">[[address]]</div>
+						</a>
+					    </div>
+					    </div>
+					    <div class="card-list-item">
+						<div class="card-list-item-title"><img src="{% static 'img/baseline-call-24px.svg' %}" alt="" class="grey-icon-left">
+						    <h5 class="card-heading-3 indent">Telephone:</h5>
+						</div>
+						<div class="card-list-item-content">
+						    <a href="#" class="point-data-link-block w-inline-block">
+							<div class="text-block">[[phone]]</div>
+						    </a>
+						</div>
+					    </div>
+					    <div class="card-list-item">
+						<div class="card-list-item-title"><img src="{% static 'img/baseline-mail_outline-24px.svg' %}" alt="" class="grey-icon-left">
+						    <h5 class="card-heading-3 indent">Email:</h5>
+						</div>
+						<div class="card-list-item-content">
+						    <a href="#" class="point-data-link-block w-inline-block">
+							<div class="text-block">[[email]]</div>
+						    </a>
+						</div>
+					    </div>
+					    <div class="card-list-item last">
+						<div class="card-list-item-title"><img src="{% static 'img/baseline-web-24px.svg' %}" alt="" class="grey-icon-left">
+						    <h5 class="card-heading-3 indent">Website:</h5>
+						</div>
+						<div class="card-list-item-content">
+						    <a href="#" target="_blank" class="point-data-link-block w-inline-block">
+							<div class="text-block">[[website]]</div>
+						    </a>
+						</div>
+					    </div>
+				    </div>
+				    </div>
+			    </div>
+	</div>
     </div>
 </div>
 
@@ -259,114 +117,200 @@
 
 
 {% block profile_detail %}
-<article id="demographics" class="clearfix">
-    <header class="section-contents">
-        <h1><i class="fa fa-fw fa-user"></i> Demographics</h1>
-    </header>
-    <div class="section-container">
-
-        <section class="clearfix stat-row">
-            <h2 class="header-for-columns"><a class="permalink" href="#age" id="age">Population <i class="fa fa-link"></i></a></h2>
-	    <div class="column-quarter">
-                {% include 'profile/_blocks/_stat_list.html' with stat=demographics.total_population stat_type='number' %}
-            </div>
-            <div class="column-quarter">
-                {% include 'profile/_blocks/_stat_list.html' with stat=demographics.senior_citizen_total_population stat_type='number' %}
-            </div>
-            <div class="column-half" id="chart-histogram-demographics-age_group_distribution" data-stat-type="scaled-percentage" data-chart-title="Population by age range"></div>
-        </section>
-        <section class="clearfix stat-row">
-	    <div class="column-quarter">
-                {% include 'profile/_blocks/_stat_list.html' with stat=demographics.total_population_perc stat_type='percentage' %}
-            </div>
-            <div class="column-half">
-                <div id="chart-column-demographics-population_group_distribution" data-stat-type="scaled-percentage" data-chart-title="Older Adults population by race"></div>
-            </div>
-            <div class="column-quarter">
-                <div id="chart-pie-demographics-sex_ratio" data-stat-type="percentage" data-initial-sort="-value" data-chart-title="Older Adults population by gender"></div>
-            </div>
-        </section>
-        <section class="clearfix stat-row">
-            <h2 class="header-for-columns"><a class="permalink" href="#language" id="language">Language <i class="fa fa-link"></i></a></h2>
-            <div class="column-quarter">
-                {% include 'profile/_blocks/_stat_list.html' with stat=demographics.language_most_spoken stat_type='name' stat_name='Language most spoken at home' %}
-            </div>
-            <div class="column-three-quarters">
-                <div id="chart-histogram-demographics-language_distribution" data-stat-type="scaled-percentage" data-chart-title="Older Adults by language most spoken at home"></div>
-            </div>
-	</section>
-	<section class="clearfix stat-row">
-	    <h2 class="header-for-columns">
-		<a class="permalink" href="#citizenship" id="citizenship"> Citizenship
-		</a>
-	    </h2>
-	    <div class="column-quarter">
-                {% include 'profile/_blocks/_stat_list.html' with stat=demographics.citizen_sa stat_type='percent' stat_name='Language most spoken at home' %}
-	    </div>
-	    <div class="column-three-quarters">
-		<div id="chart-histogram-demographics-citizenship" data-stat-type="scaled-percentage" data-chart-title="South African Citizenship">
-		</div>
-	    </div>
-	</section>
-	<section class="clearfix stat-row">
-	    <h2 class="header-for-columns">
-		<a class="permalink" href="#migration" id="migration"> Migration
-		</a>
-	    </h2>
-	    <div class="column-quarter">
-                {% include 'profile/_blocks/_stat_list.html' with stat=demographics.province_of_birth_total stat_type='number' stat_name='' %}
-	    </div>
-	    <div class="column-three-quarters">
-                <div id="chart-histogram-demographics-province_of_birth_dist" data-stat-type="scaled-percentage" data-chart-title="Province of birth">
+<div class="data-sections-wrapper">
+    <div data-collapse="none" data-animation="default" data-duration="400" data-no-scroll="1" class="data-navbar w-nav">
+	<div class="links-to-data">
+            <div class="responsive-container">
+		<div class="location-data-nav">
+		    <div class="data-links">
+			<div class="nav-discription">available data:</div>
+			<div class="data-links-wrapper">
+			    {% for profile,value in indicator.items %}
+			    <a href="{{profile}}" class="data-link w-inline-block">
+				{% if profile == 'Demograhics' %}
+				<img src="{% static 'img/people.svg' %}" width="24" height="24" alt="" class="data-link-icon">
+				{% elif profile == 'Health' %}
+				<img src="{% static 'img/health.svg' %}" width="24" height="24" alt="" class="data-link-icon">
+				{% else %}
+				<img src="{% static 'img/money.svg' %}" width="24" height="24" alt="" class="data-link-icon">
+				{% endif %}
+				<h4 class="data-link-title">{{profile}}</h4></a>
+			    {% endfor %}
+		    </div>
+		    <div class="data-source">
+			<div class="nav-discription">Data source:</div>
+			<div>
+			    <div data-delay="0" class="dropdown w-dropdown">
+				<div class="dropdown-toggle-2 w-dropdown-toggle">
+				    <div id="current-data-source" class="current-data-source">
+					{{ primary_releases.active.name }} {{ primary_releases.active.year }}
+				    </div><img src="{% static 'img/Expand-less.svg' %}" alt="" class="image"></div>
+				    {% if primary_release.other %}
+				    <nav class="dropdown-list-2 w-dropdown-list">
+					{% for release in primary_releases.other %}
+						<a href="{{ request.path }}?release={{release.year}}" class="dropdown-link w-dropdown-link">{{ release.name }} {{ release.year }}</a>
+						
+						{% endfor %}
+				    </nav>
+					{% endif %}
+			    </div>
+			</div>
+		    </div>
 		</div>
             </div>
-	</section>
+	</div>
     </div>
-</article>
-<article id="health" class="clearfix">
-    <header class="section-contents">
-        <h1><i class="fa fa-fw fa-heartbeat"></i> Older Adult health and wellness</h1>
-    </header>
-    <div class="section-container">
-        <section class="clearfix stat-row">
-            <h2 class="header-for-columns"><a class="permalink" href="#general_health" id="general_health">General health and functioning<i class="fa fa-link"></i></a></h2>
-            <aside class="multi-line-header">
-                <p>* This includes seniors with both mild and severe difficulties</p>
-            </aside>
-            <div class="column-third">
-                {% include 'profile/_blocks/_stat_list.html' with stat=health.senior_seeing_perc stat_type='percentage' decimals='-1' %}
+                </div>
+    {% for profile, values in indicator.items %}
+    <section id="{{profile}}" class="data-section">
+	<div class="responsive-container">
+            <div class="section-header">
+		<div class="section-title">
+		    {% if profile == 'Demographics' %}
+		    <img src="{% static 'img/people.svg' %}" alt="" class="data-section-icon">
+		    {% elif profile == 'Health' %}
+		    <img src="{% static 'img/health.svg' %}" alt="" class="data-section-icon">
+		    {% else %}
+		    <img src="{% static 'img/money.svg' %}" alt="" class="data-section-icon">
+		    {% endif %}
+		    <h3 class="data-section-title with-icon">{{profile}}</h3>
+		</div>
+		<div class="small-button-wrapper"><a href="#" class="small-button light w-inline-block"><img src="{% static 'img/share-white.svg' %}" alt="" class="small-icon"><div class="button-label hidden-mobile">Share dataset</div></a></div>
             </div>
-            <div class="column-two-thirds" id="chart-histogram-health-senior_seeing_difficulty" data-stat-type="scaled-percentage" data-chart-title="older adults experiencing difficulty seeing"></div>
-	    <div class="column-third">
-                {% include 'profile/_blocks/_stat_list.html' with stat=health.senior_selfcare_perc stat_type='percentage' decimals='-1' %}
+            <div class="data-section-wrapper">
+		<div data-collapse="none" data-animation="default" data-duration="400" class="section-navbar w-nav">
+		    <div class="section-links-wrapper">
+			{% for indicator in values %}
+			<a href="#{{indicator.header}}" class="section-link w-inline-block">
+			    <div class="section-link-label">{{indicator.header}}</div>
+			</a>
+			{% endfor %}
+		    </div>
+		</div>
+		<div class="section-content-wrapper">
+		    {% for indicator in values %}
+		    <section id="{{indicator.header}}" class="section-content">
+			<div class="section-content-block">
+			    <div class="section-content-block-header">
+				<h4 class="content-block-heading">{{indicator.header}}</h4>
+				<div class="small-button-wrapper">
+				    <a href="#" class="small-button blue w-inline-block">
+					<img src="{% static 'img/share.svg' %}" alt="" class="small-icon">
+					<div class="button-label hidden-mobile">Share data</div>
+				    </a>
+				</div>
+			    </div>
+			    <div class="section-content-block-body">
+				<div class="content-block-value-wrapper">
+				    <div class="content-block-value">
+					{% if indicator.column_field %}
+					<div class="numeric-value">
+					    <span class="large-number">{{indicator.column_field}}%</span>
+					</div>
+					{% else %}
+					{% if indicator.distribution_maxima.name %}
+					<div class="numeric-value">
+					    <span class="large-number">{{indicator.distribution_maxima.name}}</span>
+					</div>
+					{% else %}
+					<div class="numeric-value">
+					    <span class="large-number">{{indicator.distribution_maxima}}</span>
+					</div>
+					{% endif %}
+					{% endif %}
+					<div class="value-description">{{indicator.summary}}</div>
+				    </div>
+				</div>
+				<div class="charts-wrapper">
+				    <div class="chart">
+					<div class="chart-header">
+					    <h5 class="chart-title">{{indicator.chart_title}}</h5>
+					    <div class="chart-options">
+						<div class="small-button-wrapper">
+						    <a href="#" class="small-button hidden-mobile w-inline-block">
+							<img src="{% static 'img/map-blue.svg' %}" alt="" class="small-icon">
+							<div class="button-label black">Map dataset</div>
+						    </a>
+						    <a href="#" class="small-button w-inline-block">
+							<img src="{% static 'img/baseline-more_vert-24px.svg' %}" alt="" class="small-icon">
+						    </a>
+						</div>
+					    </div>
+					</div>
+					<div class="chart-body">
+					    <div class="chart-bars-wrapper">
+						{% for name,stats in indicator.stat_values.items %}
+						{% if name != 'metadata' %}
+						<div class="chart-bar _{{forloop.counter}}">
+						    <div class="chart-label-wrapper">
+							<div class="chart-label column">{{name}}</div>
+						    </div>
+						    <div class="chart-value-wrapper">
+							<div class="chart-label">{{stats.values.this}}%</div>
+						    </div>
+						    <div class="chart-hover-wrapper">
+							<div class="chart-hover-card">
+							    <div class="chart-hover-text">{{stats.numerators.this}}</div>
+							    <div class="chart-hover-card-arrow"></div>
+							</div>
+						    </div>
+						</div>
+						{% endif %}
+						{% endfor %}
+					    </div>
+					</div>
+				    </div>
+				    {% if indicator.grouped %}
+				    <div class="chart">
+					<div class="chart-header">
+					    <h5 class="chart-title">{{indicator.group_result.chart_title}}</h5>
+					    <div class="chart-options">
+						<div class="small-button-wrapper">
+						    <a href="#" class="small-button hidden-mobile w-inline-block">
+							<img src="{% static 'img/map-blue.svg' %}" alt="" class="small-icon">
+							<div class="button-label black">Map dataset</div>
+						    </a>
+						    <a href="#" class="small-button w-inline-block">
+							<img src="{% static 'img/baseline-more_vert-24px.svg' %}" alt="" class="small-icon">
+						    </a>
+						</div>
+					    </div>
+					</div>
+					<div class="chart-body">
+					    <div class="chart-bars-wrapper">
+						{% for name,stats in indicator.group_result.stat_values.items %}
+						{% if name != 'metadata' %}
+						<div class="chart-bar _{{forloop.counter}}">
+						    <div class="chart-label-wrapper">
+							<div class="chart-label column">{{name}}</div>
+						    </div>
+						    <div class="chart-value-wrapper">
+							<div class="chart-label">{{stats.values.this}}%</div>
+						    </div>
+						    <div class="chart-hover-wrapper">
+							<div class="chart-hover-card">
+							    <div class="chart-hover-text">{{stats.numerators.this}}</div>
+							    <div class="chart-hover-card-arrow"></div>
+							</div>
+						    </div>
+						</div>
+						{% endif %}
+						{% endfor %}
+					    </div>
+					</div>
+				    </div>
+				    {% endif %}
+				</div>
+			    </div>
+			</div>
+		    </section>
+		    {% endfor %}
+		</div>
             </div>
-            <div class="column-two-thirds" id="chart-histogram-health-senior_selfcare_difficulty" data-stat-type="scaled-percentage" data-chart-title="older adults experiencing difficulty talking care of themselves"></div>
-	    <div class="column-third">
-                {% include 'profile/_blocks/_stat_list.html' with stat=health.senior_walking_perc stat_type='percentage' decimals='-1' %}
-            </div>
-            <div class="column-two-thirds" id="chart-histogram-health-senior_walking_difficulty" data-stat-type="scaled-percentage" data-chart-title="older adults experiencing difficulty walking or climbing stairs"></div>
-	    <div class="column-third">
-                {% include 'profile/_blocks/_stat_list.html' with stat=health.senior_hearing_perc stat_type='percentage' decimals='-1' %}
-            </div>
-            <div class="column-two-thirds" id="chart-histogram-health-senior_hearing_difficulty" data-stat-type="scaled-percentage" data-chart-title="older adults experiencing difficulty hearing"></div>
+	</div>
         </section>
-    </div>
-</article>
-
-<article id="economics" class="clearfix">
-    <header class="section-contents">
-        <h1><i class="fa fa-fw fa-money"></i> Economics</h1>
-    </header>
-    <div class="section-container">
-	<section class="clearfix stat-row">
-            <h2><a class="permalink" href="#income" id="income">Individual Income<i class="fa fa-link"></i></a></h2>
-            <aside>
-		Average monthly income is <a href="/help#faq-average-hh-income">a median estimate</a>, be careful with this value.
-            </aside>
-            <div class="column-two-thirds" id="chart-histogram-economics-senior_individual_income" data-chart-title="older adults monthly income" data-stat-type="scaled-percentage"></div>
-	</section>
-    </div>
-</article>
+    {% endfor %}
+</div>
 
 
 {% block citations %}
