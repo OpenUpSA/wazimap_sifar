@@ -1,31 +1,121 @@
-{% extends '_base.html' %}
 {% load staticfiles %}
 {% load sass_tags %}
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html data-wf-site="5d3698450ec6033a9ae18ab8" data-wf-page="5d3698450ec6031647e18ab9" class="w-mod-js w-mod-ix wf-lato-n1-active wf-lato-i1-active wf-lato-n3-active wf-lato-i3-active wf-lato-n4-active wf-lato-i4-active wf-lato-n7-active wf-lato-i7-active wf-lato-n9-active wf-lato-i9-active wf-oswald-n4-active wf-oswald-n2-active wf-oswald-n6-active wf-oswald-n5-active wf-oswald-n3-active wf-oswald-n7-active wf-active no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title>{% block head_title %}{{ WAZIMAP.name }}{% endblock %}</title>
+        <meta name="description" content="{% block head_meta_description %}{% endblock %}">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        {% block head_css %}
+        <link rel="stylesheet" href="{% sass_src 'css/wazimap.scss' %}">
+	<link rel="stylesheet" href="{% static 'css/vendor/featherlight.min.css' %}">
+	<link rel="stylesheet" href="{% sass_src 'css/wazimap_za.scss' %}">
+	<link rel="stylesheet" href="{% static 'css/webflow.normalize.css' %}">
+	<link rel="stylesheet" href="{% static 'css/webflow.css' %}">
+	<link rel="stylesheet" href="{% static 'css/wazimap.webflow.css' %}">
+        {% endblock head_css %}
+        {% block head_css_extra %}{% endblock %}
+        {% block head_javascript %}
+        <script src="//cdn.jsdelivr.net/g/modernizr@2.7,respond@1.4"></script>
+        {% block head_javascript_extra %}{% endblock %}{% endblock %}
+        <!-- Begin Google Analytics -->
+        <script>
+         (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+             (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+				  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+         })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
-{% block head_css %}
-<link rel="stylesheet" href="{% static 'css/vendor/featherlight.min.css' %}">
-<link rel="stylesheet" href="{% sass_src 'css/wazimap_za.scss' %}">
-{% endblock %}
+         {% if WAZIMAP.ga_tracking_id %}
+         ga('create', '{{ WAZIMAP.ga_tracking_id }}', 'auto');
+         {% endif %}
+         ga('send', 'pageview');
 
+        </script>
+        <!-- End Google Analytics -->
+        {% block favicon %}
+        <link rel="shortcut icon" href="{{ STATIC_URL }}img/icons/favicon.ico" />
+        {% endblock favicon %}
+        <link rel="apple-touch-icon-precomposed" href="{{ STATIC_URL }}img/icons/touch-icon-144x144.png" sizes="144x144" />
+        {% block head_facebook_tags %}{% endblock %}
+        {% block head_twitter_tags %}{% endblock %}
+        <!-- Page generated: {% now "Y-m-d H:i:s.u" %} -->
+    </head>
+    <body id="{% block body_id %}{% endblock %}" class="{% block body_class %}{% endblock %}">
+        {% block body %}
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
+        <![endif]-->
 
-{% block favicon %}
-{% endblock %}
+        {% block header %}
+	<header id="page-header">
+	    <div data-collapse="tiny" data-animation="default" data-duration="400" data-no-scroll="1" class="header-navbar w-nav">
+		<div class="responsive-container header-nav">
+		    <div class="nav-items">
+			<a href="{% url 'homepage' %}" class="brand w-nav-brand"><img src="{% static 'img/sifar-logo-white.svg' %}" alt="" class="image-2"></a>
+			<nav role="navigation" class="nav-menu w-nav-menu">
+			    <a href="/about" class="header-nav-link w-nav-link">About</a>
+			    <a href="/help" class="header-nav-link w-nav-link">Help</a>
+			    <a href="/admin" class="header-nav-link w-nav-link">Admin</a></nav>
+			<div class="menu-button w-nav-button"><img src="images/menu-white.svg" alt="" class="image-5"></div>
+		    </div>
+		</div>
+	    </div>
+	</header>
+            {% block header_content %}{% endblock header_content %}
+            {% endblock %}
 
+            {% block content_container %}
+            <div class="content-container wrapper clearfix">
+		{% block content %}{% endblock %}
+	    </div>
+            {% endblock %}
 
-{% block header_logo %}
-<img src="{% static 'img/sifar-logo-white.svg' %}">
-{% endblock %}
+            <footer id="page-footer">
+		<section class="wrapper footer-container clearfix">
+		{% block footer_content %}
+		{% include '_footer.html' %}
+		{% endblock footer_content %}
+            </section>
 
-{% block header_menu %}
-<li><a href="/about">About</a></li>
-<li><a href="/help">Help</a></li>
-<li><a href="/admin">Admin</a>
-{% endblock %}
+		<section class="wrapper clearfix">
+		<p class="attribution">
+				{% block footer-attribution %}
+				{{ WAZIMAP.name }} is built on <a href="http://wazimap.readthedocs.org/">Wazimap</a>, an open source platform by <a href="https://openup.org.za/">OpenUp</a> and <a href="http://www.mediamonitoringafrica.org/">Media Monitoring Africa</a> for making census data more understandable. Wazimap is based on <a href="https://censusreporter.org/">Census Reporter</a> which was funded by a Knight News Challenge grant.
+				{% endblock %}
+		</p>
+            </section>
+	    </footer>
+            {% endblock body %}
 
-{% block header_branding %}
-{% endblock %}
+            {% include 'settings_js.html' %}
 
-{% block body_javascript_extra %}
-{{ block.super }}
+            {% block body_javascript %}
+            <!--[if gte IE 9]><!-->
+            <script src="//cdn.jsdelivr.net/g/jquery@2.1,d3js@3.4,typeahead.js@0.10.2(typeahead.bundle.min.js),underscorejs@1.6,spinjs@1.3,handlebarsjs@1.3(handlebars.min.js)"></script>
+            <!--<![endif]-->
 
-{% endblock %}
+            <!-- local patched version of r2d3 handles percentage widths, HTML overlays -->
+            <!--[if lte IE 8]>
+		<script src="{{ STATIC_URL }}js/vendor/r2d3.js" charset="utf-8"></script>
+		<script src="//cdnjs.cloudflare.com/ajax/libs/aight/1.2.2/aight.min.js"></script>
+		<script src="//cdnjs.cloudflare.com/ajax/libs/aight/1.2.2/aight.d3.min.js"></script>
+		<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.9.1/jquery.js"></script>
+		<script src="//cdn.jsdelivr.net/g/typeahead.js@0.10.2(typeahead.bundle.min.js),underscorejs@1.6,spinjs@1.3,handlebarsjs@1.3(handlebars.min.js)"></script>
+            <![endif]-->
+
+        <!--[if lte IE 9]>
+            <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-ajaxtransport-xdomainrequest/1.0.1/jquery.xdomainrequest.min.js"></script>
+        <![endif]-->
+
+        <script src="{% static 'js/app.js' %}"></script>
+        <script src="{% static 'js/glossary.js' %}"></script>
+        <script src="{% static 'js/widget.geo.select.js' %}"></script>
+        {% block body_javascript_extra %}{% endblock %}{% endblock body_javascript %}
+    </body>
+</html>
