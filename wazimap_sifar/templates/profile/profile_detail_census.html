@@ -44,9 +44,9 @@
     </div>
 </div>
 
-<div id="cover-map">
+<div id="cover-map" style="margin-bottom:0em">
     <div id="slippy-map"></div>
-    <div id="cover-profile" class="wrapper">
+    <div id="cover-profile" class="wrapper" style="width:auto">
 	<div class="map-settings">
 	    <div class="map-height">
 		<div class="card-plate">
@@ -63,7 +63,7 @@
 		</div>
 	    </div>
 	</div>
-	<div v-bind:style="{display:display}" class="point-data" id="contact">
+	<div v-bind:style="{display:display}" class="point-data" id="contact" style="right:2%">
 	    <div class="card-plate">
 		<div class="card-content">
 		    <div class="point-data-heading">
@@ -107,14 +107,14 @@
 			    </div>
 			    <div class="card-list-item-content">
 				<a href="#" target="_blank" class="point-data-link-block w-inline-block">
-				    <div class="text-block">[[website]]</div>
+					    <div class="text-block">[[website]]</div>
 				</a>
 			    </div>
 			</div>
 		    </div>
 		</div>
 	    </div>
-	</div>
+		</div>
     </div>
 </div>
 
@@ -122,200 +122,198 @@
 
 
 {% block profile_detail %}
-<div class="data-sections-wrapper">
-    <div data-collapse="none" data-animation="default" data-duration="400" data-no-scroll="1" class="data-navbar w-nav">
-	<div class="links-to-data">
-            <div class="responsive-container">
-		<div class="location-data-nav">
-		    <div class="data-links">
-			<div class="nav-discription">available data:</div>
-			<div class="data-links-wrapper">
-			    {% for profile,value in indicator.items %}
-			    <a href="{{profile}}" class="data-link w-inline-block">
-				{% if profile == 'Demograhics' %}
-				<img src="{% static 'img/people.svg' %}" width="24" height="24" alt="" class="data-link-icon">
-				{% elif profile == 'Health' %}
-				<img src="{% static 'img/health.svg' %}" width="24" height="24" alt="" class="data-link-icon">
-				{% else %}
-				<img src="{% static 'img/money.svg' %}" width="24" height="24" alt="" class="data-link-icon">
-				{% endif %}
-				<h4 class="data-link-title">{{profile}}</h4></a>
-			    {% endfor %}
-			</div>
-			<div class="data-source">
-			    <div class="nav-discription">Data source:</div>
-			    <div>
-				<div data-delay="0" class="dropdown w-dropdown">
-				    <div class="dropdown-toggle-2 w-dropdown-toggle">
-					<div id="current-data-source" class="current-data-source">
-					    {{ primary_releases.active.name }} {{ primary_releases.active.year }}
-					</div><img src="{% static 'img/Expand-less.svg' %}" alt="" class="image"></div>
-					{% if primary_release.other %}
-					<nav class="dropdown-list-2 w-dropdown-list">
-					    {% for release in primary_releases.other %}
-					    <a href="{{ request.path }}?release={{release.year}}" class="dropdown-link w-dropdown-link">{{ release.name }} {{ release.year }}</a>
+<div data-collapse="none" data-animation="default" data-duration="400" data-no-scroll="1" class="data-navbar w-nav">
+    <div class="links-to-data">
+        <div class="responsive-container">
+	    <div class="location-data-nav">
+		<div class="data-links">
+		    <div class="nav-discription">available data:</div>
+		    <div class="data-links-wrapper">
+			{% for profile,value in indicator.items %}
+			<a href="{{profile}}" class="data-link w-inline-block">
+			    {% if profile == 'Demograhics' %}
+			    <img src="{% static 'img/people.svg' %}" width="24" height="24" alt="" class="data-link-icon">
+			    {% elif profile == 'Health' %}
+			    <img src="{% static 'img/health.svg' %}" width="24" height="24" alt="" class="data-link-icon">
+			    {% else %}
+			    <img src="{% static 'img/money.svg' %}" width="24" height="24" alt="" class="data-link-icon">
+			    {% endif %}
+						<h4 class="data-link-title">{{profile}}</h4></a>
+						{% endfor %}
+				    </div>
+		</div>
+		<div class="data-source">
+		    <div class="nav-discription">Data source:</div>
+		    <div>
+			<div data-delay="0" class="dropdown w-dropdown">
+			    <div class="dropdown-toggle-2 w-dropdown-toggle">
+				<div id="current-data-source" class="current-data-source">
+				    {{ primary_releases.active.name }} {{ primary_releases.active.year }}
+				</div><img src="{% static 'img/Expand-less.svg' %}" alt="" class="image"></div>
+				{% if primary_release.other %}
+				<nav class="dropdown-list-2 w-dropdown-list">
+				    {% for release in primary_releases.other %}
+				    <a href="{{ request.path }}?release={{release.year}}" class="dropdown-link w-dropdown-link">{{ release.name }} {{ release.year }}</a>
 
-					    {% endfor %}
-					</nav>
-					{% endif %}
-				</div>
-			    </div>
+				    {% endfor %}
+				</nav>
+				{% endif %}
 			</div>
 		    </div>
 		</div>
 	    </div>
 	</div>
     </div>
-    {% for profile, values in indicator.items %}
-    <section id="{{profile}}" class="data-section">
-	<div class="responsive-container">
-            <div class="section-header">
-		<div class="section-title">
-		    {% if profile == 'Demographics' %}
-		    <img src="{% static 'img/people.svg' %}" alt="" class="data-section-icon">
-		    {% elif profile == 'Health' %}
-		    <img src="{% static 'img/health.svg' %}" alt="" class="data-section-icon">
-		    {% else %}
-		    <img src="{% static 'img/money.svg' %}" alt="" class="data-section-icon">
-		    {% endif %}
-		    <h3 class="data-section-title with-icon">{{profile}}</h3>
-		</div>
-		<div class="small-button-wrapper"><a href="#" class="small-button light w-inline-block"><img src="{% static 'img/share-white.svg' %}" alt="" class="small-icon"><div class="button-label hidden-mobile">Share dataset</div></a></div>
-            </div>
-            <div class="data-section-wrapper">
-		<div data-collapse="none" data-animation="default" data-duration="400" class="section-navbar w-nav">
-		    <div class="section-links-wrapper">
-			{% for indicator in values %}
-			<a href="#{{indicator.header}}" class="section-link w-inline-block">
-			    <div class="section-link-label">{{indicator.header}}</div>
-			</a>
-			{% endfor %}
-		    </div>
-		</div>
-		<div class="section-content-wrapper">
+</div>
+{% for profile, values in indicator.items %}
+<section id="{{profile}}" class="data-section">
+    <div class="responsive-container">
+        <div class="section-header">
+	    <div class="section-title">
+		{% if profile == 'Demographics' %}
+		<img src="{% static 'img/people.svg' %}" alt="" class="data-section-icon">
+		{% elif profile == 'Health' %}
+		<img src="{% static 'img/health.svg' %}" alt="" class="data-section-icon">
+		{% else %}
+		<img src="{% static 'img/money.svg' %}" alt="" class="data-section-icon">
+		{% endif %}
+		<h3 class="data-section-title with-icon">{{profile}}</h3>
+	    </div>
+	    <div class="small-button-wrapper"><a href="#" class="small-button light w-inline-block"><img src="{% static 'img/share-white.svg' %}" alt="" class="small-icon"><div class="button-label hidden-mobile">Share dataset</div></a></div>
+        </div>
+        <div class="data-section-wrapper">
+	    <div data-collapse="none" data-animation="default" data-duration="400" class="section-navbar w-nav">
+		<div class="section-links-wrapper">
 		    {% for indicator in values %}
-		    <section id="{{indicator.header}}" class="section-content">
-			<div class="section-content-block">
-			    <div class="section-content-block-header">
-				<h4 class="content-block-heading">{{indicator.header}}</h4>
-				<div class="small-button-wrapper">
-				    <a href="#" class="small-button blue w-inline-block">
-					<img src="{% static 'img/share.svg' %}" alt="" class="small-icon">
-					<div class="button-label hidden-mobile">Share data</div>
-				    </a>
-				</div>
-			    </div>
-			    <div class="section-content-block-body">
-				<div class="content-block-value-wrapper">
-				    <div class="content-block-value">
-					{% if indicator.column_field %}
-					<div class="numeric-value">
-					    <span class="large-number">{{indicator.column_field}}%</span>
-					</div>
-					{% else %}
-					{% if indicator.distribution_maxima.name %}
-					<div class="numeric-value">
-					    <span class="large-number">{{indicator.distribution_maxima.name}}</span>
-					</div>
-					{% else %}
-					<div class="numeric-value">
-					    <span class="large-number">{{indicator.distribution_maxima}}</span>
-					</div>
-					{% endif %}
-					{% endif %}
-					<div class="value-description">{{indicator.summary}}</div>
-				    </div>
-				</div>
-				<div class="charts-wrapper">
-				    <div class="chart">
-					<div class="chart-header">
-					    <h5 class="chart-title">{{indicator.chart_title}}</h5>
-					    <div class="chart-options">
-						<div class="small-button-wrapper">
-						    <a href="/data/map/?table={{indicator.stat_values.metadata.table_id}}&primary_geo_id={{geography.this.full_geoid}}&geo_ids={{geography.this.geo_level}}|{{geography.this.parent_geoid}}&release={{indicator.stat_values.metadata.year}}" class="small-button hidden-mobile w-inline-block">
-							<img src="{% static 'img/map-blue.svg' %}" alt="" class="small-icon">
-							<div class="button-label black">Map dataset</div>
-						    </a>
-						    <a href="#" class="small-button w-inline-block">
-							<img src="{% static 'img/baseline-more_vert-24px.svg' %}" alt="" class="small-icon">
-						    </a>
-						</div>
-					    </div>
-					</div>
-					<div class="chart-body">
-					    <div class="chart-bars-wrapper">
-						{% for name,stats in indicator.stat_values.items %}
-						{% if name != 'metadata' %}
-						<div class="chart-bar _{{forloop.counter}}">
-						    <div class="chart-label-wrapper">
-							<div class="chart-label column">{{name}}</div>
-						    </div>
-						    <div class="chart-value-wrapper">
-							<div class="chart-label">{{stats.values.this}}%</div>
-						    </div>
-						    <div class="chart-hover-wrapper">
-							<div class="chart-hover-card">
-							    <div class="chart-hover-text">{{stats.numerators.this}}</div>
-							    <div class="chart-hover-card-arrow"></div>
-							</div>
-						    </div>
-						</div>
-						{% endif %}
-						{% endfor %}
-					    </div>
-					</div>
-				    </div>
-				    {% if indicator.has_children %}
-				    {% for child in indicator.children %}
-				    <div class="chart">
-					<div class="chart-header">
-					    <h5 class="chart-title">{{child.chart_title}}</h5>
-					    <div class="chart-options">
-						<div class="small-button-wrapper">
-						    <a href="/data/map/?table={{child.stat_values.metadata.table_id}}&primary_geo_id={{geography.this.full_geoid}}&geo_ids={{geography.this.geo_level}}|{{geography.this.parent_geoid}}&release={{child.stat_values.metadata.year}}" class="small-button hidden-mobile w-inline-block">
-							<img src="{% static 'img/map-blue.svg' %}" alt="" class="small-icon">
-							<div class="button-label black">Map dataset</div>
-						    </a>
-						    <a href="#" class="small-button w-inline-block">
-							<img src="{% static 'img/baseline-more_vert-24px.svg' %}" alt="" class="small-icon">
-						    </a>
-						</div>
-					    </div>
-					</div>
-					<div class="chart-body">
-					    <div class="chart-bars-wrapper">
-						{% for name,stats in child.stat_values.items %}
-						{% if name != 'metadata' %}
-						<div class="chart-bar _{{forloop.counter}}">
-						    <div class="chart-label-wrapper">
-							<div class="chart-label column">{{name}}</div>
-						    </div>
-						    <div class="chart-value-wrapper">
-							<div class="chart-label">{{stats.values.this}}%</div>
-						    </div>
-						    <div class="chart-hover-wrapper">
-							<div class="chart-hover-card">
-							    <div class="chart-hover-text">{{stats.numerators.this}}</div>
-							    <div class="chart-hover-card-arrow"></div>
-							</div>
-						    </div>
-						</div>
-						{% endif %}
-						{% endfor %}
-					    </div>
-					</div>
-				    </div>
-				    {% endfor %}
-				    {% endif %}
-				</div>
-			    </div>
-			</div>
-		    </section>
+		    <a href="#{{indicator.header}}" class="section-link w-inline-block">
+			<div class="section-link-label">{{indicator.header}}</div>
+		    </a>
 		    {% endfor %}
 		</div>
-            </div>
-	</div>
-    </section>
-    {% endfor %}
-</div>
+	    </div>
+	    <div class="section-content-wrapper">
+		{% for indicator in values %}
+		<section id="{{indicator.header}}" class="section-content">
+		    <div class="section-content-block">
+			<div class="section-content-block-header">
+			    <h4 class="content-block-heading">{{indicator.header}}</h4>
+			    <div class="small-button-wrapper">
+				<a href="#" class="small-button blue w-inline-block">
+				    <img src="{% static 'img/share.svg' %}" alt="" class="small-icon">
+				    <div class="button-label hidden-mobile">Share data</div>
+				</a>
+			    </div>
+			</div>
+			<div class="section-content-block-body">
+			    <div class="content-block-value-wrapper">
+				<div class="content-block-value">
+				    {% if indicator.column_field %}
+				    <div class="numeric-value">
+					<span class="large-number">{{indicator.column_field}}%</span>
+				    </div>
+				    {% else %}
+				    {% if indicator.distribution_maxima.name %}
+				    <div class="numeric-value">
+					<span class="large-number">{{indicator.distribution_maxima.name}}</span>
+				    </div>
+				    {% else %}
+				    <div class="numeric-value">
+					<span class="large-number">{{indicator.distribution_maxima}}</span>
+				    </div>
+				    {% endif %}
+				    {% endif %}
+				    <div class="value-description">{{indicator.summary}}</div>
+				</div>
+			    </div>
+			    <div class="charts-wrapper">
+				<div class="chart">
+				    <div class="chart-header">
+					<h5 class="chart-title">{{indicator.chart_title}}</h5>
+					<div class="chart-options">
+					    <div class="small-button-wrapper">
+						<a href="/data/map/?table={{indicator.stat_values.metadata.table_id}}&primary_geo_id={{geography.this.full_geoid}}&geo_ids={{geography.this.geo_level}}|{{geography.this.parent_geoid}}&release={{indicator.stat_values.metadata.year}}" class="small-button hidden-mobile w-inline-block">
+						    <img src="{% static 'img/map-blue.svg' %}" alt="" class="small-icon">
+						    <div class="button-label black">Map dataset</div>
+						</a>
+						<a href="#" class="small-button w-inline-block">
+						    <img src="{% static 'img/baseline-more_vert-24px.svg' %}" alt="" class="small-icon">
+						</a>
+					    </div>
+					</div>
+				    </div>
+				    <div class="chart-body">
+					<div class="chart-bars-wrapper">
+					    {% for name,stats in indicator.stat_values.items %}
+					    {% if name != 'metadata' %}
+					    <div class="chart-bar _{{forloop.counter}}">
+						<div class="chart-label-wrapper">
+						    <div class="chart-label column">{{name}}</div>
+						</div>
+						<div class="chart-value-wrapper">
+						    <div class="chart-label">{{stats.values.this}}%</div>
+						</div>
+						<div class="chart-hover-wrapper">
+						    <div class="chart-hover-card">
+							<div class="chart-hover-text">{{stats.numerators.this}}</div>
+							<div class="chart-hover-card-arrow"></div>
+						    </div>
+						</div>
+					    </div>
+					    {% endif %}
+					    {% endfor %}
+					</div>
+				    </div>
+				</div>
+				{% if indicator.has_children %}
+				{% for child in indicator.children %}
+				<div class="chart">
+				    <div class="chart-header">
+					<h5 class="chart-title">{{child.chart_title}}</h5>
+					<div class="chart-options">
+					    <div class="small-button-wrapper">
+						<a href="/data/map/?table={{child.stat_values.metadata.table_id}}&primary_geo_id={{geography.this.full_geoid}}&geo_ids={{geography.this.geo_level}}|{{geography.this.parent_geoid}}&release={{child.stat_values.metadata.year}}" class="small-button hidden-mobile w-inline-block">
+						    <img src="{% static 'img/map-blue.svg' %}" alt="" class="small-icon">
+						    <div class="button-label black">Map dataset</div>
+						</a>
+						<a href="#" class="small-button w-inline-block">
+						    <img src="{% static 'img/baseline-more_vert-24px.svg' %}" alt="" class="small-icon">
+						</a>
+					    </div>
+					</div>
+				    </div>
+				    <div class="chart-body">
+					<div class="chart-bars-wrapper">
+					    {% for name,stats in child.stat_values.items %}
+					    {% if name != 'metadata' %}
+					    <div class="chart-bar _{{forloop.counter}}">
+						<div class="chart-label-wrapper">
+						    <div class="chart-label column">{{name}}</div>
+						</div>
+						<div class="chart-value-wrapper">
+						    <div class="chart-label">{{stats.values.this}}%</div>
+						</div>
+						<div class="chart-hover-wrapper">
+						    <div class="chart-hover-card">
+							<div class="chart-hover-text">{{stats.numerators.this}}</div>
+							<div class="chart-hover-card-arrow"></div>
+						    </div>
+						</div>
+					    </div>
+					    {% endif %}
+					    {% endfor %}
+					</div>
+				    </div>
+				</div>
+				{% endfor %}
+				{% endif %}
+			    </div>
+			</div>
+		    </div>
+		</section>
+		{% endfor %}
+	    </div>
+        </div>
+    </div>
+</section>
+{% endfor %}
 {% endblock %}
