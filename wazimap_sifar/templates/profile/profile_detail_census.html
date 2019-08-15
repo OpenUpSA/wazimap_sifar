@@ -227,7 +227,7 @@
 					    <h5 class="chart-title">{{indicator.chart_title}}</h5>
 					    <div class="chart-options">
 						<div class="small-button-wrapper">
-						    <a href="#" class="small-button hidden-mobile w-inline-block">
+						    <a href="/data/map/?table={{indicator.stat_values.metadata.table_id}}&primary_geo_id={{geography.this.full_geoid}}&geo_ids={{geography.this.geo_level}}|{{geography.this.parent_geoid}}&release={{indicator.stat_values.metadata.year}}" class="small-button hidden-mobile w-inline-block">
 							<img src="{% static 'img/map-blue.svg' %}" alt="" class="small-icon">
 							<div class="button-label black">Map dataset</div>
 						    </a>
@@ -251,22 +251,23 @@
 						    <div class="chart-hover-wrapper">
 							<div class="chart-hover-card">
 							    <div class="chart-hover-text">{{stats.numerators.this}}</div>
-							    <div class="chart-hover-card-arrow"></div>
+												<div class="chart-hover-card-arrow"></div>
 							</div>
 						    </div>
 						</div>
-						{% endif %}
-						{% endfor %}
+											{% endif %}
+											{% endfor %}
 					    </div>
 					</div>
-				    </div>
-				    {% if indicator.grouped %}
+												    </div>
+				    {% if indicator.has_children %}
+				    {% for child in indicator.children %}
 				    <div class="chart">
 					<div class="chart-header">
-					    <h5 class="chart-title">{{indicator.group_result.chart_title}}</h5>
+					    <h5 class="chart-title">{{child.chart_title}}</h5>
 					    <div class="chart-options">
 						<div class="small-button-wrapper">
-						    <a href="#" class="small-button hidden-mobile w-inline-block">
+						    <a href="/data/map/?table={{child.stat_values.metadata.table_id}}&primary_geo_id={{geography.this.full_geoid}}&geo_ids={{geography.this.geo_level}}|{{geography.this.parent_geoid}}&release={{child.stat_values.metadata.year}}" class="small-button hidden-mobile w-inline-block">
 							<img src="{% static 'img/map-blue.svg' %}" alt="" class="small-icon">
 							<div class="button-label black">Map dataset</div>
 						    </a>
@@ -278,7 +279,7 @@
 					</div>
 					<div class="chart-body">
 					    <div class="chart-bars-wrapper">
-						{% for name,stats in indicator.group_result.stat_values.items %}
+						{% for name,stats in child.stat_values.items %}
 						{% if name != 'metadata' %}
 						<div class="chart-bar _{{forloop.counter}}">
 						    <div class="chart-label-wrapper">
@@ -299,6 +300,7 @@
 					    </div>
 					</div>
 				    </div>
+				    {% endfor %}
 				    {% endif %}
 				</div>
 			    </div>

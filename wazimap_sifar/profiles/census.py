@@ -1,6 +1,7 @@
 from __future__ import division
 from collections import OrderedDict
 import logging
+import copy
 
 from wazimap.data.tables import get_datatable, get_table_id
 from wazimap.data.utils import get_session, add_metadata
@@ -252,14 +253,27 @@ def column_field_value(distribution, column_field=None):
 
 
 def group_indicators(indicator_profiles):
+    """
+    We need to go through all the indicators and check whether they have a parent profile indicator.
+    If they do have a parent, we need to append the indicator to the parent indicator
+    We will then remove all the top level indicators that have a parent.
+    """
     for profile, values in indicator_profiles.items():
         for indicator in values:
-            if indicator["grouped"]:
+            if indicator["parent_profile"]:
+                header = indicator["parent_profile"]
                 for i in values:
-                    if i["header"] == indicator["grouped"]:
-                        indicator["group_result"] = i
-                        values.remove(i)
+                    if i["header"] == header:
+                        i["has_children"] = True
+                        i["children"].append(indicator)
                         break
+
+    for profile in indicator_profiles.keys():
+        indicator_profiles[profile] = [
+            indicator
+            for indicator in indicator_profiles[profile]
+            if indicator["parent_profile"] is None
+        ]
     return indicator_profiles
 
 
@@ -289,16 +303,18 @@ def get_indicator_profile(geo, session):
                 "chart_type": profile.chart_type,
                 "column_field": column_field_value(distribution, profile.column_field),
                 "display_order": profile.display_order,
-                "grouped": profile.grouped_profile.header
-                if profile.grouped_profile
+                "parent_profile": profile.parent_profile.header
+                if profile.parent_profile
                 else None,
+                "has_children": False,
+                "children": [],
             }
         )
         indicator_profiles[profile.profile.name] = sorted(
             indicator_profiles[profile.profile.name],
             key=lambda profile: profile["display_order"],
         )
-        indicator_profiles = group_indicators(indicator_profiles)
+    indicator_profiles = group_indicators(indicator_profiles)
 
     return indicator_profiles
 
