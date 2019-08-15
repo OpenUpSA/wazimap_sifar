@@ -33,9 +33,15 @@ WSGI_APPLICATION = 'wazimap_sifar.wsgi.application'
 
 # Application definition
 INSTALLED_APPS = [
-    'wazimap_sifar', 'rest_framework', 'django.contrib.postgres',
-    'django_admin_hstore_widget', 'elasticapm.contrib.django', 'import_export',
-    'explorer', 'leaflet'
+    "wazimap_sifar",
+    "rest_framework",
+    "django.contrib.postgres",
+    "django_admin_hstore_widget",
+    "elasticapm.contrib.django",
+    "import_export",
+    "explorer",
+    "leaflet",
+    "dynamic_profile",
 ] + INSTALLED_APPS
 
 MIDDLEWARE_CLASSES = (
