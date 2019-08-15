@@ -11,7 +11,7 @@ function getRandomColor() {
 
 Vue.component('contributer-item',{
     props:['contributer'],
-    template:`<div v-bind:class="{selected: isSelected}" class="accordion-radio-item" v-on:click="showPoints(contributer.id,contributer.subcategory)" v-bind:style="{color: color}">
+    template:`<div v-if="contributer.approved" v-bind:class="{selected: isSelected}" class="accordion-radio-item" v-on:click="showPoints(contributer.id,contributer.subcategory)" v-bind:style="{color: color}">
 					    <div class="accordion-item-heading">{{contributer.subcategory}}</div>
 					</div>`,
     data: function(){
