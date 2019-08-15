@@ -3,12 +3,17 @@
 {% block head_meta_description %}Population data and election figures from {{ geography.this.short_name}}, broken down by category: Demographics, Service delivery, Economics and Education.{% endblock %}
 
 {% block header_content %}
+<style>
+ input:focus{
+     outline-width:0;
+ }
+</style>
 <div data-collapse="none" data-animation="default" data-duration="400" data-no-scroll="1" class="map-navbar w-nav">
     <div class="map-nav">
 	<div class="responsive-nav-container">
             <div class="map-search-wrapper">
 		<div class="map-search"><img src="{% static 'img/Search.svg' %}" alt="" class="icon-left">
-		    <div class="search-placeholder">Find a location</div>
+		    <input name="geography_select" id="geography-select" type="text" placeholder="Find a Location" autocomplete="off" style="border:none;background: transparent;" class="search-placeholder">
 		</div>
             </div>
             <div class="nav-location">
@@ -25,7 +30,7 @@
 			    <div class="button-label">{{ geography.this.short_name }}</div>
 			</a>
 			{% endif %}
-				    </div>
+		    </div>
 		</div>
 		<div class="vertical-divider"></div>
 		<div class="recenter-button">
@@ -49,66 +54,66 @@
 			<div class="dropdown-heading-wrapper"><img src="{% static 'img/baseline-sort-24px.svg' %}" alt="" class="icon-left">
 			    <h3 class="card-heading-1 with-icon">Resources &amp; Services</h3>
 			</div><img src="{% static 'img/baseline-arrow_drop_down-24px.svg' %}" alt="" class="dropdown-arrow"></div>
-			    <div class="dropdown-item-content" id="dataset-category"  style="display:none">
-				<dataset-item
-			            v-for="c in category"
-			            v-bind:key="c.name"
-			            v-bind:dataset="c"></dataset-item>
-			    </div>
+			<div class="dropdown-item-content" id="dataset-category"  style="display:none">
+			    <dataset-item
+			        v-for="c in category"
+			        v-bind:key="c.name"
+			        v-bind:dataset="c"></dataset-item>
+			</div>
 		</div>
 	    </div>
 	</div>
 	<div v-bind:style="{display:display}" class="point-data" id="contact">
-			    <div class="card-plate">
-				    <div class="card-content">
-				    <div class="point-data-heading">
-					<h3 class="card-heading-1">[[name]] </h3>
-					<img src="{% static 'img/baseline-close-24px.svg' %}" alt="" class="close" v-on:click="closePoint()">
-				    </div>
-				    <div class="point-data-content">
-					    <div class="card-list-item">
-					    <div class="card-list-item-title"><img src="{% static 'img/baseline-location_on-24px.svg' %}" alt="" class="grey-icon-left">
-						    <h5 class="card-heading-3 indent">Address:</h5>
+	    <div class="card-plate">
+		<div class="card-content">
+		    <div class="point-data-heading">
+			<h3 class="card-heading-1">[[name]] </h3>
+			<img src="{% static 'img/baseline-close-24px.svg' %}" alt="" class="close" v-on:click="closePoint()">
+		    </div>
+		    <div class="point-data-content">
+			<div class="card-list-item">
+			    <div class="card-list-item-title"><img src="{% static 'img/baseline-location_on-24px.svg' %}" alt="" class="grey-icon-left">
+				<h5 class="card-heading-3 indent">Address:</h5>
 			    </div>
-					    <div class="card-list-item-content">
-						<a href="#" target="_blank" class="point-data-link-block w-inline-block">
-						    <div class="text-block">[[address]]</div>
-						</a>
-					    </div>
-					    </div>
-					    <div class="card-list-item">
-						<div class="card-list-item-title"><img src="{% static 'img/baseline-call-24px.svg' %}" alt="" class="grey-icon-left">
-						    <h5 class="card-heading-3 indent">Telephone:</h5>
-						</div>
-						<div class="card-list-item-content">
-						    <a href="#" class="point-data-link-block w-inline-block">
-							<div class="text-block">[[phone]]</div>
-						    </a>
-						</div>
-					    </div>
-					    <div class="card-list-item">
-						<div class="card-list-item-title"><img src="{% static 'img/baseline-mail_outline-24px.svg' %}" alt="" class="grey-icon-left">
-						    <h5 class="card-heading-3 indent">Email:</h5>
-						</div>
-						<div class="card-list-item-content">
-						    <a href="#" class="point-data-link-block w-inline-block">
-							<div class="text-block">[[email]]</div>
-						    </a>
-						</div>
-					    </div>
-					    <div class="card-list-item last">
-						<div class="card-list-item-title"><img src="{% static 'img/baseline-web-24px.svg' %}" alt="" class="grey-icon-left">
-						    <h5 class="card-heading-3 indent">Website:</h5>
-						</div>
-						<div class="card-list-item-content">
-						    <a href="#" target="_blank" class="point-data-link-block w-inline-block">
-							<div class="text-block">[[website]]</div>
-						    </a>
-						</div>
-					    </div>
-				    </div>
-				    </div>
+			    <div class="card-list-item-content">
+				<a href="#" target="_blank" class="point-data-link-block w-inline-block">
+				    <div class="text-block">[[address]]</div>
+				</a>
 			    </div>
+			</div>
+			<div class="card-list-item">
+			    <div class="card-list-item-title"><img src="{% static 'img/baseline-call-24px.svg' %}" alt="" class="grey-icon-left">
+				<h5 class="card-heading-3 indent">Telephone:</h5>
+			    </div>
+			    <div class="card-list-item-content">
+				<a href="#" class="point-data-link-block w-inline-block">
+				    <div class="text-block">[[phone]]</div>
+				</a>
+			    </div>
+			</div>
+			<div class="card-list-item">
+			    <div class="card-list-item-title"><img src="{% static 'img/baseline-mail_outline-24px.svg' %}" alt="" class="grey-icon-left">
+				<h5 class="card-heading-3 indent">Email:</h5>
+			    </div>
+			    <div class="card-list-item-content">
+				<a href="#" class="point-data-link-block w-inline-block">
+				    <div class="text-block">[[email]]</div>
+				</a>
+			    </div>
+			</div>
+			<div class="card-list-item last">
+			    <div class="card-list-item-title"><img src="{% static 'img/baseline-web-24px.svg' %}" alt="" class="grey-icon-left">
+				<h5 class="card-heading-3 indent">Website:</h5>
+			    </div>
+			    <div class="card-list-item-content">
+				<a href="#" target="_blank" class="point-data-link-block w-inline-block">
+				    <div class="text-block">[[website]]</div>
+				</a>
+			    </div>
+			</div>
+		    </div>
+		</div>
+	    </div>
 	</div>
     </div>
 </div>
@@ -136,31 +141,31 @@
 				{% endif %}
 				<h4 class="data-link-title">{{profile}}</h4></a>
 			    {% endfor %}
-		    </div>
-		    <div class="data-source">
-			<div class="nav-discription">Data source:</div>
-			<div>
-			    <div data-delay="0" class="dropdown w-dropdown">
-				<div class="dropdown-toggle-2 w-dropdown-toggle">
-				    <div id="current-data-source" class="current-data-source">
-					{{ primary_releases.active.name }} {{ primary_releases.active.year }}
-				    </div><img src="{% static 'img/Expand-less.svg' %}" alt="" class="image"></div>
-				    {% if primary_release.other %}
-				    <nav class="dropdown-list-2 w-dropdown-list">
-					{% for release in primary_releases.other %}
-						<a href="{{ request.path }}?release={{release.year}}" class="dropdown-link w-dropdown-link">{{ release.name }} {{ release.year }}</a>
-						
-						{% endfor %}
-				    </nav>
+			</div>
+			<div class="data-source">
+			    <div class="nav-discription">Data source:</div>
+			    <div>
+				<div data-delay="0" class="dropdown w-dropdown">
+				    <div class="dropdown-toggle-2 w-dropdown-toggle">
+					<div id="current-data-source" class="current-data-source">
+					    {{ primary_releases.active.name }} {{ primary_releases.active.year }}
+					</div><img src="{% static 'img/Expand-less.svg' %}" alt="" class="image"></div>
+					{% if primary_release.other %}
+					<nav class="dropdown-list-2 w-dropdown-list">
+					    {% for release in primary_releases.other %}
+					    <a href="{{ request.path }}?release={{release.year}}" class="dropdown-link w-dropdown-link">{{ release.name }} {{ release.year }}</a>
+
+					    {% endfor %}
+					</nav>
 					{% endif %}
+				</div>
 			    </div>
 			</div>
 		    </div>
 		</div>
-            </div>
+	    </div>
 	</div>
     </div>
-                </div>
     {% for profile, values in indicator.items %}
     <section id="{{profile}}" class="data-section">
 	<div class="responsive-container">
@@ -251,15 +256,15 @@
 						    <div class="chart-hover-wrapper">
 							<div class="chart-hover-card">
 							    <div class="chart-hover-text">{{stats.numerators.this}}</div>
-												<div class="chart-hover-card-arrow"></div>
+							    <div class="chart-hover-card-arrow"></div>
 							</div>
 						    </div>
 						</div>
-											{% endif %}
-											{% endfor %}
+						{% endif %}
+						{% endfor %}
 					    </div>
 					</div>
-												    </div>
+				    </div>
 				    {% if indicator.has_children %}
 				    {% for child in indicator.children %}
 				    <div class="chart">
@@ -310,7 +315,7 @@
 		</div>
             </div>
 	</div>
-        </section>
+    </section>
     {% endfor %}
 </div>
 
