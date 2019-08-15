@@ -191,11 +191,6 @@ def get_profile(geo, profile_name, request):
     finally:
         session.close()
 
-    import json
-
-    with open("example.json", "w") as f:
-        json.dump(data, f)
-
     return data
 
 
