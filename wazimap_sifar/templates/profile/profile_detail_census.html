@@ -130,7 +130,7 @@
 		    <div class="nav-discription">available data:</div>
 		    <div class="data-links-wrapper">
 						{% for profile,value in indicator.items %}
-						<a href="{{profile}}" class="data-link w-inline-block">
+						<a href="#{{profile}}" class="data-link w-inline-block">
 						{% if profile == 'Demograhics' %}
 						<img src="{% static 'img/people.svg' %}" width="24" height="24" alt="" class="data-link-icon">
 						{% elif profile == 'Health' %}
