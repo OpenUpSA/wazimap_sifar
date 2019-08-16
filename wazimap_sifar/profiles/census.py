@@ -279,7 +279,9 @@ def group_indicators(indicator_profiles):
 
 
 def get_indicator_profile(geo, session):
-    indicator_profiles = {p.name: [] for p in Profile.objects.all()}
+    indicator_profiles = OrderedDict(
+        (p.name, []) for p in Profile.objects.order_by("display_order").all()
+    )
     for profile in IndicatorProfile.objects.all():
         try:
             distribution, total = indicator_calculation(
