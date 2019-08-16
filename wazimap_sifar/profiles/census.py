@@ -6,6 +6,7 @@ import copy
 from wazimap.data.tables import get_datatable, get_table_id
 from wazimap.data.utils import get_session, add_metadata
 from wazimap.geo import geo_data
+from wazimap.models.data import DataNotFound
 
 from wazimap.data.utils import (
     collapse_categories,
@@ -191,6 +192,11 @@ def get_profile(geo, profile_name, request):
     finally:
         session.close()
 
+    import json
+
+    with open("example.json", "w") as f:
+        json.dump(data, f)
+
     return data
 
 
@@ -275,40 +281,63 @@ def group_indicators(indicator_profiles):
 def get_indicator_profile(geo, session):
     indicator_profiles = {p.name: [] for p in Profile.objects.all()}
     for profile in IndicatorProfile.objects.all():
-        distribution, total = indicator_calculation(
-            geo,
-            session,
-            column_name=profile.column_name,
-            table_name=profile.table_name.name,
-            order_by=profile.order_by,
-            exclude_zero=profile.exclude_zero,
-        )
-        if profile.group_remainder:
-            group_remainder(distribution, profile.group_remainder)
-        indicator_profiles[profile.profile.name].append(
-            {
-                "header": profile.header,
-                "summary": profile.summary,
-                "chart_title": profile.chart_title,
-                "stat_values": distribution,
-                "total": total,
-                "distribution_maxima": calculate_highest(
-                    distribution, total, profile.maximum_value
-                ),
-                "chart_type": profile.chart_type,
-                "column_field": column_field_value(distribution, profile.column_field),
-                "display_order": profile.display_order,
-                "parent_profile": profile.parent_profile.header
-                if profile.parent_profile
-                else None,
-                "has_children": False,
-                "children": [],
-            }
-        )
-        indicator_profiles[profile.profile.name] = sorted(
-            indicator_profiles[profile.profile.name],
-            key=lambda profile: profile["display_order"],
-        )
+        try:
+            distribution, total = indicator_calculation(
+                geo,
+                session,
+                column_name=profile.column_name,
+                table_name=profile.table_name.name,
+                order_by=profile.order_by,
+                exclude_zero=profile.exclude_zero,
+            )
+        except DataNotFound:
+            indicator_profiles[profile.profile.name].append(
+                {
+                    "header": profile.header,
+                    "summary": profile.summary,
+                    "display_order": profile.display_order,
+                    "data": False,
+                    "parent_profile": profile.parent_profile.header
+                    if profile.parent_profile
+                    else None,
+                    "has_children": False,
+                    "children": [],
+                }
+            )
+            indicator_profiles[profile.profile.name] = sorted(
+                indicator_profiles[profile.profile.name],
+                key=lambda profile: profile["display_order"],
+            )
+        else:
+            if profile.group_remainder:
+                group_remainder(distribution, profile.group_remainder)
+            indicator_profiles[profile.profile.name].append(
+                {
+                    "header": profile.header,
+                    "summary": profile.summary,
+                    "chart_title": profile.chart_title,
+                    "stat_values": distribution,
+                    "total": total,
+                    "distribution_maxima": calculate_highest(
+                        distribution, total, profile.maximum_value
+                    ),
+                    "chart_type": profile.chart_type,
+                    "column_field": column_field_value(
+                        distribution, profile.column_field
+                    ),
+                    "display_order": profile.display_order,
+                    "parent_profile": profile.parent_profile.header
+                    if profile.parent_profile
+                    else None,
+                    "has_children": False,
+                    "children": [],
+                    "data": True,
+                }
+            )
+            indicator_profiles[profile.profile.name] = sorted(
+                indicator_profiles[profile.profile.name],
+                key=lambda profile: profile["display_order"],
+            )
     indicator_profiles = group_indicators(indicator_profiles)
 
     return indicator_profiles

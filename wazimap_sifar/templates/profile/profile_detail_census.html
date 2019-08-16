@@ -225,6 +225,7 @@
 				    <div class="value-description">{{indicator.summary}}</div>
 				</div>
 			    </div>
+			    {% if indicator.data %}
 			    <div class="charts-wrapper">
 				<div class="chart">
 				    <div class="chart-header">
@@ -307,7 +308,11 @@
 				{% endfor %}
 				{% endif %}
 			    </div>
+			    {% else %}
+			    <p>No Data Avaliable for this indicator</p>
+			    {% endif %}
 			</div>
+
 		    </div>
 		</section>
 		{% endfor %}
