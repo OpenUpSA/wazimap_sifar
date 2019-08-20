@@ -21,15 +21,16 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get(
-    'SIFAR_SECRET_KEY', 'xf&mewbq^132LP86$1!jhdasjkdh7o9bg*&$qln08e3@r(ec3e')
+    "SIFAR_SECRET_KEY", "xf&mewbq^132LP86$1!jhdasjkdh7o9bg*&$qln08e3@r(ec3e"
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('SIFAR_DEBUG', 'true') == 'true'
+DEBUG = os.environ.get("SIFAR_DEBUG", "true") == "true"
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ["*"]
 
-ROOT_URLCONF = 'wazimap_sifar.urls'
-WSGI_APPLICATION = 'wazimap_sifar.wsgi.application'
+ROOT_URLCONF = "wazimap_sifar.urls"
+WSGI_APPLICATION = "wazimap_sifar.wsgi.application"
 
 # Application definition
 INSTALLED_APPS = [
@@ -45,133 +46,106 @@ INSTALLED_APPS = [
 ] + INSTALLED_APPS
 
 MIDDLEWARE_CLASSES = (
-    'whitenoise.middleware.WhiteNoiseMiddleware',
-    'elasticapm.contrib.django.middleware.TracingMiddleware',
-    'elasticapm.contrib.django.middleware.Catch404Middleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware'
+    "whitenoise.middleware.WhiteNoiseMiddleware",
+    "elasticapm.contrib.django.middleware.TracingMiddleware",
+    "elasticapm.contrib.django.middleware.Catch404Middleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
 ) + MIDDLEWARE_CLASSES
 
 DATABASE_URL = os.environ.get(
-    'DATABASE_URL',
-    'postgresql://wazimap_sifar:wazimap_sifar@development/wazimap_sifar')
-DATABASES = {
-    'default': dj_database_url.parse(DATABASE_URL),
-}
+    "DATABASE_URL", "postgresql://wazimap_sifar:wazimap_sifar@development/wazimap_sifar"
+)
+DATABASES = {"default": dj_database_url.parse(DATABASE_URL)}
 
-WAZIMAP['ga_tracking_id'] = 'UA-93649482-12'
-WAZIMAP['profile_builder'] = 'wazimap_sifar.profiles.census.get_profile'
-WAZIMAP['default_profile'] = 'census'
-WAZIMAP['geodata'] = 'wazimap_sifar.geo.GeoData'
-WAZIMAP['geometry_data'] = {}
-WAZIMAP['default_geo_version'] = '2016'
-WAZIMAP['name'] = 'Samson Institute for Ageing Research'
-WAZIMAP['url'] = 'http://wazimap-sifar.openup.org.za'
-WAZIMAP['country_code'] = 'ZA'
-WAZIMAP['latest_release_year'] = '2016',
-WAZIMAP['primary_release_year'] = {'subplace': 2011}
-WAZIMAP['primary_dataset_name'] = 'Census and Community Survey'
-WAZIMAP['available_release_years'] = {
-    'subplace': [2011],
+WAZIMAP["ga_tracking_id"] = "UA-93649482-12"
+WAZIMAP["profile_builder"] = "wazimap_sifar.profiles.census.get_profile"
+WAZIMAP["default_profile"] = "census"
+WAZIMAP["comparative_levels"] = ["district", "province", "country"]
+WAZIMAP["geodata"] = "wazimap_sifar.geo.GeoData"
+WAZIMAP["geometry_data"] = {}
+WAZIMAP["default_geo_version"] = "2016"
+WAZIMAP["name"] = "Samson Institute for Ageing Research"
+WAZIMAP["url"] = "http://wazimap-sifar.openup.org.za"
+WAZIMAP["country_code"] = "ZA"
+WAZIMAP["latest_release_year"] = ("2016",)
+WAZIMAP["primary_release_year"] = {"subplace": 2011}
+WAZIMAP["primary_dataset_name"] = "Census and Community Survey"
+WAZIMAP["available_release_years"] = {"subplace": [2011]}
+WAZIMAP["levels"] = {
+    "country": {
+        "plural": "countries",
+        "children": ["province", "district", "municipality", "subplace", "point"],
+    },
+    "province": {"children": ["district", "municipality", "subplace", "point"]},
+    "district": {"children": ["municipality", "subplace", "point"]},
+    "municipality": {"children": ["subplace", "point"]},
+    "subplace": {"children": ["point"]},
+    "point": {"children": []},
 }
-WAZIMAP['levels'] = {
-    'country': {
-        'plural': 'countries',
-        'children':
-        ['province', 'district', 'municipality', 'subplace', 'point'],
-    },
-    'province': {
-        'children': ['district', 'municipality', 'subplace', 'point'],
-    },
-    'district': {
-        'children': ['municipality', 'subplace', 'point'],
-    },
-    'municipality': {
-        'children': ['subplace', 'point']
-    },
-    'subplace': {
-        'children': ['point']
-    },
-    'point': {
-        'children': []
-    },
-}
-WAZIMAP['mapit'] = {
-    'generations': {
-        '2011': '1',
-        '2016': '2',
-        None: '1',
-    }
-}
+WAZIMAP["mapit"] = {"generations": {"2011": "1", "2016": "2", None: "1"}}
 
 # file uploads
 MEDIA_URL = "/media/"
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 # the URL for assets
-STATIC_URL = '/static/'
+STATIC_URL = "/static/"
 MAPIT_LOCATION_URL = "https://mapit.code4sa.org/point/4326/"
 
-LOGSTASH_URL = os.environ.get('LOGSTASH_URL', '')
-APM_SERVER_URL = os.environ.get('APM_SERVER_URL', '')
+LOGSTASH_URL = os.environ.get("LOGSTASH_URL", "")
+APM_SERVER_URL = os.environ.get("APM_SERVER_URL", "")
 
-ELASTIC_APM = {'SERVICE_NAME': 'Wazimap Sifar', 'SERVER_URL': APM_SERVER_URL}
+ELASTIC_APM = {"SERVICE_NAME": "Wazimap Sifar", "SERVER_URL": APM_SERVER_URL}
 
 LEAFLET_CONFIG = {
-    'DEFAULT_CENTER': (-29.440, 29.443),
-    'DEFAULT_ZOOM': 5,
-    'MIN_ZOOM': 3,
-    'MAX_ZOOM': 18,
-    'RESET_VIEW': False
+    "DEFAULT_CENTER": (-29.440, 29.443),
+    "DEFAULT_ZOOM": 5,
+    "MIN_ZOOM": 3,
+    "MAX_ZOOM": 18,
+    "RESET_VIEW": False,
 }
 
 LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': True,
-    'formatters': {
-        'verbose': {
-            'format':
-            '%(asctime)s %(levelname)s %(module)s %(process)d %(thread)d %(message)s'
+    "version": 1,
+    "disable_existing_loggers": True,
+    "formatters": {
+        "verbose": {
+            "format": "%(asctime)s %(levelname)s %(module)s %(process)d %(thread)d %(message)s"
+        }
+    },
+    "handlers": {
+        "console": {
+            "level": "DEBUG",
+            "class": "logging.StreamHandler",
+            "formatter": "verbose",
+        },
+        "logstash": {
+            "level": "DEBUG",
+            "class": "logstash.TCPLogstashHandler",
+            "host": LOGSTASH_URL,
+            "port": 5959,
+            "version": 1,
+            "message_type": "logstash",
+            "fqdn": False,
+            "tags": ["Wazimap Sifar"],
+        },
+        "elasticapm": {
+            "level": "INFO",
+            "class": "elasticapm.contrib.django.handlers.LoggingHandler",
         },
     },
-    'handlers': {
-        'console': {
-            'level': 'DEBUG',
-            'class': 'logging.StreamHandler',
-            'formatter': 'verbose'
+    "loggers": {
+        "": {"handlers": ["console"], "level": "ERROR"},
+        "django": {
+            "handlers": ["elasticapm", "console"],
+            "level": "DEBUG" if DEBUG else "INFO",
         },
-        'logstash': {
-            'level': 'DEBUG',
-            'class': 'logstash.TCPLogstashHandler',
-            'host': LOGSTASH_URL,
-            'port': 5959,
-            'version': 1,
-            'message_type': 'logstash',
-            'fqdn': False,
-            'tags': ['Wazimap Sifar']
-        },
-        'elasticapm': {
-            'level': 'INFO',
-            'class': 'elasticapm.contrib.django.handlers.LoggingHandler',
+        "django.template": {"handlers": ["elasticapm", "console"], "level": "ERROR"},
+        "wazimap": {
+            "handlers": ["elasticapm", "console"],
+            "level": "DEBUG" if DEBUG else "INFO",
         },
     },
-    'loggers': {
-        '': {
-            'handlers': ['console'],
-            'level': 'ERROR',
-        },
-        'django': {
-            'handlers': ['elasticapm', 'console'],
-            'level': 'DEBUG' if DEBUG else 'INFO',
-        },
-        'django.template': {
-            'handlers': ['elasticapm', 'console'],
-            'level': 'ERROR',
-        },
-        'wazimap': {
-            'handlers': ['elasticapm', 'console'],
-            'level': 'DEBUG' if DEBUG else 'INFO',
-        },
-    }
 }
