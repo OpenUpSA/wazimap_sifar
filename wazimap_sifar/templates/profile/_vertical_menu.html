@@ -1,5 +1,5 @@
 <nav class="chart-menu-dropdown-list w-dropdown-list">
-    <a href="#" class="chart-show-embed chart-menu-dropdown-item w-dropdown-link">Embed this chart</a>
+    <a href="#" class="chart-show-embed chart-menu-dropdown-item w-dropdown-link" id="{{indicator.stat_values.metadata.table_id}}">Embed this chart</a>
     
     <a href="/data/table/?table={{indicator.stat_values.metadata.table_id}}&primary_geo_id={{geography.this.full_geoid}}&geo_ids={{geography.this.full_geoid}}{% for parent,geo in geography.parents.items %},{{ geo.full_geoid }}{% endfor %}&release={{indicator.stat_values.metadata.year}}" class="chart-menu-dropdown-item w-dropdown-link">Explore data</a>
     
