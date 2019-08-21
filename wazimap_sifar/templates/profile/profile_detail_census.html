@@ -12,8 +12,10 @@
     <div class="map-nav">
 	<div class="responsive-nav-container">
             <div class="map-search-wrapper">
-		<div class="map-search"><img src="{% static 'img/Search.svg' %}" alt="" class="icon-left">
-		    <input name="geography_select" id="geography-select" type="text" placeholder="Find a Location" autocomplete="off" style="border:none;background: transparent;" class="search-placeholder">
+		<div class="location-search w-form">
+		    <form id="email-form" name="email-form" data-name="Email Form" class="form">
+			<input id="geography-select" type="text" class="map-search w-input" maxlength="256" name="geography_select" data-name="Name" placeholder="Find a Location" id="name">
+		    </form>
 		</div>
             </div>
             <div class="nav-location">
@@ -32,13 +34,13 @@
 			{% endif %}
 		    </div>
 		</div>
-		<div class="vertical-divider"></div>
-		<div class="recenter-button">
-		    <a href="#" class="map-nav-link recenter w-inline-block">
-			<img src="{% static 'img/center.svg' %}" alt="" class="recenter-icon">
-			<div class="button-label hidden-mobile">Recenter</div>
-		    </a>
-		</div>
+		<!-- <div class="vertical-divider"></div>
+		     <div class="recenter-button">
+		     <a href="#" class="map-nav-link recenter w-inline-block">
+		     <img src="{% static 'img/center.svg' %}" alt="" class="recenter-icon">
+		     <div class="button-label hidden-mobile">Recenter</div>
+		     </a>
+		     </div> -->
             </div>
 	</div>
     </div>
@@ -134,6 +136,9 @@
  }
  .chart-qualifier{
      display:none;
+ }
+ .twitter-typeahead{
+     top: 15px;
  }
  
 </style>
