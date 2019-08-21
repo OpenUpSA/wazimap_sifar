@@ -194,7 +194,12 @@
 		{% endif %}
 		<h3 class="data-section-title with-icon">{{profile}}</h3>
 	    </div>
-	    <div class="small-button-wrapper"><a href="#" class="small-button light w-inline-block"><img src="{% static 'img/share-white.svg' %}" alt="" class="small-icon"><div class="button-label hidden-mobile">Share dataset</div></a></div>
+	    <div class="small-button-wrapper">
+		<a href="https://twitter.com/share?url={{request.build_absolute_uri}}#{{profile}}" target="_blank" class="small-button light w-inline-block">
+		    <img src="{% static 'img/share-white.svg' %}" alt="" class="small-icon">
+		    <div class="button-label hidden-mobile">Share dataset</div>
+		</a>
+	    </div>
         </div>
         <div class="data-section-wrapper">
 	    <div data-collapse="none" data-animation="default" data-duration="400" class="section-navbar w-nav">
@@ -213,7 +218,7 @@
 			<div class="section-content-block-header">
 			    <h4 class="content-block-heading">{{indicator.header}}</h4>
 			    <div class="small-button-wrapper">
-				<a href="#" class="small-button blue w-inline-block">
+				<a href="https://twitter.com/share?url={{request.build_absolute_uri}}#{{indicator.header}}" class="small-button blue w-inline-block">
 				    <img src="{% static 'img/share.svg' %}" alt="" class="small-icon">
 				    <div class="button-label hidden-mobile">Share data</div>
 				</a>
