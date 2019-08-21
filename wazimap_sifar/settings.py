@@ -76,13 +76,12 @@ WAZIMAP["available_release_years"] = {"subplace": [2011]}
 WAZIMAP["levels"] = {
     "country": {
         "plural": "countries",
-        "children": ["province", "district", "municipality", "subplace", "point"],
+        "children": ["province", "district", "municipality", "subplace"],
     },
-    "province": {"children": ["district", "municipality", "subplace", "point"]},
-    "district": {"children": ["municipality", "subplace", "point"]},
-    "municipality": {"children": ["subplace", "point"]},
-    "subplace": {"children": ["point"]},
-    "point": {"children": []},
+    "province": {"children": ["district", "municipality", "subplace"]},
+    "district": {"children": ["municipality", "subplace"]},
+    "municipality": {"children": ["subplace"]},
+    "subplace": {"children": []},
 }
 WAZIMAP["mapit"] = {"generations": {"2011": "1", "2016": "2", None: "1"}}
 
