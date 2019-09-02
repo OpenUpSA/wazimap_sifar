@@ -84,9 +84,7 @@ WAZIMAP["levels"] = {
     "subplace": {"children": []},
 }
 WAZIMAP["mapit"] = {"generations": {"2011": "1", "2016": "2", None: "1"}}
-WAZIMAP["google_geocode_api_key"] = os.environ.get(
-    "GOOGLE_GEOCODE_API_KEY", "AIzaSyCWWJ8UepA_Y7QS7o7Jxy8ki0vmRLdLZJs"
-)
+WAZIMAP["google_geocode_api_key"] = os.environ.get("GOOGLE_GEOCODE_API_KEY", "")
 # file uploads
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
