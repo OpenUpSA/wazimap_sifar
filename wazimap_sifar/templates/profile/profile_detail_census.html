@@ -232,6 +232,14 @@
 			<div class="section-content-block-body">
 			    <div class="main-content-block">
 				<div class="content-block-value-wrapper">
+				    {% if indicator.header == 'Population' %}
+				    <div class="content-block-value">
+					<div class="numeric-value">
+					    <span class="large-number">{{indicator.header_extra}}</span>
+					</div>
+					<div class="value-description">Total Population</div>
+				    </div>
+				    {% endif %}
 				    <div class="content-block-value">
 					{% if indicator.column_field %}
 					<div class="numeric-value">
@@ -248,9 +256,9 @@
 					</div>
 					{% endif %}
 					{% endif %}
-									    <div class="value-description">{{indicator.summary}}</div>
-				    </div>
-												</div>
+					<div class="value-description">{{indicator.summary}}</div>
+								    </div>
+				</div>
 				{% if indicator.data %}
 				<div class="charts-wrapper">
 				    <div class="chart">
