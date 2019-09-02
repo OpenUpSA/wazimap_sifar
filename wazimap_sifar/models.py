@@ -29,7 +29,9 @@ class Contributer(models.Model):
 
 
 class Dataset(models.Model):
-    contributer = models.ForeignKey(Contributer, on_delete=models.CASCADE, null=True)
+    contributer = models.ForeignKey(
+        Contributer, on_delete=models.CASCADE, null=True, verbose_name="Source"
+    )
     name = models.CharField(max_length=255)
     latitude = models.FloatField()
     longitude = models.FloatField()
