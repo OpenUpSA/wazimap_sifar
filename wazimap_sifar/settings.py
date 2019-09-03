@@ -56,9 +56,6 @@ MIDDLEWARE_CLASSES = (
 ) + MIDDLEWARE_CLASSES
 
 
-if DEBUG:
-    GEOS_LIBRARY_PATH = "/usr/lib/libgeos_c.so"
-
 DATABASE_URL = os.environ.get(
     "DATABASE_URL", "postgresql://wazimap_sifar:wazimap_sifar@development/wazimap_sifar"
 )
