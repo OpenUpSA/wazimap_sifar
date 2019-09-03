@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     "explorer",
     "leaflet",
     "dynamic_profile",
+    "django.contrib.gis",
 ] + INSTALLED_APPS
 
 MIDDLEWARE_CLASSES = (
