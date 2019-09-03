@@ -35,11 +35,11 @@ class Dataset(models.Model):
     name = models.CharField(max_length=255)
     latitude = models.FloatField()
     longitude = models.FloatField()
-    address = models.CharField(max_length=255, null=True)
-    type = models.CharField(max_length=255, null=True)
-    email = models.EmailField(null=True)
-    phone_number = models.CharField(max_length=10, null=True)
-    website = models.URLField(null=True)
+    address = models.CharField(max_length=255, null=True, blank=True)
+    type = models.CharField(max_length=255, null=True, blank=True)
+    email = models.EmailField(null=True, blank=True)
+    phone_number = models.CharField(max_length=10, null=True, blank=True)
+    website = models.URLField(null=True, blank=True)
 
     class Meta:
         db_table = "sifar_dataset"

@@ -9,9 +9,38 @@ from import_export.admin import ImportExportModelAdmin
 from wazimap_sifar.models import Dataset, DatasetCategory, Contributer
 from wazimap_sifar.resource import DatasetResource
 from wazimap_sifar.forms import CustomImportForm, CustomConfirmImportForm
+from django import forms
+from django.contrib.gis import forms as gis_form
+
+
+class DatasetForm(forms.ModelForm):
+    point = gis_form.PointField(
+        required=True,
+        srid=4326,
+        widget=gis_form.OSMWidget(
+            attrs={
+                "map_width": 800,
+                "map_height": 500,
+                "default_lat": "-28.556",
+                "default_lon": "23.879",
+                "default_zoom": "20",
+            }
+        ),
+    )
+
+    def clean(self):
+        data = super(DatasetForm, self).clean()
+        point = data.get("point")
+        if not point:
+            raise forms.ValidationError("Select a location")
+
+        self.instance.latitude = point.x
+        self.instance.longitude = point.y
+        return data
 
 
 class DatasetAdmin(ImportExportModelAdmin):
+    form = DatasetForm
     resource_class = DatasetResource
     list_display = (
         "name",
@@ -26,6 +55,7 @@ class DatasetAdmin(ImportExportModelAdmin):
     exclude = ("type",)
     search_fields = ("name",)
     list_filter = ("contributer__subcategory",)
+    readonly_fields = ("latitude", "longitude")
 
     def get_import_form(self):
         return CustomImportForm
