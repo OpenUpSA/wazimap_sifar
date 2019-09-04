@@ -150,3 +150,6 @@ LOGGING = {
         },
     },
 }
+
+if not DEBUG:
+    GEOS_LIBRARY_PATH = "/app/.heroku/vendor/lib/libgeos_c.so"
