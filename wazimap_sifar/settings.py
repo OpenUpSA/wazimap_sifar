@@ -152,4 +152,4 @@ LOGGING = {
 }
 
 if not DEBUG:
-    GEOS_LIBRARY_PATH = "/app/.heroku/vendor/lib/libgeos_c.so"
+    GEOS_LIBRARY_PATH = os.environ.get("GEOS_LIBRARY_PATH")
