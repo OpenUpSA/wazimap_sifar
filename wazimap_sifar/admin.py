@@ -73,9 +73,9 @@ class DatasetAdmin(ImportExportModelAdmin):
             else:
                 try:
                     # If we don't have it from a form field, we should find it in the session.
-                    contributer = request.session["contributer"]
+                    contributer = request.user.username
                 except KeyError as e:
-                    raise Exception("Context failure on row import, " + e)
+                    raise Exception(e)
             rk["contributer"] = contributer
         return rk
 
