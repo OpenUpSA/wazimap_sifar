@@ -4,7 +4,7 @@ reload(sys)
 sys.setdefaultencoding("utf8")
 
 from django.contrib import admin
-from import_export.admin import ImportExportModelAdmin
+from import_export.admin import ImportExportModelAdmin, ImportExportActionModelAdmin
 
 from wazimap_sifar.models import Dataset, DatasetCategory, Contributer
 from wazimap_sifar.resource import DatasetResource
@@ -39,7 +39,7 @@ class DatasetForm(forms.ModelForm):
         return data
 
 
-class DatasetAdmin(ImportExportModelAdmin):
+class DatasetAdmin(ImportExportModelAdmin, ImportExportActionModelAdmin):
     form = DatasetForm
     resource_class = DatasetResource
     list_display = (
