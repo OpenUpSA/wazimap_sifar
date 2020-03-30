@@ -1,12 +1,12 @@
 from rest_framework import serializers
 
-from wazimap_sifar.models import DatasetCategory, Contributer, Dataset
+from wazimap_sifar.models import DatasetCategory, Contributor, Dataset
 
 
 class ContributerSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Contributer
-        fields = '__all__'
+        model = Contributor
+        fields = "__all__"
 
 
 class DatasetCategorySerializer(serializers.ModelSerializer):
@@ -14,4 +14,4 @@ class DatasetCategorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = DatasetCategory
-        fields = '__all__'
+        fields = "__all__"

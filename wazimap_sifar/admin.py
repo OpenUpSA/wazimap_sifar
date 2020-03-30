@@ -6,7 +6,7 @@ sys.setdefaultencoding("utf8")
 from django.contrib import admin
 from import_export.admin import ImportExportModelAdmin, ImportExportActionModelAdmin
 
-from wazimap_sifar.models import Dataset, DatasetCategory, Contributer
+from wazimap_sifar.models import Dataset, DatasetCategory, Contributor
 from wazimap_sifar.resource import DatasetResource
 from wazimap_sifar.forms import CustomImportForm, CustomConfirmImportForm
 from django import forms
@@ -80,10 +80,10 @@ class DatasetAdmin(ImportExportModelAdmin, ImportExportActionModelAdmin):
         return rk
 
 
-class ContributerAdmin(admin.ModelAdmin):
+class ContributorAdmin(admin.ModelAdmin):
     list_display = ("user", "category", "subcategory", "approved")
 
 
 admin.site.register(Dataset, DatasetAdmin)
 admin.site.register(DatasetCategory)
-admin.site.register(Contributer, ContributerAdmin)
+admin.site.register(Contributor, ContributorAdmin)

@@ -15,7 +15,7 @@ class DatasetCategory(models.Model):
         return self.name
 
 
-class Contributer(models.Model):
+class Contributor(models.Model):
     user = models.ForeignKey(User)
     category = models.ForeignKey(DatasetCategory, on_delete=models.CASCADE, null=True)
     subcategory = models.CharField(max_length=255)
@@ -30,7 +30,7 @@ class Contributer(models.Model):
 
 class Dataset(models.Model):
     contributer = models.ForeignKey(
-        Contributer, on_delete=models.CASCADE, null=True, verbose_name="Source"
+        Contributor, on_delete=models.CASCADE, null=True, verbose_name="Source"
     )
     name = models.CharField(max_length=255)
     latitude = models.FloatField()

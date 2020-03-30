@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.core.serializers import serialize as geo_serialize
 
-from wazimap_sifar.models import DatasetCategory, Contributer, Dataset
+from wazimap_sifar.models import DatasetCategory, Contributor, Dataset
 from . import serializers
 from wazimap_sifar.utils import to_geojson
 
@@ -16,7 +16,7 @@ class DatasetCategoryView(APIView):
     def get(self, request):
         query = self.model.objects.all()
         serialize = self.model_serializer(query, many=True)
-        return Response({'data': serialize.data})
+        return Response({"data": serialize.data})
 
 
 class DatasetContributers(APIView):
