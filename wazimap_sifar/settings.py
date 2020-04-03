@@ -36,6 +36,7 @@ WSGI_APPLICATION = "wazimap_sifar.wsgi.application"
 INSTALLED_APPS = [
     "wazimap_sifar",
     "rest_framework",
+    "rest_framework.authtoken",
     "django.contrib.postgres",
     "django_admin_hstore_widget",
     "elasticapm.contrib.django",
@@ -153,3 +154,12 @@ LOGGING = {
 
 if not DEBUG:
     GEOS_LIBRARY_PATH = os.environ.get("GEOS_LIBRARY_PATH")
+
+
+REST_FRAMEWORK = {
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
+    "PAGE_SIZE": 10,
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.TokenAuthentication"
+    ],
+}
