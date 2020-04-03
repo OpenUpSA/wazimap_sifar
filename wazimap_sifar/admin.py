@@ -82,6 +82,7 @@ class DatasetAdmin(ImportExportModelAdmin, ImportExportActionModelAdmin):
 
 class ContributorAdmin(admin.ModelAdmin):
     list_display = ("user", "category", "subcategory", "approved")
+    list_filter = ("user", "category", "approved")
 
 
 admin.site.register(Dataset, DatasetAdmin)
