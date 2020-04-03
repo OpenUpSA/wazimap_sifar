@@ -18,8 +18,43 @@ class DatasetCategoryView(APIView):
         serialize = self.model_serializer(query, many=True)
         return Response({"data": serialize.data})
 
+    def post(self, request):
+        serializer = self.model_serializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(status=status.HTTP_201_CREATED)
+        return Response(status.HTTP_400_BAD_REQUEST)
 
-class DatasetContributers(APIView):
-    def get(self, request, contrib_id):
-        data = to_geojson(Dataset, contrib_id)
-        return Response(data)
+
+class ContributerView(APIView):
+    model = Contributor
+    model_serializer = serializers.ContributerSerializer
+
+    def get(self, request):
+        query = self.model.objects.all()
+        serialize = self.model_serializer(query, many=True)
+        return Response({"data": serialize.data})
+
+    def post(self, request):
+        serializer = self.model_serializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(status=status.HTTP_201_CREATED)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+class DatasetView(APIView):
+    model = Dataset
+    model_serializer = serializers.DatasetSerializer
+
+    def get(self, request):
+        query = self.model.objects.all()
+        serialize = self.model_serializer(query, many=True)
+        return Response({"data": serialize.data})
+
+    def post(self, request):
+        serializer = self.model_serializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
