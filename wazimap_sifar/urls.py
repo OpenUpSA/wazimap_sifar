@@ -6,13 +6,16 @@ from django.contrib import admin
 from .api import views as api
 
 urlpatterns = [
-    url(r'^admin/', include(admin.site.urls)),
-    url('^api/v1/dataset/category$',
-        api.DatasetCategoryView.as_view(),
-        name='category'),
-    url('^api/v1/dataset/contributer/(?P<contrib_id>[0-9]+)$',
-        api.DatasetContributers.as_view(),
-        name='contributer'),
+    url(r"^admin/", include(admin.site.urls)),
+    url(
+        "^api/v1/dataset/category$", api.DatasetCategoryView.as_view(), name="category"
+    ),
+    url(
+        "^api/v1/dataset/contributer$",
+        api.ContributerView.as_view(),
+        name="contributer",
+    ),
+    url("^api/v1/dataset/datasets$", api.DatasetView.as_view(), name="datasets"),
     # url(r'^api/point/v1/sifar/private-pharmacies$',
     #     api.PrivatePharmacyView.as_view(),
     #     name='private_pharmacies'),
@@ -31,7 +34,7 @@ urlpatterns = [
     # url(r'^api/point/v1/sifar/professional-services$',
     #     api.ProfessionalServiceView.as_view(),
     #     name='professional_service'),
-    url('^explorer/', include('explorer.urls', namespace='explorer')),
+    url("^explorer/", include("explorer.urls", namespace="explorer")),
 ]
 
 urlpatterns += urls.urlpatterns
