@@ -71,6 +71,9 @@ Vue.component('contributer-item',{
 			}
 		    }).addTo(dataset.map);
 		    
+		},
+		error: function(error){
+		    console.log(error);
 		}
 	    });
 	     }
@@ -90,7 +93,7 @@ Vue.component('dataset-item',{
 					<h5 class="card-heading-3 indent">{{dataset.name}}</h5>
 				    </div><img src="/static/img/baseline-arrow_drop_down-24px.svg" style="-webkit-transform:translate3d(0, 0, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0DEG) skew(0, 0);-moz-transform:translate3d(0, 0, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0DEG) skew(0, 0);-ms-transform:translate3d(0, 0, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0DEG) skew(0, 0);transform:translate3d(0, 0, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0DEG) skew(0, 0)" alt="" class="icon-right"></div>
                                       <div v-bind:style="{display: display}" class="accordion-item-content">
-                                     <contributer-item v-for="contrib in dataset.contributer_set" v-bind:contributer="contrib" v-bind:key="contrib.id"></contributer-item>
+                                     <contributer-item v-for="contrib in dataset.contributors" v-bind:contributer="contrib" v-bind:key="contrib.id"></contributer-item>
                                     </div>
 			    </div>`,
     data: function(){

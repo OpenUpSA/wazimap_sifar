@@ -10,6 +10,8 @@ from wazimap_sifar.utils import to_geojson
 
 
 class DatasetCategoryView(APIView):
+    authentication_classes = []
+    permission_classes = []
     model = DatasetCategory
     model_serializer = serializers.DatasetCategorySerializer
 
@@ -58,3 +60,12 @@ class DatasetView(APIView):
             serializer.save()
             return Response(status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class DatasetContributers(APIView):
+    authentication_classes = []
+    permission_classes = []
+
+    def get(self, request, contrib_id):
+        data = to_geojson(Dataset, contrib_id)
+        return Response(data)

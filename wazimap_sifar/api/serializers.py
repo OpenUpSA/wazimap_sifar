@@ -5,24 +5,25 @@ from django.contrib.auth.models import User
 
 
 class ContributerSerializer(serializers.ModelSerializer):
-    user = serializers.SlugRelatedField(
-        slug_field="username", queryset=User.objects.all()
-    )
-    category = serializers.SlugRelatedField(
-        slug_field="name", queryset=DatasetCategory.objects.all()
-    )
+    # user = serializers.SlugRelatedField(
+    #     slug_field="username", queryset=User.objects.all()
+    # )
+    # category = serializers.SlugRelatedField(
+    #     slug_field="name", queryset=DatasetCategory.objects.all()
+    # )
 
     class Meta:
         model = Contributor
-        fields = "__all__"
+        fields = ("id", "subcategory", "approved")
 
 
 class DatasetCategorySerializer(serializers.ModelSerializer):
-    contributer_set = ContributerSerializer(read_only=True, many=True)
+    # contributors = serializers.StringRelatedField(many=True)
+    contributors = ContributerSerializer(read_only=True, many=True)
 
     class Meta:
         model = DatasetCategory
-        fields = "__all__"
+        fields = ("id", "name", "contributors")
 
 
 class DatasetSerializer(serializers.ModelSerializer):
