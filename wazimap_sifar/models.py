@@ -17,7 +17,12 @@ class DatasetCategory(models.Model):
 
 class Contributor(models.Model):
     user = models.ForeignKey(User)
-    category = models.ForeignKey(DatasetCategory, on_delete=models.CASCADE, null=True)
+    category = models.ForeignKey(
+        DatasetCategory,
+        on_delete=models.CASCADE,
+        null=True,
+        related_name="contributors",
+    )
     subcategory = models.CharField(max_length=255)
     approved = models.BooleanField(default=False)
 
