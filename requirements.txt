@@ -22,7 +22,7 @@ django-sass-processor==0.7
 django-storages==1.7.1
 django-test-without-migrations==0.4
 djangorestframework==3.9.1
-ecdsa==0.13
+ecdsa==0.13.3
 elastic-apm==3.0.1
 enum34==1.1.6
 et-xmlfile==1.0.1
