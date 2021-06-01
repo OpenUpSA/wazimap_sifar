@@ -63,7 +63,7 @@ SQLAlchemy==1.2.11
 tablib==0.12.1
 unicodecsv==0.14.1
 uritemplate==3.0.0
-urllib3==1.23
+urllib3==1.26.5
 git+https://github.com/OpenUpSA/wazimap.git@py2-releases#egg=wazimap[gdal]
 git+https://github.com/OpenUpSA/explorer.git@master#egg=explorer
 git+https://github.com/OpenUpSA/wazimap-dynamic-profile.git@v0.5#egg=wazimap-dynamic-profile
